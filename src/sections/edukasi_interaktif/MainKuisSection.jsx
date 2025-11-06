@@ -65,11 +65,11 @@ const MainKuisSection = () => {
           </div>
           <p className="text-white/90 mb-6">Klik tombol di bawah untuk membuka Kahoot atau Wayground dan mulai membuat kuis interaktif!</p>
           <div className="flex justify-center gap-4">
-              <button className="flex items-center gap-x-3 bg-white text-[#FF9602] font-semibold px-6 py-2 rounded-xl hover:bg-orange-100 transition">
+              <button className="cursor-pointer flex items-center gap-x-3 bg-white text-[#FF9602] font-semibold px-6 py-2 rounded-xl hover:bg-orange-100 transition">
                 <div className="w-5"><img src="src/assets/SVG (4).png" alt="" /></div>
                   Buka Kahoot
               </button>
-              <button className="flex items-center gap-x-3 bg-white text-[#FF9602] font-semibold px-6 py-2 rounded-xl hover:bg-orange-100 transition">
+              <button className="cursor-pointer flex items-center gap-x-3 bg-white text-[#FF9602] font-semibold px-6 py-2 rounded-xl hover:bg-orange-100 transition">
                   <div className="w-5"><img src="src/assets/SVG (4).png" alt="" /></div>
                   Buka Wayground
               </button>
@@ -102,7 +102,7 @@ const MainKuisSection = () => {
               </select>
 
               {/* Dropdown Mapel */}
-              <select className="bg-white w-full md:w-48 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
+              <select className="bg-white w-full md:w-48 py-2 px-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
                 <option>Semua Mata Pelajaran</option>
                 <option>Matematika</option>
                 <option>IPA</option>
@@ -117,7 +117,7 @@ const MainKuisSection = () => {
               </select>
 
               {/* Tombol Tambah Kuis */}
-              <button className="w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5 py-2 rounded-full shadow">
+              <button className="cursor-pointer w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5 py-2 rounded-full shadow">
                 + Tambah Kuis
               </button>
 
