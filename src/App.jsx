@@ -17,6 +17,7 @@ import PojokBuku from "./pages/ruang_volunteer/PojokBuku";
 import ChatBot from "./pages/edukasi_interaktif/ChatBot";
 import Kuis from "./pages/edukasi_interaktif/Kuis";
 import ProgramTersedia from "./pages/referensi_aksi/ProgramTersedia";
+import Donasi from "./pages/referensi_aksi/Donasi";
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
                 <Route path="/edukasi-chatbot" element={<ChatBot/>} />
                 <Route path="/edukasi-kuis" element={<Kuis/>} />
                 <Route path="/referensi_aksi-program_tersedia" element={<ProgramTersedia/>} />
+                <Route path="/donasi" element={<Donasi/>} />
             </Routes>
         </div>
     )
