@@ -78,7 +78,7 @@ const MainKuisSection = () => {
               </button>
           </div>
         </section>
-
+            
        {/* Daftar Kuis */}
         <DaftarKuis/>
 
