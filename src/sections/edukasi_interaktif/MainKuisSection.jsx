@@ -92,13 +92,13 @@ const MainKuisSection = () => {
                 <input
                   type="text"
                   placeholder="Cari Kuis & Game..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-[#6B7280]"
                 />
               </div>
 
               {/* Dropdown Kelas */}
               <select className="bg-white w-full md:w-40 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
-                <option>Semua Kelas</option>
+                <option className="text-[#B0AA9C]" value="" disabled selected hidden>Semua Kelas</option>
                 <option>Kelas 1</option>
                 <option>Kelas 2</option>
                 <option>Kelas 3</option>
@@ -106,7 +106,7 @@ const MainKuisSection = () => {
 
               {/* Dropdown Mapel */}
               <select className="bg-white w-full md:w-48 py-2 px-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
-                <option>Semua Mata Pelajaran</option>
+                <option className="text-[#B0AA9C]" value="" disabled selected hidden>Semua Mata Pelajaran</option>
                 <option>Matematika</option>
                 <option>IPA</option>
                 <option>IPS</option>
@@ -114,7 +114,7 @@ const MainKuisSection = () => {
 
               {/* Dropdown Platform */}
               <select className="bg-white w-full md:w-44 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
-                <option>Semua Platform</option>
+                <option className="text-[#B0AA9C]" value="" disabled selected hidden>Semua Platform</option>
                 <option>Kahoot</option>
                 <option>Wayground</option>
               </select>
