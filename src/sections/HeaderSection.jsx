@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from "react-router-dom";
 import { FaRegHeart } from "react-icons/fa";
 import { HiUsers, HiBookOpen } from "react-icons/hi";
 import gambarLatar from '../assets/bg-login.png'; 
@@ -10,8 +11,22 @@ import MiniHeader from "../components/MiniHeader";
 
 
 const HeaderSection = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="h-[1000px] w-full relative bg-cover flex pt-32 px-52 justify-center" style={{ backgroundImage: `url(${gambarLatar})` }}>
+      <div className="flex absolute top-10 right-10 gap-5">
+        <button className="cursor-pointer hover:bg-gray-50/20 border-white border-2 p-1 rounded-[10px] w-28 text-center font-bold text-white shadow-2xl"
+          onClick={() => navigate("/login")}
+        >
+          Masuk
+        </button>
+        <button className="rounded-[10px] cursor-pointer hover:bg-amber-500/70 bg-[#FF9D01] w-28 p-1 text-center font-bold text-white shadow-2xl"
+          onClick={() => navigate("/register")}
+        >
+          Daftar
+        </button>
+      </div>
         <div className="flex flex-col gap-y-6 items-center text-[#FBF8F4]">
           <MiniHeader
             icon={<FaRegHeart className="w-5 h-5" />}
