@@ -13,7 +13,8 @@ import HomePage from './pages/HomePage'; // Halaman Home yang baru kita buat
 import RuangVolunteer from './pages/ruang_volunteer/RuangVolunteer';
 import RuangVolunteerPM from "./pages/ruang_volunteer/RuangVolunteerPM";
 import RuangVolunteerMM from "./pages/ruang_volunteer/RuangVolunteerMM";
-import PojokBuku from "./pages/ruang_volunteer/PojokBuku";
+import RuangVolunteerCL from "./pages/ruang_volunteer/RuangVolunteerCL";
+import RuangVolunteerAG from "./pages/ruang_volunteer/RuangVolunteerAG";import PojokBuku from "./pages/ruang_volunteer/PojokBuku";
 import ChatBot from "./pages/edukasi_interaktif/ChatBot";
 import Kuis from "./pages/edukasi_interaktif/Kuis";
 import ProgramTersedia from "./pages/referensi_aksi/ProgramTersedia";
@@ -31,6 +32,8 @@ function App() {
                 <Route path="/volunteer-panduan-mengajar" element={<RuangVolunteerPM />} />
                 <Route path="/volunteer-materi-mengajar" element={<RuangVolunteerMM />} />
                 <Route path="/volunteer-pojok-buku" element={<PojokBuku/>} />
+                <Route path="/volunteer-cerita-lapangan" element={<RuangVolunteerCL />} />
+                <Route path="/volunteer-agenda" element={<RuangVolunteerAG />} />
                 <Route path="/edukasi-chatbot" element={<ChatBot/>} />
                 <Route path="/edukasi-kuis" element={<Kuis/>} />
                 <Route path="/referensi_aksi-program_tersedia" element={<ProgramTersedia/>} />
