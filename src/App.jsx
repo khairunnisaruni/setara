@@ -18,6 +18,8 @@ import ChatBot from "./pages/edukasi_interaktif/ChatBot";
 import Kuis from "./pages/edukasi_interaktif/Kuis";
 import ProgramTersedia from "./pages/referensi_aksi/ProgramTersedia";
 import Donasi from "./pages/referensi_aksi/Donasi";
+import Profile from "./pages/Profile";
+
 
 function App() {
 
@@ -33,6 +35,8 @@ function App() {
                 <Route path="/edukasi-kuis" element={<Kuis/>} />
                 <Route path="/referensi_aksi-program_tersedia" element={<ProgramTersedia/>} />
                 <Route path="/donasi" element={<Donasi/>} />
+                <Route path="/profile" element={<Profile/>} />
+
             </Routes>
         </div>
     )
