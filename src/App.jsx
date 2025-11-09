@@ -20,6 +20,8 @@ import Kuis from "./pages/edukasi_interaktif/Kuis";
 import ProgramTersedia from "./pages/referensi_aksi/ProgramTersedia";
 import Donasi from "./pages/referensi_aksi/Donasi";
 import Profile from "./pages/Profile";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 
 function App() {
@@ -39,6 +41,9 @@ function App() {
                 <Route path="/referensi_aksi-program_tersedia" element={<ProgramTersedia/>} />
                 <Route path="/donasi" element={<Donasi/>} />
                 <Route path="/profile" element={<Profile/>} />
+                <Route path="/login" element={<Login/>} />
+                <Route path="/register" element={<Register/>} />
+
 
             </Routes>
         </div>
