@@ -22,6 +22,7 @@ import Donasi from "./pages/referensi_aksi/Donasi";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AdminBuku from "./pages/admin/AdminBuku";
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
                 <Route path="/profile" element={<Profile/>} />
                 <Route path="/login" element={<Login/>} />
                 <Route path="/register" element={<Register/>} />
+                <Route path="/admin/buku" element={<AdminBuku/>} />
 
 
             </Routes>
