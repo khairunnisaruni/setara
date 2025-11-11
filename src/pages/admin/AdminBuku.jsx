@@ -4,17 +4,32 @@ import TabButton from "../../components/admin/TabButton";
 import BookToolbarSection from "../../sections/admin/BookToolbarSection";
 import BookTableSection from "../../sections/admin/BookTableSelection";
 import Pagination from "../../components/admin/Pagination";
-import AddBookModal from "../../components/admin/modals/AddBuku"; // ✅ pastikan path ini benar
+import AddBookModal from "../../components/admin/modals/Buku/AddBuku"; 
+import Success from "../../components/admin/modals/Success";
+import Failed from "../../components/admin/modals/Failed";
 
 const Buku = () => {
   const [activeTab, setActiveTab] = useState("daftar");
   const [search, setSearch] = useState("");
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false); // ✅ modal state
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false); 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailedModal, setShowFailedModal] = useState(false);
 
   // ✅ handle submit dari modal
-  const handleAddSubmit = (formData) => {
-    console.log("Data buku baru:", formData);
-    setIsAddModalOpen(false);
+   const handleAddSubmit = async (formData) => {
+    try {
+      console.log("Data buku baru:", formData);
+
+      // Simulasi proses API
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      // Jika berhasil
+      setShowSuccessModal(true);
+      setIsAddModalOpen(false);
+    } catch (error) {
+      // Jika gagal
+      setShowFailedModal(true);
+    }
   };
 
   return (
@@ -64,6 +79,16 @@ const Buku = () => {
           onClose={() => setIsAddModalOpen(false)}
           onSubmit={handleAddSubmit}
         />
+
+        {/* ✅ Modal Sukses */}
+        {showSuccessModal && (
+          <Success onClose={() => setShowSuccessModal(false)} />
+        )}
+
+        {/* ✅ Modal Gagal */}
+        {showFailedModal && (
+          <Failed onClose={() => setShowFailedModal(false)} />
+        )}
       </div>
     </AdminLayout>
   );
