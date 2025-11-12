@@ -28,6 +28,7 @@ import AdminQuiz from "./pages/admin/AdminQuiz";
 import AdminMateri from "./pages/admin/AdminMateri";
 import AdminCerita from "./pages/admin/AdminCerita";
 import AdminProgram from "./pages/admin/AdminProgram";
+import AdminDonasi from "./pages/admin/AdminDonasi";
 
 
 
@@ -56,6 +57,7 @@ function App() {
                 <Route path="/admin/materials" element={<AdminMateri/>} /> 
                 <Route path="/admin/stories" element={<AdminCerita/>} /> 
                 <Route path="/admin/programs" element={<AdminProgram/>} /> 
+                <Route path="/admin/donations" element={<AdminDonasi/>} /> 
 
 
             </Routes>

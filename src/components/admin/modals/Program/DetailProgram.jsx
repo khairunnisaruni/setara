@@ -100,7 +100,7 @@ const DetailProgram = ({ isOpen, onClose, program }) => {
                 href={program?.link || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-500 hover:underline break-words"
+                className="text-gray-500 hover:underline wrap-break-word"
               >
                 {program?.link || "Tidak ada link"}
               </a>

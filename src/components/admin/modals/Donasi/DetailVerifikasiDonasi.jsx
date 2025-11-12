@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import AcceptedModal from "../Accepted";
 import RejectedModal from "../Rejected";
 
-const DetailVerifikasiProgram = ({ isOpen, onClose, program }) => {
+const DetailVerifikasiDonasi = ({ isOpen, onClose, donasi }) => {
   const [showAccepted, setShowAccepted] = useState(false);
   const [showRejected, setShowRejected] = useState(false);
 
@@ -20,7 +20,7 @@ const DetailVerifikasiProgram = ({ isOpen, onClose, program }) => {
 
   return (
     <>
-      {/* ===== Modal Detail Verifikasi Program ===== */}
+      {/* ===== Modal Detail Verifikasi Donasi ===== */}
       <Dialog
         open={isOpen}
         onClose={onClose}
@@ -31,10 +31,10 @@ const DetailVerifikasiProgram = ({ isOpen, onClose, program }) => {
           <div className="h-32 w-full bg-gray-100">
             <img
               src={
-                program?.banner ||
-                "https://via.placeholder.com/400x200.png?text=Banner+Program"
+                donasi?.banner ||
+                "https://via.placeholder.com/400x200.png?text=Banner+Donasi"
               }
-              alt="Banner Program"
+              alt="Banner Donasi"
               className="w-full h-full object-cover"
             />
           </div>
@@ -49,87 +49,80 @@ const DetailVerifikasiProgram = ({ isOpen, onClose, program }) => {
 
           {/* ===== Konten Utama ===== */}
           <div className="p-4">
-            {/* Judul Modal */}
             <Dialog.Title className="text-base font-bold text-amber-500 underline underline-offset-4 mb-4">
-              Detail Program
+              Detail Donasi
             </Dialog.Title>
 
-            {/* Detail Program */}
+            {/* ===== Detail Donasi ===== */}
             <div className="text-left space-y-3 text-sm">
+              {/* Judul Donasi */}
               <div>
-                <p className="font-semibold">Judul Program</p>
-                <p className="text-gray-500">{program?.title || "—"}</p>
+                <p className="font-semibold">Judul Donasi</p>
+                <p className="text-gray-500">{donasi?.title || "—"}</p>
               </div>
 
+              {/* Kategori */}
               <div>
-                <p className="font-semibold">Penyelenggara</p>
-                <p className="text-gray-500">{program?.organizer || "—"}</p>
-              </div>
-
-              <div>
-                <p className="font-semibold">Jenis Program</p>
+                <p className="font-semibold">Kategori</p>
                 <span
-                  className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${
-                    program?.programType === "Beasiswa"
-                      ? "bg-orange-100 text-orange-700"
-                      : program?.programType === "Pelatihan"
+                  className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    donasi?.category === "Pendidikan"
+                      ? "bg-blue-100 text-blue-700"
+                      : donasi?.category === "Kesehatan"
                       ? "bg-green-100 text-green-700"
-                      : program?.programType === "Pengabdian Masyarakat"
-                      ? "bg-purple-100 text-purple-700"
+                      : donasi?.category === "Lingkungan"
+                      ? "bg-emerald-100 text-emerald-700"
                       : "bg-gray-100 text-gray-700"
                   }`}
                 >
-                  {program?.programType || "—"}
+                  {donasi?.category || "—"}
                 </span>
               </div>
 
+              {/* Penerima Donasi */}
               <div>
-                <p className="font-semibold">Lokasi</p>
-                <p className="text-gray-500">{program?.location || "—"}</p>
+                <p className="font-semibold">Penerima Donasi</p>
+                <p className="text-gray-500">{donasi?.recipient || "—"}</p>
               </div>
 
+              {/* Deskripsi */}
               <div>
                 <p className="font-semibold">Deskripsi</p>
                 <p className="text-gray-500">
-                  {program?.description || "Tidak ada deskripsi."}
+                  {donasi?.description || "Tidak ada deskripsi."}
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <p className="font-semibold">Periode</p>
-                  <p className="text-gray-500">{program?.period || "—"}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Deadline</p>
-                  <p className="text-gray-500">{program?.deadline || "—"}</p>
-                </div>
+              {/* Dampak / Impact */}
+              <div>
+                <p className="font-semibold">Dampak</p>
+                <p className="text-gray-500">
+                  {donasi?.impact || "Belum ada informasi dampak."}
+                </p>
               </div>
 
+              {/* Penanggung Jawab */}
               <div>
-                <p className="font-semibold">Status</p>
-                <span
-                  className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full ${
-                    program?.status === "Aktif"
-                      ? "bg-green-100 text-green-700"
-                      : program?.status === "Nonaktif"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-gray-100 text-gray-700"
-                  }`}
-                >
-                  {program?.status || "—"}
-                </span>
+                <p className="font-semibold">Penanggung Jawab</p>
+                <p className="text-gray-500">{donasi?.responsible || "—"}</p>
               </div>
 
+              {/* Kontak */}
               <div>
-                <p className="font-semibold">Link Pendaftaran / Dokumentasi</p>
+                <p className="font-semibold">Kontak</p>
+                <p className="text-gray-500">{donasi?.contact || "—"}</p>
+              </div>
+
+              {/* Tautan */}
+              <div>
+                <p className="font-semibold">Tautan Informasi / Dokumentasi</p>
                 <a
-                  href={program?.link || "#"}
+                  href={donasi?.link || "#"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:underline wrap-break-word"
+                  className="text-gray-500 hover:underline break-all"
                 >
-                  {program?.link || "Tidak ada link"}
+                  {donasi?.link || "Tidak ada link"}
                 </a>
               </div>
             </div>
@@ -166,4 +159,4 @@ const DetailVerifikasiProgram = ({ isOpen, onClose, program }) => {
   );
 };
 
-export default DetailVerifikasiProgram;
+export default DetailVerifikasiDonasi;
