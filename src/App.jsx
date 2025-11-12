@@ -26,6 +26,7 @@ import AdminBuku from "./pages/admin/AdminBuku";
 import AdminUser from "./pages/admin/AdminUserManagement";
 import AdminQuiz from "./pages/admin/AdminQuiz";
 import AdminMateri from "./pages/admin/AdminMateri";
+import AdminCerita from "./pages/admin/AdminCerita";
 
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
                 <Route path="/admin/users" element={<AdminUser/>} />
                 <Route path="/admin/quiz" element={<AdminQuiz/>} /> 
                 <Route path="/admin/materials" element={<AdminMateri/>} /> 
+                 <Route path="/admin/stories" element={<AdminCerita/>} /> 
 
 
             </Routes>
