@@ -23,7 +23,8 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminBuku from "./pages/admin/AdminBuku";
-import AdminUser from "./pages/admin/UserManagement";
+import AdminUser from "./pages/admin/AdminUserManagement";
+import AdminQuiz from "./pages/admin/AdminQuiz";
 
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
                 <Route path="/register" element={<Register/>} />
                 <Route path="/admin/buku" element={<AdminBuku/>} />
                 <Route path="/admin/users" element={<AdminUser/>} />
+                <Route path="/admin/quiz" element={<AdminQuiz/>} /> 
 
 
             </Routes>

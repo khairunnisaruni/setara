@@ -13,7 +13,7 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
 
   useEffect(() => {
     if (isOpen) {
-      // kalau gak ada initialData, pakai contoh dummy
+      // Data dummy jika tidak ada initialData
       const dummyData = {
         title: "Petualangan di Negeri Awan",
         author: "R. Sasmita",
@@ -21,7 +21,6 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
         description: "Sebuah kisah tentang perjalanan misterius di negeri awan.",
         link: "https://contohbuku.com/awan",
       };
-
       setFormData(initialData || dummyData);
     }
   }, [isOpen, initialData]);
@@ -43,16 +42,16 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-lg">
-        {/* 🔸 Judul rata kiri */}
-        <h2 className="text-lg font-semibold mb-4 text-gray-800">
+      <div className="bg-white rounded-xl p-4 w-full max-w-md shadow-lg">
+        {/* Judul modal */}
+        <h2 className="text-lg font-semibold mb-3 text-gray-800">
           Perbarui Rekomendasi Buku
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-3 text-left">
+        <form onSubmit={handleSubmit} className="space-y-2 text-left">
           {/* Judul Buku */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Judul Buku
             </label>
             <input
@@ -60,14 +59,14 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-400 rounded-md placeholder-gray-400"
+              className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               placeholder="Masukkan judul buku"
             />
           </div>
 
           {/* Penulis Buku */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Penulis Buku
             </label>
             <input
@@ -75,21 +74,21 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               name="author"
               value={formData.author}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-400 rounded-md placeholder-gray-400"
+              className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               placeholder="Masukkan nama penulis buku"
             />
           </div>
 
           {/* Kategori Buku */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Kategori Buku
             </label>
             <select
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-400 rounded-md text-gray-700 placeholder-gray-400"
+              className="w-full p-2 border border-gray-400 rounded-md text-gray-700 text-sm placeholder-gray-400"
             >
               <option value="">Pilih Kategori</option>
               <option value="fiksi">Fiksi</option>
@@ -99,7 +98,7 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
 
           {/* Deskripsi */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Deskripsi
             </label>
             <textarea
@@ -107,29 +106,29 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               rows="3"
               value={formData.description}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-400 rounded-md placeholder-gray-400"
-              placeholder="Deskripsi singkat tentang materi"
+              className="w-full p-2 border border-gray-400 rounded-md text-sm placeholder-gray-400"
+              placeholder="Deskripsi singkat tentang buku"
             />
           </div>
 
           {/* Upload Sampul Buku */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Upload Sampul Buku
             </label>
             <div className="relative">
               <input
                 type="file"
                 name="file"
-                id="edit-file-upload"
+                id="edit-book-file-upload"
                 onChange={handleChange}
                 className="hidden"
               />
               <label
-                htmlFor="edit-file-upload"
-                className="flex items-center gap-2 border border-gray-400 rounded-md px-3 py-2 cursor-pointer text-gray-600 hover:bg-gray-50"
+                htmlFor="edit-book-file-upload"
+                className="flex items-center gap-2 border border-gray-400 rounded-md px-3 py-1.5 cursor-pointer text-gray-600 hover:bg-gray-50"
               >
-                <Upload className="w-5 h-5 text-gray-500" />
+                <Upload className="w-4 h-4 text-gray-500" />
                 {formData.file
                   ? formData.file.name
                   : "Pilih File Baru (Opsional)"}
@@ -137,9 +136,9 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
             </div>
           </div>
 
-          {/* Upload Tautan Buku */}
+          {/* Tautan Buku */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Upload Tautan Buku
             </label>
             <input
@@ -147,7 +146,7 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               name="link"
               value={formData.link}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-400 rounded-md placeholder-gray-400"
+              className="w-full p-2 border border-gray-400 rounded-md text-sm placeholder-gray-400"
               placeholder="Contoh: www.bukunasional.com"
             />
           </div>

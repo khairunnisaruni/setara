@@ -2,32 +2,30 @@ import { useState } from "react";
 import AdminLayout from "../../sections/admin/AdminLayout";
 import TabButton from "../../components/admin/TabButton";
 import ToolbarSection from "../../sections/admin/ToolbarSection";
-import BookTableSection from "../../sections/admin/BookTableSelection";
+import QuizTableSection from "../../sections/admin/QuizTableSection"; // 🔸 ganti dari BookTableSection
 import Pagination from "../../components/admin/Pagination";
-import AddBookModal from "../../components/admin/modals/Buku/AddBuku"; 
+import AddQuizModal from "../../components/admin/modals/Quiz/AddQuiz"; // 🔸 modal baru
 import Success from "../../components/admin/modals/Success";
 import Failed from "../../components/admin/modals/Failed";
 
-const Buku = () => {
+const KuisGame = () => {
   const [activeTab, setActiveTab] = useState("daftar");
   const [search, setSearch] = useState("");
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false); 
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFailedModal, setShowFailedModal] = useState(false);
 
-  // ✅ handle submit dari modal
-   const handleAddSubmit = async (formData) => {
+  // ✅ handle submit dari modal tambah kuis
+  const handleAddSubmit = async (formData) => {
     try {
-      console.log("Data buku baru:", formData);
+      console.log("Data kuis & game baru:", formData);
 
-      // Simulasi proses API
+      // simulasi request API
       await new Promise((resolve) => setTimeout(resolve, 800));
 
-      // Jika berhasil
       setShowSuccessModal(true);
       setIsAddModalOpen(false);
     } catch (error) {
-      // Jika gagal
       setShowFailedModal(true);
     }
   };
@@ -35,9 +33,9 @@ const Buku = () => {
   return (
     <AdminLayout>
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-gray-800">Rekomendasi Buku</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Kuis & Game</h2>
         <p className="text-gray-600 mt-1 mb-4">
-          Kelola dan pantau seluruh data rekomendasi buku dalam sistem
+          Kelola dan pantau seluruh data kuis dan game dalam sistem
         </p>
 
         {/* Tabs */}
@@ -47,51 +45,49 @@ const Buku = () => {
               active={activeTab === "daftar"}
               onClick={() => setActiveTab("daftar")}
             >
-              Daftar Rekomendasi Buku
+              Daftar Kuis & Game
             </TabButton>
             <TabButton
               active={activeTab === "verifikasi"}
               onClick={() => setActiveTab("verifikasi")}
               badge="5"
             >
-              Verifikasi Rekomendasi Buku
+              Verifikasi Kuis & Game
             </TabButton>
           </div>
         </div>
 
-        {/* Toolbar */}
+        {/* Toolbar: Search + Filter + Tambah */}
         <ToolbarSection
           search={search}
           setSearch={setSearch}
           activeTab={activeTab}
-          onAddClick={() => setIsAddModalOpen(true)} // ✅ buka modal
+          onAddClick={() => setIsAddModalOpen(true)}
         />
 
-        {/* Table */}
-        <BookTableSection activeTab={activeTab} search={search} />
+        {/* Tabel Daftar / Verifikasi */}
+        <QuizTableSection activeTab={activeTab} search={search} />
 
         {/* Pagination */}
         <Pagination />
 
-        {/* ✅ Modal Tambah Buku */}
-        <AddBookModal
+        {/* Modal Tambah Kuis & Game */}
+        <AddQuizModal
           isOpen={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
           onSubmit={handleAddSubmit}
         />
 
-        {/* ✅ Modal Sukses */}
+        {/* Modal Sukses */}
         {showSuccessModal && (
           <Success onClose={() => setShowSuccessModal(false)} />
         )}
 
-        {/* ✅ Modal Gagal */}
-        {showFailedModal && (
-          <Failed onClose={() => setShowFailedModal(false)} />
-        )}
+        {/* Modal Gagal */}
+        {showFailedModal && <Failed onClose={() => setShowFailedModal(false)} />}
       </div>
     </AdminLayout>
   );
 };
 
-export default Buku;
+export default KuisGame;

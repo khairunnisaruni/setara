@@ -1,7 +1,7 @@
 import SearchBar from "../../components/admin/SearchBar";
 import FilterButton from "../../components/admin/FilterButton";
 
-const BookToolbarSection = ({ search, setSearch, activeTab, onAddClick }) => {
+const ToolbarSection = ({ search, setSearch, activeTab, onAddClick }) => {
   return (
     <div className="flex flex-wrap gap-3 mb-4">
       <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -18,4 +18,4 @@ const BookToolbarSection = ({ search, setSearch, activeTab, onAddClick }) => {
   );
 };
 
-export default BookToolbarSection;
+export default ToolbarSection;

@@ -41,7 +41,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col justify-between shadow-sm">
+    <aside className="min-w-64 bg-white border-r border-gray-200 h-screen flex flex-col justify-between shadow-sm">
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 p-5 border-b border-gray-100">

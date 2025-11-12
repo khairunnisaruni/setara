@@ -3,13 +3,14 @@ import { Upload } from "lucide-react";
 import FailedModal from "../../modals/Failed";
 import SuccessModal from "../../modals/Success";
 
-const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
+const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     title: "",
-    author: "",
-    category: "",
     description: "",
+    platform: "",
     link: "",
+    subjectCategory: "",
+    classCategory: "",
     file: null,
   });
 
@@ -41,76 +42,114 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <>
-      {/* Modal Tambah Buku */}
       <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
         <div className="bg-white rounded-xl p-4 w-full max-w-sm shadow-lg">
           <h2 className="text-base font-semibold text-center mb-3">
-            Tambah Rekomendasi Buku
+            Tambah Kuis & Game
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-2">
-            {/* Judul Buku */}
+            {/* Judul */}
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Judul Buku
+                Judul Kuis & Game
               </label>
               <input
                 type="text"
                 name="title"
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                placeholder="Masukkan judul buku"
+                placeholder="Masukkan judul"
               />
-            </div>
-
-            {/* Penulis Buku */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Penulis Buku
-              </label>
-              <input
-                type="text"
-                name="author"
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                placeholder="Masukkan nama penulis buku"
-              />
-            </div>
-
-            {/* Kategori Buku */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Kategori Buku
-              </label>
-              <select
-                name="category"
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700"
-              >
-                <option value="">Pilih Kategori</option>
-                <option value="fiksi">Fiksi</option>
-                <option value="nonfiksi">Non-Fiksi</option>
-              </select>
             </div>
 
             {/* Deskripsi */}
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Deskripsi
+                Deskripsi (15 Kata)
               </label>
               <textarea
                 name="description"
                 rows="2"
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                placeholder="Deskripsi singkat tentang buku"
+                placeholder="Deskripsi singkat"
               />
             </div>
 
-            {/* Upload Sampul Buku */}
+            {/* Platform */}
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Upload Sampul Buku
+                Platform
+              </label>
+              <select
+                name="platform"
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700"
+              >
+                <option value="">Pilih Platform</option>
+                <option value="kahoot">Kahoot</option>
+                <option value="wayground">Wayground</option>
+              </select>
+            </div>
+
+            {/* Link */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Link Kuis
+              </label>
+              <input
+                type="url"
+                name="link"
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                placeholder="Masukkan link"
+              />
+            </div>
+
+            {/* Kategori Mata Pelajaran */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Mata Pelajaran
+              </label>
+              <select
+                name="subjectCategory"
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700"
+              >
+                <option value="">Pilih Mata Pelajaran</option>
+                <option value="matematika">Matematika</option>
+                <option value="bahasa-indonesia">Bahasa Indonesia</option>
+                <option value="ipa">IPA</option>
+                <option value="ips">IPS</option>
+                <option value="bahasa-inggris">Bahasa Inggris</option>
+              </select>
+            </div>
+
+            {/* Kategori Kelas */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Kelas
+              </label>
+              <select
+                name="classCategory"
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700"
+              >
+                <option value="">Pilih Kelas</option>
+                <option value="kelas-1">Kelas 1</option>
+                <option value="kelas-2">Kelas 2</option>
+                <option value="kelas-3">Kelas 3</option>
+                <option value="kelas-4">Kelas 4</option>
+                <option value="kelas-5">Kelas 5</option>
+                <option value="kelas-6">Kelas 6</option>
+              </select>
+            </div>
+
+            {/* Upload Gambar Pendukung */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Gambar Pendukung
               </label>
               <div className="relative">
                 <input
@@ -125,23 +164,9 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
                   className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-1.5 cursor-pointer text-gray-600 text-sm hover:bg-gray-50"
                 >
                   <Upload className="w-4 h-4 text-gray-500" />
-                  {formData.file ? formData.file.name : "Upload Sampul Buku"}
+                  {formData.file ? formData.file.name : "Unggah File"}
                 </label>
               </div>
-            </div>
-
-            {/* Tautan Buku */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Tautan Buku
-              </label>
-              <input
-                type="url"
-                name="link"
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                placeholder="Contoh: www.bukunasional.com"
-              />
             </div>
 
             {/* Tombol Aksi */}
@@ -164,7 +189,7 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
         </div>
       </div>
 
-      {/* Popup sukses / gagal */}
+      {/* Modal Sukses dan Gagal */}
       <SuccessModal
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
@@ -177,4 +202,4 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-export default AddBookModal;
+export default AddQuizModal;
