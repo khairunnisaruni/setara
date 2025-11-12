@@ -23,6 +23,7 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminBuku from "./pages/admin/AdminBuku";
+import AdminUser from "./pages/admin/UserManagement";
 
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
                 <Route path="/login" element={<Login/>} />
                 <Route path="/register" element={<Register/>} />
                 <Route path="/admin/buku" element={<AdminBuku/>} />
+                <Route path="/admin/users" element={<AdminUser/>} />
 
 
             </Routes>

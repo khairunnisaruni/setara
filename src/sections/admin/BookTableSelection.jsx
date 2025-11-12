@@ -66,11 +66,11 @@ const BookTableSection = ({ activeTab, search }) => {
     setShowDeleteConfirm(true);
   };
 
-  const handleConfirmDelete = () => {
-    setShowDeleteConfirm(false);
-    setShowDeleteSuccess(true);
-    console.log("Buku dihapus:", selectedBook);
-  };
+  // const handleConfirmDelete = () => {
+  //   setShowDeleteConfirm(false);
+  //   setShowDeleteSuccess(true);
+  //   console.log("Buku dihapus:", selectedBook);
+  // };
 
   const handleUpdateSubmit = (updatedData) => {
     console.log("Buku diupdate:", updatedData);
