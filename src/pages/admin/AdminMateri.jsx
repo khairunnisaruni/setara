@@ -2,25 +2,25 @@ import { useState } from "react";
 import AdminLayout from "../../sections/admin/AdminLayout";
 import TabButton from "../../components/admin/TabButton";
 import ToolbarSection from "../../sections/admin/ToolbarSection";
-import BookTableSection from "../../sections/admin/BookTableSection";
+import MateriTableSection from "../../sections/admin/MateriTableSection";
 import Pagination from "../../components/admin/Pagination";
-import AddBookModal from "../../components/admin/modals/Buku/AddBuku"; 
+import AddMateriModal from "../../components/admin/modals/Materi/AddMateri";
 import Success from "../../components/admin/modals/Success";
 import Failed from "../../components/admin/modals/Failed";
 
-const Buku = () => {
+const Materi = () => {
   const [activeTab, setActiveTab] = useState("daftar");
   const [search, setSearch] = useState("");
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false); 
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFailedModal, setShowFailedModal] = useState(false);
 
-  // ✅ handle submit dari modal
-   const handleAddSubmit = async (formData) => {
+  // ✅ handle submit dari modal tambah materi
+  const handleAddSubmit = async (formData) => {
     try {
-      console.log("Data buku baru:", formData);
+      console.log("Data materi baru:", formData);
 
-      // Simulasi proses API
+      // simulasi proses API
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       // Jika berhasil
@@ -35,9 +35,9 @@ const Buku = () => {
   return (
     <AdminLayout>
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-gray-800">Rekomendasi Buku</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Materi Multimedia</h2>
         <p className="text-gray-600 mt-1 mb-4">
-          Kelola dan pantau seluruh data rekomendasi buku dalam sistem
+          Kelola dan pantau seluruh data materi dalam sistem
         </p>
 
         {/* Tabs */}
@@ -47,14 +47,14 @@ const Buku = () => {
               active={activeTab === "daftar"}
               onClick={() => setActiveTab("daftar")}
             >
-              Daftar Rekomendasi Buku
+              Daftar Materi
             </TabButton>
             <TabButton
               active={activeTab === "verifikasi"}
               onClick={() => setActiveTab("verifikasi")}
               badge="5"
             >
-              Verifikasi Rekomendasi Buku
+              Verifikasi Materi
             </TabButton>
           </div>
         </div>
@@ -64,17 +64,17 @@ const Buku = () => {
           search={search}
           setSearch={setSearch}
           activeTab={activeTab}
-          onAddClick={() => setIsAddModalOpen(true)} // ✅ buka modal
+          onAddClick={() => setIsAddModalOpen(true)} // buka modal
         />
 
         {/* Table */}
-        <BookTableSection activeTab={activeTab} search={search} />
+        <MateriTableSection activeTab={activeTab} search={search} />
 
         {/* Pagination */}
         <Pagination />
 
-        {/* ✅ Modal Tambah Buku */}
-        <AddBookModal
+        {/* ✅ Modal Tambah Materi */}
+        <AddMateriModal
           isOpen={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
           onSubmit={handleAddSubmit}
@@ -94,4 +94,4 @@ const Buku = () => {
   );
 };
 
-export default Buku;
+export default Materi;
