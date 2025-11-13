@@ -58,7 +58,7 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
                 type="text"
                 name="title"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
                 placeholder="Masukkan judul buku"
               />
             </div>
@@ -72,7 +72,7 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
                 type="text"
                 name="author"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
                 placeholder="Masukkan nama penulis buku"
               />
             </div>
@@ -102,7 +102,7 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
                 name="description"
                 rows="2"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
                 placeholder="Deskripsi singkat tentang buku"
               />
             </div>
@@ -139,7 +139,7 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
                 type="url"
                 name="link"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
                 placeholder="Contoh: www.bukunasional.com"
               />
             </div>

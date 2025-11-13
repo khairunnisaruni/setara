@@ -71,7 +71,7 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Contoh: Donasi Buku Bacaan untuk Anak SD di Daerah Terpencil"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               />
             </div>
 
@@ -106,7 +106,7 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.recipient}
                 onChange={handleChange}
                 placeholder="Contoh: Siswa SD Tapanuli, Komunitas belajar anak-anak usia 7–12 tahun"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               />
             </div>
 
@@ -121,7 +121,7 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={handleChange}
                 rows="3"
                 placeholder="Tuliskan deskripsi tentang tujuan donasi, penerima manfaat, dan bentuk bantuan yang dibutuhkan..."
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               />
             </div>
 
@@ -135,7 +135,7 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
                 name="banner"
                 accept="image/*"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               />
             </div>
 
@@ -150,7 +150,7 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={handleChange}
                 rows="2"
                 placeholder="Bagaimana bantuan akan digunakan dan dampaknya bagi penerima manfaat"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               />
             </div>
 
@@ -165,7 +165,7 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.link}
                 onChange={handleChange}
                 placeholder="https://..."
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               />
             </div>
 
@@ -180,7 +180,7 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.responsible}
                 onChange={handleChange}
                 placeholder="Masukkan nama penanggung jawab donasi"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               />
             </div>
 
@@ -195,7 +195,7 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.contact}
                 onChange={handleChange}
                 placeholder="Masukkan kontak atau nomor telepon penanggung jawab donasi"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               />
             </div>
 

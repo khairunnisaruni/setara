@@ -56,7 +56,7 @@ const AddMateriModal = ({ isOpen, onClose, onSubmit }) => {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm "
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm "
                 placeholder="Masukkan judul Materi"
               />
             </div>
@@ -132,7 +132,7 @@ const AddMateriModal = ({ isOpen, onClose, onSubmit }) => {
                 rows="3"
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm "
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm "
                 placeholder="Deskripsi singkat tentang materi"
               />
             </div>

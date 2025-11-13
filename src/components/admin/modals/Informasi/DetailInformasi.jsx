@@ -25,15 +25,15 @@ const DetailInformasi = ({ isOpen, onClose, info }) => {
         {/* Isi Panduan */}
         <div className="space-y-4">
           <div>
-            <p className="text-gray-400 font-semibold">Judul Panduan</p>
-            <p className="text-gray-800 font-medium">
+            <p className="text-gray-800 font-semibold">Judul Panduan</p>
+            <p className="text-gray-500 text-sm">
               {info?.judul || "Cara Menggunakan Aplikasi BoycottBuddy"}
             </p>
           </div>
 
           <div>
-            <p className="text-gray-400 font-semibold">Deskripsi Panduan</p>
-            <p className="text-gray-800 font-medium text-justify">
+            <p className="text-gray-800 font-semibold">Deskripsi Panduan</p>
+            <p className="text-gray-500 text-sm whitespace-pre-line">
               {info?.deskripsi ||
                 "Panduan ini menjelaskan langkah-langkah untuk menggunakan fitur utama aplikasi, mulai dari melakukan pencarian produk hingga memahami hasil deteksi merek yang termasuk dalam daftar boikot."}
             </p>

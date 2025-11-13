@@ -42,6 +42,7 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <>
+      {/* Overlay Modal */}
       <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
         <div className="bg-white rounded-xl p-4 w-full max-w-sm shadow-lg">
           <h2 className="text-base font-semibold text-center mb-3">
@@ -58,7 +59,7 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
                 type="text"
                 name="title"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
                 placeholder="Masukkan judul"
               />
             </div>
@@ -72,7 +73,7 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
                 name="description"
                 rows="2"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
                 placeholder="Deskripsi singkat"
               />
             </div>
@@ -85,7 +86,7 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
               <select
                 name="platform"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
               >
                 <option value="">Pilih Platform</option>
                 <option value="kahoot">Kahoot</option>
@@ -102,7 +103,7 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
                 type="url"
                 name="link"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
                 placeholder="Masukkan link"
               />
             </div>
@@ -115,7 +116,7 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
               <select
                 name="subjectCategory"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
               >
                 <option value="">Pilih Mata Pelajaran</option>
                 <option value="matematika">Matematika</option>
@@ -134,7 +135,7 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
               <select
                 name="classCategory"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
               >
                 <option value="">Pilih Kelas</option>
                 <option value="kelas-1">Kelas 1</option>
@@ -174,13 +175,13 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-gray-100 text-gray-700 text-sm px-3 py-1.5 rounded-md"
+                className="bg-gray-100 text-gray-700 text-sm px-3 py-1.5 rounded-md hover:bg-gray-200"
               >
                 Batal
               </button>
               <button
                 type="submit"
-                className="bg-amber-400 text-white text-sm px-3 py-1.5 rounded-md hover:bg-amber-500"
+                className="bg-amber-400 text-white text-sm px-3 py-1.5 rounded-md hover:bg-amber-500 transition-all"
               >
                 Simpan
               </button>
@@ -189,7 +190,7 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
         </div>
       </div>
 
-      {/* Modal Sukses dan Gagal */}
+      {/* Popup Sukses & Gagal */}
       <SuccessModal
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}

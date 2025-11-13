@@ -71,7 +71,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Contoh: Program Kampus Mengajar Angkatan 7"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
               />
             </div>
 
@@ -86,7 +86,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.organizer}
                 onChange={handleChange}
                 placeholder="Contoh: Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
               />
             </div>
 
@@ -125,7 +125,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.location}
                 onChange={handleChange}
                 placeholder="Beri tahu dimana lokasi volunteer/pengabdian masyarakat"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
               />
             </div>
 
@@ -140,7 +140,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={handleChange}
                 rows="3"
                 placeholder="Jelaskan deskripsi program ini"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
               />
             </div>
 
@@ -155,7 +155,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.period}
                 onChange={handleChange}
                 placeholder="Contoh: Januari - Juni 2025"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
               />
             </div>
 
@@ -169,7 +169,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
                 name="deadline"
                 value={formData.deadline}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md  placeholder-gray-400text-sm"
               />
             </div>
 
@@ -201,7 +201,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.link}
                 onChange={handleChange}
                 placeholder="https://..."
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
               />
             </div>
 
@@ -215,7 +215,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
                 name="banner"
                 accept="image/*"
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
               />
             </div>
 
