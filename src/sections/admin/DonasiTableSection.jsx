@@ -26,7 +26,7 @@ const DonasiTableSection = ({ activeTab, search }) => {
     {
       id: 1,
       title: "Donasi Buku untuk Sekolah Pedalaman",
-      category: "Pendidikan",
+      category: "Kebutuhan Dasar Siswa",
       recipient: "SD Negeri 5 Humbang",
       responsible: "Komunitas BacaMedan",
       contact: "0812-9876-5432",
@@ -34,7 +34,7 @@ const DonasiTableSection = ({ activeTab, search }) => {
     {
       id: 2,
       title: "Donasi Pakaian Layak Pakai",
-      category: "Sosial",
+      category: "Beasiswa dan Bantuan Pendidikan",
       recipient: "Yayasan Kasih Ibu",
       responsible: "Pemuda Mandiri",
       contact: "0821-2345-6789",
@@ -42,7 +42,7 @@ const DonasiTableSection = ({ activeTab, search }) => {
     {
       id: 3,
       title: "Donasi Peralatan Belajar",
-      category: "Pendidikan",
+      category: "Kegiatan Relawan & Volunteer",
       recipient: "SD Negeri 1 Binjai",
       responsible: "Mahasiswa Telkom",
       contact: "0813-5555-2222",
@@ -50,7 +50,7 @@ const DonasiTableSection = ({ activeTab, search }) => {
     {
       id: 4,
       title: "Bantuan Sembako untuk Panti Asuhan",
-      category: "Kemanusiaan",
+      category: "Fasilitas Belajar dan Infrastruktur",
       recipient: "Panti Asuhan Nur Hidayah",
       responsible: "Relawan Berbagi",
       contact: "0813-9876-4321",
@@ -140,19 +140,7 @@ const DonasiTableSection = ({ activeTab, search }) => {
                 >
                   <td className="py-3 px-3 text-center">{i + 1}</td>
                   <td className="py-3 px-3">{donasi.title}</td>
-                  <td className="py-3 px-3">
-                    <span
-                      className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                        donasi.category === "Pendidikan"
-                          ? "bg-blue-100 text-blue-700"
-                          : donasi.category === "Sosial"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-orange-100 text-orange-700"
-                      }`}
-                    >
-                      {donasi.category}
-                    </span>
-                  </td>
+                  <td className="py-3 px-3">{donasi.category}</td>
                   <td className="py-3 px-3">{donasi.recipient}</td>
                   <td className="py-3 px-3">{donasi.responsible}</td>
                   <td className="py-3 px-3">{donasi.contact}</td>
