@@ -46,12 +46,7 @@ const DetailVerifikasiMateri = ({ isOpen, onClose, materi }) => {
 
           {/* Isi Konten */}
           <div className="flex flex-col items-center space-y-2">
-            {/* Preview File */}
-            <div className="w-28 h-28 bg-gray-100 flex items-center justify-center rounded-md mb-4">
-              <p className="text-sm text-gray-400 italic">
-                {materi?.fileType || "File"}
-              </p>
-            </div>
+            
 
             {/* Detail Materi */}
             <div className="text-left w-full space-y-3">
