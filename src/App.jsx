@@ -22,6 +22,7 @@ import Donasi from "./pages/referensi_aksi/Donasi";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Admin from "./pages/admin/Admin";
 import AdminBuku from "./pages/admin/AdminBuku";
 import AdminUser from "./pages/admin/AdminUserManagement";
 import AdminQuiz from "./pages/admin/AdminQuiz";
@@ -30,6 +31,7 @@ import AdminCerita from "./pages/admin/AdminCerita";
 import AdminProgram from "./pages/admin/AdminProgram";
 import AdminDonasi from "./pages/admin/AdminDonasi";
 import AdminInformasi from "./pages/admin/AdminInformasi";
+// import AdminProfile from "./pages/admin/AdminProfile";
 
 
 function App() {
@@ -51,6 +53,7 @@ function App() {
                 <Route path="/profile" element={<Profile/>} />
                 <Route path="/login" element={<Login/>} />
                 <Route path="/register" element={<Register/>} />
+                <Route path="/admin" element={<Admin/>} />
                 <Route path="/admin/buku" element={<AdminBuku/>} />
                 <Route path="/admin/users" element={<AdminUser/>} />
                 <Route path="/admin/quiz" element={<AdminQuiz/>} /> 
@@ -59,6 +62,7 @@ function App() {
                 <Route path="/admin/programs" element={<AdminProgram/>} /> 
                 <Route path="/admin/donations" element={<AdminDonasi/>} /> 
                 <Route path="/admin/info" element={<AdminInformasi/>} /> 
+                {/* <Route path="/admin/profile" element={<AdminProfile/>} />  */}
 
 
             </Routes>

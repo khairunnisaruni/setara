@@ -54,7 +54,7 @@ const AddInformasiModal = ({ isOpen, onClose, onSubmit }) => {
                 name="judul"
                 onChange={handleChange}
                 value={formData.judul}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
                 placeholder="Masukkan judul panduan"
                 required
               />
@@ -70,7 +70,7 @@ const AddInformasiModal = ({ isOpen, onClose, onSubmit }) => {
                 rows="5"
                 onChange={handleChange}
                 value={formData.deskripsi}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
                 placeholder="Tulis deskripsi panduan..."
                 required
               />

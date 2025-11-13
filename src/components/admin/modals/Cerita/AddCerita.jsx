@@ -54,7 +54,7 @@ const AddCeritaModal = ({ isOpen, onClose, onSubmit }) => {
                 name="title"
                 onChange={handleChange}
                 value={formData.title}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
                 placeholder="Masukkan judul cerita"
                 required
               />
@@ -70,7 +70,7 @@ const AddCeritaModal = ({ isOpen, onClose, onSubmit }) => {
                 rows="5"
                 onChange={handleChange}
                 value={formData.content}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
                 placeholder="Tulis cerita Anda di sini..."
                 required
               />

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   Home,
@@ -11,8 +12,11 @@ import {
   Info,
   DollarSign,
 } from "lucide-react";
+import KonfirmasiKeluar from "../../components/admin/modals/KonfirmasiKeluar";
 
 const Sidebar = () => {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
   const sections = [
     {
       title: "Menu Utama",
@@ -44,14 +48,8 @@ const Sidebar = () => {
     <aside className="min-w-64 bg-white border-r border-gray-200 h-screen flex flex-col justify-between shadow-sm">
       {/* Header */}
       <div>
-        <div className="flex items-center gap-2 p-5 border-b border-gray-100">
-          <div className="bg-amber-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold shadow">
-            S
-          </div>
-          <div>
-            <p className="font-semibold text-gray-800 leading-tight">SETARA</p>
-            <p className="text-xs text-gray-500">Admin Panel</p>
-          </div>
+        <div className="p-5 border-b border-gray-100">
+          <h1 className="text-2xl font-bold text-amber-600 tracking-wide">SETARA</h1>
         </div>
 
         {/* Navigation */}
@@ -66,7 +64,7 @@ const Sidebar = () => {
                   <NavLink
                     key={j}
                     to={item.path}
-                    end={item.exact || false} // 🔹 Tambahkan "end" di sini
+                    end={item.exact || false}
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg transition-all duration-200 ${
                         isActive
@@ -85,12 +83,21 @@ const Sidebar = () => {
         </nav>
       </div>
 
-      {/* Logout */}
+      {/* Logout (tampilan tetap, tapi bisa diklik) */}
       <div className="p-4 border-t border-gray-100">
-        <button className="flex items-center gap-2 text-sm text-red-500 hover:text-red-600 transition-all">
+        <div
+          onClick={() => setShowLogoutModal(true)}
+          className="flex items-center gap-2 text-sm text-red-500 hover:text-red-600 transition-all cursor-pointer"
+        >
           <LogOut size={18} /> Keluar
-        </button>
+        </div>
       </div>
+
+      {/* Modal Konfirmasi Keluar */}
+      <KonfirmasiKeluar
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+      />
     </aside>
   );
 };
