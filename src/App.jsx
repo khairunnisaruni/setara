@@ -29,7 +29,7 @@ import AdminMateri from "./pages/admin/AdminMateri";
 import AdminCerita from "./pages/admin/AdminCerita";
 import AdminProgram from "./pages/admin/AdminProgram";
 import AdminDonasi from "./pages/admin/AdminDonasi";
-
+import AdminInformasi from "./pages/admin/AdminInformasi";
 
 
 function App() {
@@ -58,6 +58,7 @@ function App() {
                 <Route path="/admin/stories" element={<AdminCerita/>} /> 
                 <Route path="/admin/programs" element={<AdminProgram/>} /> 
                 <Route path="/admin/donations" element={<AdminDonasi/>} /> 
+                <Route path="/admin/info" element={<AdminInformasi/>} /> 
 
 
             </Routes>

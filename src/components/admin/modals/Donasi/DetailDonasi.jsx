@@ -38,19 +38,8 @@ const DetailDonasi = ({ isOpen, onClose, donasi }) => {
             {/* Kategori */}
             <div>
               <p className="font-semibold">Kategori</p>
-              <span
-                className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full ${
-                  donasi?.category === "Pendidikan"
-                    ? "bg-blue-100 text-blue-700"
-                    : donasi?.category === "Kesehatan"
-                    ? "bg-green-100 text-green-700"
-                    : donasi?.category === "Lingkungan"
-                    ? "bg-emerald-100 text-emerald-700"
-                    : "bg-gray-100 text-gray-700"
-                }`}
-              >
-                {donasi?.category || "—"}
-              </span>
+              <p className="text-gray-500">{donasi?.category || "—"}</p>
+              
             </div>
 
             {/* Penerima Donasi */}

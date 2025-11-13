@@ -41,11 +41,14 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
   if (!isOpen) return null;
 
   const categoryOptions = [
-    "Pendidikan",
-    "Kesehatan",
-    "Bencana Alam",
-    "Sosial",
-    "Lingkungan",
+    "Kebutuhan Dasar Siswa",
+    "Beasiswa & Bantuan Pendidikan",
+    "Kegiatan Relawan & Volunteer",
+    "Fasilitas Belajar & Infrastruktur",
+    "Teknologi Pendidikan & Literasi Digital",
+    "Pengabdian Masyarakat & Workshop",
+    "Kegiatan Ekstra Kulikuler & Kreativitas",
+    "Kampanye & Edukasi Masyarakat",
   ];
 
   return (

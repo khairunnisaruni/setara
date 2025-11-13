@@ -1,6 +1,6 @@
 import { Eye, Trash2 } from "lucide-react";
 
-const TableActionsUser = ({onView, onDelete}) => {
+const TableActionsOther = ({onView, onDelete}) => {
   return (
     <div className="flex justify-center items-center gap-3">
       <button
@@ -21,4 +21,4 @@ const TableActionsUser = ({onView, onDelete}) => {
   );
 };
 
-export default TableActionsUser;
+export default TableActionsOther;

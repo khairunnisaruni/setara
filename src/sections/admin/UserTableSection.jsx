@@ -1,5 +1,5 @@
 import { useState } from "react";
-import TableActionsUser from "../../components/admin/TableActionsUser";
+import TableActionsUser from "../../components/admin/TableActionsOther";
 import DetailUser from "../../components/admin/modals/UserManagement/DetailUser";
 import KonfirmasiHapus from "../../components/admin/modals/KonfirmasiHapus";
 import SuccessDeleteModal from "../../components/admin/modals/SuccessDelete";
