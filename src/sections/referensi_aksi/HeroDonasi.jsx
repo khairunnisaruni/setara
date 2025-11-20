@@ -3,7 +3,7 @@ import React from "react";
 const HeroDonasi = () => {
   return (
     <section
-    className="py-16 text-center px-4"
+    className="py-24 text-center px-4"
     style={{
         background: "linear-gradient(to right, rgba(255, 157, 1, 0.45), rgba(49, 123, 116, 0.45))",
     }}
