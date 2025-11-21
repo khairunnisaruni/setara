@@ -1,6 +1,7 @@
+// src/pages/Register.jsx
 import Button from "../components/Button";
 import Input from "../components/Input";
-import gambarLatar from '../../src/assets/bg-login.png'; 
+import gambarLatar from "../../src/assets/bg-login.png";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -11,9 +12,96 @@ function Register({ onActiveToLogin }) {
   const [profesi, setProfesi] = useState("");
   const [jenisKelamin, setJenisKelamin] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validasi dasar
+    if (
+      !nama ||
+      !email ||
+      !username ||
+      !profesi ||
+      !jenisKelamin ||
+      !password ||
+      !confirmPassword
+    ) {
+      alert("Semua field wajib diisi!");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Konfirmasi kata sandi tidak sama!");
+      return;
+    }
+
+    // Mapping nilai dropdown ke enum di DB
+    const genderMapping = {
+      Pria: "laki-laki",
+      Wanita: "perempuan",
+    };
+
+    // Profesi di DB: enum('pelajar','umum')
+    const profesiLower = profesi.toLowerCase();
+    let profesiEnum = "umum";
+    if (
+      profesiLower.includes("siswa") ||
+      profesiLower.includes("mahasiswa") ||
+      profesiLower.includes("pelajar")
+    ) {
+      profesiEnum = "pelajar";
+    }
+
+    const registerData = {
+      name: nama,
+      email,
+      username,
+      profesi: profesiEnum,
+      gender: genderMapping[jenisKelamin],
+      password,
+    };
+
+    console.log("📤 Mengirim data register:", registerData);
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/users/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(registerData),
+        }
+      );
+
+      const data = await response.json();
+      console.log("📥 Response:", data);
+
+      if (response.ok) {
+        alert("Registrasi berhasil!");
+
+        // Tetap di halaman register, tapi kosongkan form
+        setNama("");
+        setEmail("");
+        setUsername("");
+        setProfesi("");
+        setJenisKelamin("");
+        setPassword("");
+        setConfirmPassword("");
+      } else {
+        alert("Registrasi gagal: " + data.message);
+      }
+    } catch (error) {
+      console.error("❌ Error saat register:", error);
+      alert("Gagal koneksi ke server. Pastikan backend jalan di port 5000.");
+    }
+  };
 
   return (
-    <div className="min-h-screen w-full bg-cover bg-center flex items-center gap-20 px-40"
+    <div
+      className="min-h-screen w-full bg-cover bg-center flex items-center gap-20 px-40"
       style={{ backgroundImage: `url(${gambarLatar})` }}
     >
       {/* TEXT KIRI */}
@@ -26,7 +114,7 @@ function Register({ onActiveToLogin }) {
 
       {/* CARD REGISTER */}
       <div className="mt-10 mb-10 w-[55%] bg-white/40 backdrop-blur-md py-12 px-12 rounded-[40px] shadow-xl">
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-5">
             <Input
               label="Nama"
@@ -61,15 +149,13 @@ function Register({ onActiveToLogin }) {
             />
 
             <Input
-                label="Jenis Kelamin"
-                type="select"
-                placeholder="Pilih jenis kelamin"
-                value={jenisKelamin}
-                onChange={(e) => setJenisKelamin(e.target.value)}
-                options={["Pria", "Wanita"]}
+              label="Jenis Kelamin"
+              type="select"
+              placeholder="Pilih jenis kelamin"
+              value={jenisKelamin}
+              onChange={(e) => setJenisKelamin(e.target.value)}
+              options={["Pria", "Wanita"]}
             />
-
-
 
             <Input
               label="Kata Sandi"
@@ -83,21 +169,29 @@ function Register({ onActiveToLogin }) {
               label="Konfirmasi Kata Sandi"
               type="password"
               placeholder="Masukkan ulang kata sandi"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
 
           {/* TOMBOL + LINK */}
           <div className="space-y-2 pt-4">
-            <Button text="Daftar" className="cursor-pointer hover:bg-amber-500/70 font-bold" />
+            <Button
+              text="Daftar"
+              type="submit"
+              className="cursor-pointer hover:bg-amber-500/70 font-bold"
+            />
 
             <div className="text-sm font-semibold text-white">
               Sudah punya akun?{" "}
-                <Link to="/login" className="text-[#FF9500] font-bold cursor-pointer hover:text-[#FF9500]/50">
-                    Masuk
-                </Link>
+              <Link
+                to="/login"
+                className="text-[#FF9500] font-bold cursor-pointer hover:text-[#FF9500]/50"
+              >
+                Masuk
+              </Link>
             </div>
           </div>
-
         </form>
       </div>
     </div>
