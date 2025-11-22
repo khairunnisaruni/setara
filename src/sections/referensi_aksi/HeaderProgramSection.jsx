@@ -16,10 +16,9 @@ export default function HeaderProgramSection() {
     <header
       className="relative flex justify-center items-center"
       style={{
-        height: "397px",
-        background:
-          "linear-gradient(135deg, rgba(255,157,1,0.45) 0%, rgba(49,123,116,0.45) 100%)",
-        padding: "80px 512px",
+        height: "410px",
+        background: "linear-gradient(135deg, rgba(255,157,1,0.45) 0%, rgba(49,123,116,0.45) 100%)",
+        padding: "80px 300px",
       }}
     >
       <div className="flex flex-col items-center text-center gap-6 max-w-3xl">
