@@ -9,7 +9,7 @@ const programs = [
     judul: "Volunteer Mengajar Satu Desa",
     penyelenggara: "Komunitas Aksi Muda Indonesia",
     deskripsi:
-      "Aksi langsung ke desa-desa untuk mengajar anak-anak SD dengan fokus pembelajaran aktif dan menyenangkan.",
+      "Aksi langsung ke desa-desa untuk mengajar anak-anak SD yang belum memiliki akses belajar memadai, fokus pembelajaran aktif dan menyenangkan.",
     periode: "Mei – Juni 2025",
     deadline: "25 April 2025",
     link: "#",
@@ -22,7 +22,7 @@ const programs = [
     judul: "Program Kampus Mengajar",
     penyelenggara: "Kemendikbud",
     deskripsi:
-      "Kesempatan bagi mahasiswa untuk mengajar di sekolah dasar di seluruh Indonesia.",
+      "Kesempatan bagi mahasiswa untuk mengajar anak-anak di daerah 3T (Tertinggal, Terdepan, Terluar) dengan fokus pada kemampuan membaca, menulis, dan berhitung dasar.",
     periode: "April – Juni 2025",
     deadline: "28 Maret 2025",
     link: "#",
@@ -35,7 +35,7 @@ const programs = [
     judul: "Beasiswa Pendidikan Bright Futures 2025",
     penyelenggara: "Yayasan Indonesia Cerdas",
     deskripsi:
-      "Beasiswa untuk mahasiswa aktif yang berkomitmen pada bidang pendidikan dan pengabdian masyarakat.",
+      "Beasiswa untuk mahasiswa aktif yang memiliki kontribusi di bidang pendidikan masyarakat, dengan dukungan mentoring dan pelatihan leadership.",
     periode: "Januari – Desember 2025",
     deadline: "29 Desember 2024",
     link: "#",
@@ -48,7 +48,7 @@ const programs = [
     judul: "Relawan Pengajar Desa 2025",
     penyelenggara: "Yayasan Cahaya Literasi Indonesia",
     deskripsi:
-      "Kesempatan bagi mahasiswa untuk mengajar dan mendampingi anak-anak desa dengan metode kreatif.",
+      "Kesempatan bagi mahasiswa untuk mengajar anak-anak di daerah 3T dengan metode pembelajaran kreatif, interaktif, dan menyenangkan.",
     periode: "April – Juli 2025",
     deadline: "18 Maret 2025",
     link: "#",
@@ -58,12 +58,12 @@ const programs = [
 
 export default function ProgramListSection() {
   return (
-    <div className="max-w-6xl mx-auto px-6 pt-12 pb-12">
-      <div className="grid gap-6 grid-cols-4 justify-start items-start">
+    <section className="max-w-6xl mx-auto px-6 py-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
         {programs.map((program) => (
           <ProgramCard key={program.id} program={program} />
         ))}
       </div>
-    </div>
+    </section>
   );
 }
