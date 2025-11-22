@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import ProgramCard from "../../components/referensi_aksi/ProgramCard";
+import ModalDetailProgram from "../../components/referensi_aksi/ModalDetailProgram";
 
 const programs = [
   {
@@ -57,13 +58,26 @@ const programs = [
 ];
 
 export default function ProgramListSection() {
+  const [selectedProgram, setSelectedProgram] = useState(null);
+
   return (
-    <section className="max-w-6xl mx-auto px-6 py-12">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-        {programs.map((program) => (
-          <ProgramCard key={program.id} program={program} />
-        ))}
-      </div>
-    </section>
+    <>
+      <section className="max-w-6xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+          {programs.map((program) => (
+            <ProgramCard
+              key={program.id}
+              program={program}
+              onDetail={() => setSelectedProgram(program)}
+            />
+          ))}
+        </div>
+      </section>
+
+      <ModalDetailProgram
+        program={selectedProgram}
+        onClose={() => setSelectedProgram(null)}
+      />
+    </>
   );
 }
