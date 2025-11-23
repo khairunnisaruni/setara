@@ -27,6 +27,7 @@ const User = {
           console.error("❌ Error saat insert ke database:", err);
           return reject(err);
         }
+        console.log("✅ Insert berhasil! Insert ID:", results.insertId);
         resolve(results);
       });
     });
@@ -50,6 +51,24 @@ const User = {
         if (err) return reject(err);
         resolve(results[0]);
       });
+    });
+  },
+
+  // === TAMBAHAN: cari user berdasarkan username (untuk login) ===
+  findByUsername: (username) => {
+    console.log("🔍 Mencari username:", username);
+    return new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM users WHERE username = ?",
+        [username],
+        (err, results) => {
+          if (err) {
+            console.error("❌ Error di findByUsername:", err);
+            return reject(err);
+          }
+          resolve(results);
+        }
+      );
     });
   },
 };

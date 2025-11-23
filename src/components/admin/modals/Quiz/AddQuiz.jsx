@@ -204,3 +204,4 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 export default AddQuizModal;
+

@@ -2,14 +2,17 @@ import React, { useState } from "react";
 import { Form } from "react-router-dom";
 import CardDaftarKuis from "./CardDaftarKuis";
 
+
 const DaftarKuis = () => {
   const [showForm, setShowForm] = useState(false);
+
 
   return (
     <div className="max-w-6xl mx-auto mt-16 mb-20">
         <h2 className='text-2xl text-center items-center justify-center font-bold mb-5'>Daftar Kuis & Game Interaktif</h2>
         {/* Search + Filters */}
         <div className="flex flex-col md:flex-row items-center gap-4">
+
 
             {/* Search */}
             <div className="bg-white relative w-full md:w-1/3">
@@ -23,6 +26,7 @@ const DaftarKuis = () => {
             />
             </div>
 
+
             {/* Dropdown Kelas */}
             <select className="bg-white w-full md:w-40 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
             <option className="text-[#B0AA9C]" value="" disabled selected hidden>Semua Kelas</option>
@@ -30,6 +34,7 @@ const DaftarKuis = () => {
             <option>Kelas 2</option>
             <option>Kelas 3</option>
             </select>
+
 
             {/* Dropdown Mapel */}
             <select className="bg-white w-full md:w-48 py-2 px-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
@@ -39,6 +44,7 @@ const DaftarKuis = () => {
             <option>IPS</option>
             </select>
 
+
             {/* Dropdown Platform */}
             <select className="bg-white w-full md:w-44 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
             <option className="text-[#B0AA9C]" value="" disabled selected hidden>Semua Platform</option>
@@ -46,12 +52,14 @@ const DaftarKuis = () => {
             <option>Wayground</option>
             </select>
 
+
             {/* Tombol Tambah Kuis */}
             <button 
             onClick={() => setShowForm(true)}
             className="cursor-pointer w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5 py-2 rounded-full shadow">
             + Tambah Kuis
             </button>
+
 
         </div>
         {/* Grid Kuis */}
@@ -66,6 +74,7 @@ const DaftarKuis = () => {
             /> 
         </div>
 
+
         {/* Pop Up Form */}
         {showForm && (
             <form>
@@ -73,6 +82,7 @@ const DaftarKuis = () => {
                 <div className="bg-white rounded-2xl shadow-xl p-6 w-96 max-h-[90vh] overflow-y-auto animate-[fadeIn_.2s_ease]">
                 
                 <h2 className="text-xl font-bold mb-4 text-center">Tambah Kuis & Game</h2>
+
 
                 <div className="space-y-3">
                     
@@ -85,10 +95,12 @@ const DaftarKuis = () => {
                     />
                     </div>
 
+
                     <div>
                     <label className="text-sm font-medium">Deskripsi (15 Kata)</label>
                     <textarea className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400 placeholder-[#B0AA9C]" placeholder="Deskripsi singkat tentang kuis & game" name="deskripsi" id=""></textarea>
                     </div>
+
 
                     <div>
                     <label className="text-sm font-medium">Platform (Kahoot atau Wayground)</label>
@@ -99,6 +111,7 @@ const DaftarKuis = () => {
                     </select>
                     </div>
 
+
                     <div>
                     <label className="text-sm font-medium">Link Kuis</label>
                     <input 
@@ -107,6 +120,7 @@ const DaftarKuis = () => {
                         placeholder="Masukkan Link Kahoot atau Wayground"
                     />
                     </div>
+
 
                     <div>
                     <label className="text-sm font-medium">Kategori Mata Pelajaran</label>
@@ -118,6 +132,7 @@ const DaftarKuis = () => {
                         <option>IPS</option>
                     </select>
                     </div>
+
 
                     <div>
                     <label className="text-sm font-medium">Kategori Kelas</label>
@@ -132,6 +147,7 @@ const DaftarKuis = () => {
                     </select>
                     </div>
 
+
                     <div>
                     <label className="text-sm font-medium">Upload Gambar Pendukung</label>
                     <label className="flex items-center gap-2 w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] text-[#B0AA9C] rounded-xl px-3 py-2 cursor-pointer">
@@ -141,7 +157,9 @@ const DaftarKuis = () => {
                     </label>
                     </div>
 
+
                 </div>
+
 
                 <div className="flex justify-end gap-3 mt-6">
                     <button 
@@ -155,6 +173,7 @@ const DaftarKuis = () => {
                     </button>
                 </div>
 
+
                 </div>
             </div>
             </form>
@@ -164,6 +183,5 @@ const DaftarKuis = () => {
   )
 }
 
-export default DaftarKuis
 
-   
+export default DaftarKuis
