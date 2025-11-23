@@ -1,4 +1,3 @@
-// backend_setara/config/db.js
 import mysql from "mysql2";
 import dotenv from "dotenv";
 dotenv.config();
@@ -10,7 +9,6 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
-// OPSIONAL: test koneksi
 db.connect((err) => {
   if (err) {
     console.error("❌ Gagal konek database:", err.message);

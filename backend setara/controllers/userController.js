@@ -27,16 +27,16 @@ export const registerUser = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Data user baru (sesuai kolom tabel `users` di setara.sql)
+    // Data user baru
     const newUser = {
-      name,          // varchar(100)
-      username,      // varchar(100)
-      gender,        // enum('laki-laki','perempuan')
-      email,         // varchar(100)
-      password: hashedPassword, // varchar(255)
+      name,
+      username,
+      gender,
+      email,
+      password: hashedPassword,
       photo: photo || null,
       bio: bio || "",
-      profesi,       // enum('pelajar','umum')
+      profesi,
     };
 
     const createdUser = await User.create(newUser);
@@ -61,6 +61,56 @@ export const registerUser = async (req, res) => {
     res
       .status(500)
       .json({ message: "Terjadi kesalahan pada server", error: error.message });
+  }
+};
+
+// LOGIN USER
+export const loginUser = async (req, res) => {
+  console.log("=== LOGIN ENDPOINT DIPANGGIL ===");
+  console.log("Data yang diterima:", req.body);
+
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res
+        .status(400)
+        .json({ message: "Username dan password wajib diisi" });
+    }
+
+    // Cari user berdasarkan username
+    const users = await User.findByUsername(username);
+
+    if (!users || users.length === 0) {
+      console.log("❌ User tidak ditemukan");
+      return res.status(400).json({ message: "Username atau password salah" });
+    }
+
+    const user = users[0];
+
+    // Bandingkan password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      console.log("❌ Password salah");
+      return res.status(400).json({ message: "Username atau password salah" });
+    }
+
+    console.log("✅ Login berhasil untuk user:", user.username);
+
+    res.status(200).json({
+      message: "Login berhasil",
+      user: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        gender: user.gender,
+        profesi: user.profesi,
+      },
+    });
+  } catch (error) {
+    console.error("❌ ERROR loginUser:", error);
+    res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 };
 
