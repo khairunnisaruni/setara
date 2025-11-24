@@ -1,7 +1,7 @@
 import React from "react";
 import { HiDownload } from "react-icons/hi";
 
-const CardMateri = ({ name, subject, type, byte, extension, total }) => {
+const CardMateri = ({ id, name, subject, type, byte, extension, total }) => {
   const colorMap = {
     pdf: {
       bg: "bg-[#FFF1DD]",
@@ -33,28 +33,35 @@ const CardMateri = ({ name, subject, type, byte, extension, total }) => {
       <div className="flex justify-between">
         <div className="flex flex-col gap-y-4">
           <div
-            className={`w-16 h-16 border rounded-[20px] ${colors.bg} ${colors.border} `}
+            className={`w-16 h-16 border rounded-[20px] ${colors.bg} ${colors.border}`}
           ></div>
           <div>
             <div className="font-bold">{name}</div>
             <div className="font-medium text-sm">{type}</div>
-            <div className="font-medium text-sm text-gray-600">{subject}</div>
+            <div className="font-medium text-sm text-gray-600">
+              {subject}
+            </div>
           </div>
           <div className="font-medium text-sm">{byte}</div>
         </div>
         <div className="flex flex-col justify-between ">
           <div
-            className={`px-2 mx-3 py-1  border rounded-[20px] flex justify-center text-sm ${colors.bg} ${colors.border} ${colors.text} `}
+            className={`px-2 mx-3 py-1 border rounded-[20px] flex justify-center text-sm ${colors.bg} ${colors.border} ${colors.text}`}
           >
             {extension}
           </div>
           <div className="font-medium text-sm inline-block">{total}</div>
         </div>
       </div>
-      <div className="py-1 w-full border border-[#000000] flex justify-center items-center gap-x-1 rounded-[20px]">
+
+      {/* TOMBOL DOWNLOAD → panggil backend */}
+      <a
+        href={`http://localhost:5000/api/materials/${id}/download`}
+        className="py-1 w-full border border-[#000000] flex justify-center items-center gap-x-1 rounded-[20px]"
+      >
         <HiDownload />
         <p>Download</p>
-      </div>
+      </a>
     </div>
   );
 };
