@@ -51,7 +51,7 @@ export default function NavbarVolunteer() {
             label="Referensi & Aksi"
             items={[
               { label: "Program Tersedia", link: "/referensi_aksi-program_tersedia" },
-              { label: "Peta Persebaran", link: "/peta-persebaran" },
+              { label: "Peta Persebaran", link: "/peta" },
               { label: "Donasi", link: "/donasi" },
             ]}
           />
@@ -78,7 +78,7 @@ export default function NavbarVolunteer() {
 
   {/* PHOTO CIRCLE */}
   <div
-    className="w-10 h-10 rounded-full bg-gradient-to-br 
+    className="w-10 h-10 rounded-full bg-linear-to-br 
     from-[#FFB54D] to-[#317B74] text-white flex items-center 
     justify-center font-bold"
   >
