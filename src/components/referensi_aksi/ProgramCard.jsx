@@ -69,7 +69,7 @@ export default function ProgramCard({ program, onDetail }) {
 
     <div className="flex flex-col grow p-5">
 
-      {/* Kategori & Status (rapat, tidak ada tinggi berlebih) */}
+      {/* Kategori & Status */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2 min-h-5">
           <div className="w-5 h-5 shrink-0">

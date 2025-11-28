@@ -9,6 +9,7 @@ const AddMateriModal = ({ isOpen, onClose, onSubmit }) => {
     classCategory: "",
     materialCategory: "",
     description: "",
+    file: null,
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -21,6 +22,11 @@ const AddMateriModal = ({ isOpen, onClose, onSubmit }) => {
 
   const handleFileTypeChange = (type) => {
     setFormData({ ...formData, fileType: type });
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    setFormData({ ...formData, file });
   };
 
   const handleSubmit = async (e) => {
@@ -83,6 +89,37 @@ const AddMateriModal = ({ isOpen, onClose, onSubmit }) => {
                 ))}
               </div>
             </div>
+
+            {/* Upload File */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Upload File
+              </label>
+              <input
+                type="file"
+                accept={
+                  formData.fileType === "PDF"
+                    ? ".pdf"
+                    : formData.fileType === "Audio"
+                    ? "audio/*"
+                    : formData.fileType === "Video"
+                    ? "video/*"
+                    : "*"
+                }
+                onChange={handleFileUpload}
+                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700
+                          file:bg-amber-400 file:text-white file:border-none file:px-3 file:py-1.5
+                          file:rounded-md file:mr-2
+                          focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
+              />
+
+              {formData.file && (
+                <p className="text-xs text-gray-600 mt-1">
+                  File dipilih: {formData.file.name}
+                </p>
+              )}
+            </div>
+
 
             {/* Kategori Pelajar */}
             <div>
