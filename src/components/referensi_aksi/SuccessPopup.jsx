@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import axios from "axios";
 import AddProgramButton from "../../components/referensi_aksi/AddProgramButton";
 import AddProgramModal from "../../components/referensi_aksi/AddProgramModal";
+import SuccessPopup from "../../components/referensi_aksi/SuccessPopup";
 
 export default function HeaderProgramSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleAddProgram = async (formData) => {
     try {
@@ -23,8 +25,10 @@ export default function HeaderProgramSection() {
         added_by: 1,
       });
 
-      // kalau berhasil, cukup tutup modal saja
+      // 1) tutup modal
       setIsModalOpen(false);
+      // 2) tampilkan SuccessPopup
+      setShowSuccess(true);
     } catch (error) {
       console.error("❌ Error saat simpan program:", error);
       alert("Gagal menyimpan program. Cek console/backend untuk detail.");
@@ -57,6 +61,10 @@ export default function HeaderProgramSection() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddProgram}
       />
+
+      {showSuccess && (
+        <SuccessPopup onClose={() => setShowSuccess(false)} />
+      )}
     </header>
   );
 }

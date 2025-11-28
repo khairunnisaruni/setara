@@ -14,27 +14,9 @@ function Register({ onActiveToLogin }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // fungsi untuk kirim data ke backend (tanpa pop up, tanpa validasi tambahan)
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validasi dasar
-    if (
-      !nama ||
-      !email ||
-      !username ||
-      !profesi ||
-      !jenisKelamin ||
-      !password ||
-      !confirmPassword
-    ) {
-      alert("Semua field wajib diisi!");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      alert("Konfirmasi kata sandi tidak sama!");
-      return;
-    }
+    e.preventDefault(); // supaya halaman tidak reload
 
     // Mapping nilai dropdown ke enum di DB
     const genderMapping = {
@@ -58,11 +40,12 @@ function Register({ onActiveToLogin }) {
       email,
       username,
       profesi: profesiEnum,
-      gender: genderMapping[jenisKelamin],
+      gender: genderMapping[jenisKelamin] || null,
       password,
+      // confirmPassword tidak dikirim ke DB (hanya dipakai di frontend kalau nanti mau)
     };
 
-    console.log("📤 Mengirim data register:", registerData);
+    console.log("Mengirim data register:", registerData);
 
     try {
       const response = await fetch(
@@ -77,12 +60,10 @@ function Register({ onActiveToLogin }) {
       );
 
       const data = await response.json();
-      console.log("📥 Response:", data);
+      console.log("Response register:", data);
 
+      // kalau mau, setelah sukses bisa kosongkan form
       if (response.ok) {
-        alert("Registrasi berhasil!");
-
-        // Tetap di halaman register, tapi kosongkan form
         setNama("");
         setEmail("");
         setUsername("");
@@ -90,12 +71,10 @@ function Register({ onActiveToLogin }) {
         setJenisKelamin("");
         setPassword("");
         setConfirmPassword("");
-      } else {
-        alert("Registrasi gagal: " + data.message);
       }
     } catch (error) {
-      console.error("❌ Error saat register:", error);
-      alert("Gagal koneksi ke server. Pastikan backend jalan di port 5000.");
+      // tidak ada pop up, hanya log error
+      console.error(error);
     }
   };
 
@@ -114,6 +93,7 @@ function Register({ onActiveToLogin }) {
 
       {/* CARD REGISTER */}
       <div className="mt-10 mb-10 w-[55%] bg-white/40 backdrop-blur-md py-12 px-12 rounded-[40px] shadow-xl">
+        {/* tambahkan onSubmit ke form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-5">
             <Input

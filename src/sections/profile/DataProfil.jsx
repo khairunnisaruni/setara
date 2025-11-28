@@ -25,7 +25,7 @@ const DataProfil = ({ potoProfil, namaPengguna, profesi, nama, jenisKelamin, pas
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow p-6 flex flex-col md:flex-row mb-10 gap-6">
+      <div className="bg-white rounded-2xl shadow p-6 flex flex-col md:flex-row mb-10 gap-6 mt-15">
         {/* Bagian kiri: Foto & tombol */}
         <div className="flex items-center gap-10 shrink-0">
           <div className="relative">

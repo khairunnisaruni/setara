@@ -1,10 +1,12 @@
 import React from 'react';
 import DataProfil from '../sections/profile/DataProfil';
 import RiwayatPostingan from '../sections/profile/RiwayatPostingan';
+import NavbarVolunteer from '../components/NavbarVolunteer';
 
 const Profile = () => {
   return (
     <div className="bg-[#FBF8F4] min-h-screen p-8">
+      <NavbarVolunteer/>
       <DataProfil
         potoProfil="src/assets/profile.png"
         namaPengguna="Yono"

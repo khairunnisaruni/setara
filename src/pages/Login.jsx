@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import Button from "../components/Button";
 import Input from "../components/Input";
 import gambarLatar from "../../src/assets/bg-login.png";
@@ -7,18 +8,14 @@ import { Link, useNavigate } from "react-router-dom";
 function Login({ onActiveToRegister }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // untuk pindah halaman setelah login
 
+  // fungsi kirim data login ke backend (tanpa popup, tanpa validasi ekstra)
   const handleLogin = async (e) => {
-    e.preventDefault();
-
-    if (!username || !password) {
-      alert("Username dan password wajib diisi!");
-      return;
-    }
+    e.preventDefault(); // cegah reload halaman
 
     const loginData = { username, password };
-    console.log("📤 Mengirim data login:", loginData);
+    console.log("Mengirim data login:", loginData);
 
     try {
       const response = await fetch("http://localhost:5000/api/users/login", {
@@ -30,20 +27,21 @@ function Login({ onActiveToRegister }) {
       });
 
       const data = await response.json();
-      console.log("📥 Response login:", data);
+      console.log("Response login:", data);
 
       if (response.ok) {
-        // OPSIONAL: simpan data user
+        // OPSIONAL: simpan data user di localStorage
         // localStorage.setItem("user", JSON.stringify(data.user));
 
-        // Langsung pindah ke HomePage tanpa popup
+        // pindah ke halaman utama setelah login berhasil
         navigate("/");
       } else {
-        alert("Login gagal: " + data.message);
+        // tidak ada alert; hanya log kalau login gagal
+        console.log("Login gagal di server.");
       }
     } catch (error) {
-      console.error("❌ Error saat login:", error);
-      alert("Gagal koneksi ke server. Pastikan backend jalan di port 5000.");
+      // tidak ada popup, hanya log error
+      console.error(error);
     }
   };
 
@@ -61,6 +59,7 @@ function Login({ onActiveToRegister }) {
         </div>
         <div className="w-[60%] bg-[#FFFFFF]/40 max-h-[400px] h-full px-12 flex items-center rounded-[40px]">
           <div className="w-full">
+            {/* tambahkan onSubmit agar form men-trigger handleLogin */}
             <form className="space-y-8" onSubmit={handleLogin}>
               <div className="space-y-4">
                 <Input
@@ -82,7 +81,7 @@ function Login({ onActiveToRegister }) {
                 <Button
                   className="cursor-pointer hover:bg-amber-500/70 font-bold"
                   text="Masuk"
-                  type="submit"
+                  type="submit" // penting: supaya tombol menjalankan submit form
                 />
 
                 <div className="text-sm font-bold text-white">

@@ -38,7 +38,7 @@ const MainPMSection = () => {
           explain="Chatbot AI dapat membantu Anda menjawab pertanyaan siswa secara otomatis. Klik pada menu Chatbot AI di navigation bar, kemudian ketik pertanyaan atau topik yang ingin dibahas. Bot akan memberikan respons yang relevan dan edukatif untuk mendukung proses pembelajaran."
         />
         <DropDownPM
-          name="Menggunakan Game Interaktiff"
+          name="Menggunakan Game Interaktif"
           explain="Game interaktif menggunakan platform kuis lainnya yang mudah diakses dan gratis untuk membuat pembelajaran lebih menyenangkan. Klik pada menu Edukasi Interaktif di navigation bar, lalu pilih platform yang ingin digunakan melalui dropdown menu yang tersedia. Anda dapat membuat kuis baru atau menggunakan kuis yang sudah ada."
         />
 
