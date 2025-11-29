@@ -10,6 +10,7 @@ import MiniHeader from "./components/MiniHeader";
 
 import { Routes, Route, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage'; // Halaman Home yang baru kita buat
+import Beranda from './pages/Beranda';
 import RuangVolunteer from './pages/ruang_volunteer/RuangVolunteer';
 import RuangVolunteerPM from "./pages/ruang_volunteer/RuangVolunteerPM";
 import RuangVolunteerMM from "./pages/ruang_volunteer/RuangVolunteerMM";
@@ -19,7 +20,7 @@ import ChatBot from "./pages/edukasi_interaktif/ChatBot";
 import Kuis from "./pages/edukasi_interaktif/Kuis";
 import ProgramTersedia from "./pages/referensi_aksi/ProgramTersedia";
 import Donasi from "./pages/referensi_aksi/Donasi";
-import Peta from "./pages/referensi_aksi/MapSchoolPage";
+// import Peta from "./pages/referensi_aksi/MapSchoolPage";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -41,6 +42,7 @@ function App() {
         <div>
             <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/beranda" element={<Beranda />} />
                 <Route path="/volunteer-home" element={<RuangVolunteer />} />
                 <Route path="/volunteer-panduan-mengajar" element={<RuangVolunteerPM />} />
                 <Route path="/volunteer-materi-mengajar" element={<RuangVolunteerMM />} />
@@ -51,7 +53,7 @@ function App() {
                 <Route path="/edukasi-kuis" element={<Kuis/>} />
                 <Route path="/referensi_aksi-program_tersedia" element={<ProgramTersedia/>} />
                 <Route path="/donasi" element={<Donasi/>} />
-                <Route path="/peta" element={<Peta/>} />
+                 {/*  <Route path="/peta" element={<Peta/>} /> */}
                 <Route path="/profile" element={<Profile/>} />
                 <Route path="/login" element={<Login/>} />
                 <Route path="/register" element={<Register/>} />

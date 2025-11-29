@@ -60,7 +60,7 @@ const SchoolCard = ({ data }) => {
           </div>
 
           <button
-            onClick={() => navigate(`/detail-school/${data.id}`)}
+            onClick={() => navigate(`/detail-school/${data.id}`, { state: data })}
             className="text-orange-500 hover:text-orange-600 font-semibold text-sm"
           >
             Lihat Detail →

@@ -3,7 +3,7 @@ import DropDownPM from "../../../components/DropDownPM";
 
 const MainPMSection = () => {
   return (
-    <div className=" flex flex-col items-center gap-y-10 py-10">
+    <div className=" flex flex-col items-center gap-y-10 py-24">
       <div className=" text-6xl font-bold text-center flex flex-col items-center gap-y-4  p-[42px_128px] rounded-[20px] bg-[linear-gradient(85deg,rgba(255,157,1,0.85)_22.33%,rgba(49,123,116,0.85)_77.67%)]">
         {" "}
         <div>

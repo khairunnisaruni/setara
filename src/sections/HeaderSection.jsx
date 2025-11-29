@@ -58,12 +58,19 @@ const HeaderSection = () => {
             variant="third"
             className="text-[#FF9500]"
             withArrow={true}
-            onClick={() => navigate("/volunteer-home")}
+            onClick={() => navigate("/login")}
           />
           <Button
             text="Pelajari Lebih Lanjut"
             variant="third"
+            onClick={() => {
+              const section = document.getElementById("tentang-section");
+              if (section) {
+                section.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
           />
+
         </div>
 
         <div className="h-0.5 w-[70%] bg-[#FBF8F4]/10 mt-6"></div>
