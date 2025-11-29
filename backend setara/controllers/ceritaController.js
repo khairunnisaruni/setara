@@ -11,9 +11,9 @@ export const createCerita = (req, res) => {
         .json({ message: "Judul dan isi cerita wajib diisi." });
     }
 
-    const user_id = 1;       // sementara: ID user 1
-    const status = "pending"; // status awal
-    const approved_at = null; // belum diset
+    const user_id = 1;      
+    const status = "pending";
+    const approved_at = null; 
 
     Cerita.create(
       { title, content, user_id, status, approved_at },

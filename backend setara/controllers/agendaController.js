@@ -11,7 +11,7 @@ export const createAgenda = (req, res) => {
       });
     }
 
-    const user_id = 1; // sementara: ID user 1
+    const user_id = 1;
 
     Agenda.create(
       { title, description, date, waktu, location, user_id },

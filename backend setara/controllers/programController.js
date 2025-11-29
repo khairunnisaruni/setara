@@ -1,24 +1,28 @@
 // backend_setara/controllers/programController.js
 import Program from "../models/Program.js";
 
-const mapProgramTypeToCategory = (programType) => {
+// map dari nilai yang dipakai di frontend ke enum jenis_program di DB
+const mapProgramTypeToJenis = (programType) => {
   switch (programType) {
     case "volunteer":
+      return "Volunteer";
     case "pengabdian":
-      return "relawan";
+      return "Pengabdian Masyarakat";
     case "beasiswa":
-      return "beasiswa";
+      return "Beasiswa";
     default:
-      return "pendidikan";
+      return "Volunteer";
   }
 };
 
+// map dari label status di frontend ke enum status_program di DB
 const mapStatusToEnum = (status) => {
   switch (status) {
     case "Akan Datang":
       return "akan datang";
     case "Sedang Berjalan":
-      return "sedang berlangsung";
+    case "Sedang Dibuka":
+      return "sedang dibuka";
     case "Selesai":
       return "selesai";
     default:
@@ -29,39 +33,42 @@ const mapStatusToEnum = (status) => {
 export const createProgram = async (req, res) => {
   try {
     const {
-      title,
-      organizer,
-      programType,
-      location,
-      description,
-      period,
-      deadline,
-      status,
-      link,
-      banner,
-      added_by,
+      title,        // judul program di form
+      organizer,    // penyelenggara
+      programType,  // volunteer / pengabdian / beasiswa
+      location,     // lokasi program
+      description,  // deskripsi
+      period,       // teks periode_tanggal
+      deadline,     // deadline_pendaftaran (YYYY-MM-DD)
+      status,       // status tampilan
+      link,         // tautan_sumber_resmi
+      banner,       // poster_banner (URL/nama file)
+      added_by,     // id user (boleh opsional)
     } = req.body;
+
 
     if (!title || !programType || !description || !link) {
       return res.status(400).json({ message: "Field wajib belum lengkap." });
     }
 
-    const category = mapProgramTypeToCategory(programType);
+    const jenis_program = mapProgramTypeToJenis(programType);
     const status_program = mapStatusToEnum(status);
 
-    const tanggal_mulai = null;
-    const tanggal_berakhir = deadline || null;
-
-    const result = await Program.create({
-      title,
-      category,
-      description,
-      tanggal_mulai,
-      tanggal_berakhir,
+    const data = {
+      judul_program: title,
+      penyelenggara: organizer,
+      jenis_program,
+      lokasi_program: location,
+      deskripsi_program: description,
+      periode_tanggal: period,
+      deadline_pendaftaran: deadline || null,
       status_program,
-      link,
+      tautan_sumber_resmi: link,
+      poster_banner: banner || null,
       added_by: added_by || 1,
-    });
+    };
+
+    const result = await Program.create(data);
 
     return res.status(201).json({
       message: "Program berhasil dibuat",
@@ -69,7 +76,9 @@ export const createProgram = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error createProgram:", error);
-    return res.status(500).json({ message: "Terjadi kesalahan di server." });
+    return res
+      .status(500)
+      .json({ message: "Terjadi kesalahan di server." });
   }
 };
 

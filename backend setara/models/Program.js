@@ -1,23 +1,38 @@
-// backend_setara/models/Program.js
+// backend setara/models/Program.js
 import db from "../config/db.js";
 
 const Program = {
   create: (data) => {
     return new Promise((resolve, reject) => {
       const sql = `
-        INSERT INTO program
-          (title, category, description, tanggal_mulai, tanggal_berakhir, status_program, link, added_by)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO programs
+          (
+            judul_program,
+            penyelenggara,
+            jenis_program,
+            lokasi_program,
+            deskripsi_program,
+            periode_tanggal,
+            deadline_pendaftaran,
+            status_program,
+            tautan_sumber_resmi,
+            poster_banner,
+            added_by
+          )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const values = [
-        data.title,
-        data.category,                 // enum('pendidikan','beasiswa','relawan')
-        data.description || null,
-        data.tanggal_mulai || null,    // date
-        data.tanggal_berakhir || null, // date
-        data.status_program,           // enum('akan datang','sedang berlangsung','selesai')
-        data.link || null,
+        data.judul_program,
+        data.penyelenggara,
+        data.jenis_program,
+        data.lokasi_program,
+        data.deskripsi_program || null,
+        data.periode_tanggal,
+        data.deadline_pendaftaran || null,
+        data.status_program,
+        data.tautan_sumber_resmi || null,
+        data.poster_banner || null,
         data.added_by || null,
       ];
 
@@ -33,15 +48,18 @@ const Program = {
 
   getAll: () => {
     return new Promise((resolve, reject) => {
-      db.query("SELECT * FROM program ORDER BY created_at DESC", (err, results) => {
-        if (err) {
-          console.error("❌ Error getAll program:", err);
-          return reject(err);
+      db.query(
+        "SELECT * FROM programs ORDER BY created_at DESC",
+        (err, results) => {
+          if (err) {
+            console.error("❌ Error getAll program:", err);
+            return reject(err);
+          }
+          resolve(results);
         }
-        resolve(results);
-      });
+      );
     });
   },
 };
 
-export default Program; // ⬅️ PENTING: default export
+export default Program;

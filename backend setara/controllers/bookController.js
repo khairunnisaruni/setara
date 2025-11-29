@@ -11,15 +11,13 @@ export const createBook = (req, res) => {
         .json({ message: "Judul, penulis, deskripsi, dan link wajib diisi." });
     }
 
-    // mapping kategori form -> kategori_id di tabel
-    // sementara: kalau ada logic tertentu, bisa diubah nanti
     let kategori_id = 1;
     if (category === "fiksi") kategori_id = 1;
     else if (category === "nonfiksi") kategori_id = 2;
 
-    const added_by = 1; // sementara: ID user 1
-    const status = "pending"; // bisa 'pending' dulu
-    const gambar = null; // belum pakai upload file
+    const added_by = 1; 
+    const status = "pending"; 
+    const gambar = null;
 
     Book.create(
       { title, author, description, link, kategori_id, added_by, status, gambar },
