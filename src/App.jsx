@@ -10,6 +10,7 @@ import MiniHeader from "./components/MiniHeader";
 
 import { Routes, Route, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage'; // Halaman Home yang baru kita buat
+import Beranda from './pages/Beranda';
 import RuangVolunteer from './pages/ruang_volunteer/RuangVolunteer';
 import RuangVolunteerPM from "./pages/ruang_volunteer/RuangVolunteerPM";
 import RuangVolunteerMM from "./pages/ruang_volunteer/RuangVolunteerMM";
@@ -41,6 +42,7 @@ function App() {
         <div>
             <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/beranda" element={<Beranda />} />
                 <Route path="/volunteer-home" element={<RuangVolunteer />} />
                 <Route path="/volunteer-panduan-mengajar" element={<RuangVolunteerPM />} />
                 <Route path="/volunteer-materi-mengajar" element={<RuangVolunteerMM />} />
