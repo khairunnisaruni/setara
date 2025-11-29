@@ -5,11 +5,11 @@ import Logo from '../../components/edukasi_interaktif/LogoChatbot';
 
 const HeaderChatBot = () => {
     return (
-        <div className='px-5 py-4 flex flex-col gap-y-4'>
-            <Link to="/">
+        <div className="px-5 py-4 flex flex-col items-center gap-y-4">
+            {/* <Link to="/">
                 <BackButton />
-            </Link>
-            <Logo/>
+            </Link> */}
+            <Logo />
         </div>
     )
 }
