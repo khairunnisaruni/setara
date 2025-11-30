@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { HiChevronDown, HiHome, HiBell, HiMenu, HiX } from "react-icons/hi";
 import { useLocation, useNavigate, Link } from "react-router-dom";
+import NotificationDropdown from "./NotificationDropdown";
+
 
 export default function NavbarVolunteer() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -94,13 +96,10 @@ export default function NavbarVolunteer() {
             <HiHome size={16} /> Beranda
           </a>
 
-          {/* NOTIF */}
-          <a
-            href="#"
-            className="flex items-center gap-1 hover:text-[#FE9015]"
-          >
-            <HiBell size={16} /> Notifikasi
-          </a>
+          {/* NOTIFICATION DROPDOWN */}
+<div className="relative">
+  <NotificationDropdown />
+</div>
         </div>
 
         {/* RIGHT — PROFILE */}
