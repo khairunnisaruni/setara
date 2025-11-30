@@ -5,7 +5,7 @@ import gambarLatar from "../../src/assets/bg-login.png";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-function Register({ onActiveToLogin }) {
+function Register() {
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -15,7 +15,6 @@ function Register({ onActiveToLogin }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
-  // fungsi untuk kirim data ke backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -42,13 +41,11 @@ function Register({ onActiveToLogin }) {
       Wanita: "perempuan",
     };
 
-    const profesiEnum = profesi.toLowerCase(); // "pelajar" atau "umum"
-
     const registerData = {
       name: nama,
       email,
       username,
-      profesi: profesiEnum,
+      profesi: profesi.toLowerCase(),
       gender: genderMapping[jenisKelamin] || null,
       password,
     };
@@ -66,9 +63,7 @@ function Register({ onActiveToLogin }) {
       console.log("Response register:", data);
 
       if (response.ok) {
-        alert("Registrasi berhasil!");
-
-        // simpan token & user kalau tersedia
+        // simpan token & user kalau dikirim backend
         if (data.token) {
           localStorage.setItem("token", data.token);
         }
@@ -85,10 +80,12 @@ function Register({ onActiveToLogin }) {
         setPassword("");
         setConfirmPassword("");
 
-        // pindah ke halaman profile
-        navigate("/profile");
+        // 🔥 Flag agar popup muncul di halaman login
+        localStorage.setItem("registerSuccess", "true");
+
+        // 🔥 Arahkan ke login agar popup tampil
+        navigate("/login");
       } else {
-        // jika backend kirim pesan error
         alert(data.message || "Registrasi gagal");
       }
     } catch (error) {
