@@ -2,8 +2,7 @@
 import React, { useState } from "react";
 import CardMateri from "../../../components/ruang_volunteer/CardMateri";
 import FilterMateri from "../../../components/ruang_volunteer/FilterMateri";
-import React, { useState } from "react";
-import ModalTambahMateri from "../../../components/ruang_volunteer/ModalTambahMateri";
+import ModalTambahBuku from "../../../components/ruang_volunteer/ModalTambahBuku";
 import SuccessPopup from "../../../components/ruang_volunteer/notification/SuccessPopup";
 
 const allMaterials = [
@@ -201,7 +200,7 @@ const MainMMSection = () => {
       </div>
 
       {/* MODAL ADD MATERI */}
-      <ModalTambahMateri
+      <ModalTambahBuku
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         formData={formData}
@@ -216,3 +215,4 @@ const MainMMSection = () => {
 };
 
 export default MainMMSection;
+
