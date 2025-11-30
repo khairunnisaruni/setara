@@ -10,6 +10,14 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+  const handleSuccess = () => {
+    setShowSuccessPopup(true);
+    setTimeout(() => setShowSuccessPopup(false), 2000);
+  };
+
+
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
@@ -101,8 +109,16 @@ const Profile = () => {
         jenisKelamin={displayGender}
         password={"********"} // tidak menampilkan password asli
         bio={profile.bio || "Belum ada bio."}
+        onSuccess={handleSuccess}
       />
       <RiwayatPostingan />
+
+      {showSuccessPopup && (
+        <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded-xl shadow-lg z-[9999] animate-fadeIn">
+          Profil berhasil diperbarui!
+        </div>
+      )}
+
     </div>
   );
 };
