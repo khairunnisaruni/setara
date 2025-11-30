@@ -4,13 +4,15 @@ import React, { useState, useEffect } from "react";
 const EditProfileModal = ({
   open,
   onClose,
-  onSave, // callback kirim user terbaru ke parent
+  onSave,
+  onSuccess,       
   namaPengguna,
   profesi,
   nama,
   jenisKelamin,
   bio,
 }) => {
+
   const [formData, setFormData] = useState({
     username: "",
     profesi: "",
@@ -84,10 +86,9 @@ const EditProfileModal = ({
         if (data.user) {
           localStorage.setItem("user", JSON.stringify(data.user));
         }
-        if (onSave) {
-          onSave(data.user);
-        }
-        onClose();
+        if (onSave) onSave(data.user);
+        if (onSuccess) onSuccess();   
+        onClose();                    
       } else {
         alert(data.message || "Gagal mengupdate profil");
       }
@@ -113,16 +114,20 @@ const EditProfileModal = ({
               onChange={handleChange}
             />
           </div>
+
           <div>
             <label className="font-semibold text-sm">Profesi</label>
-            <input
-              type="text"
+            <select
               name="profesi"
               className="w-full border border-[#E0DCD3] bg-[#F8F4EA] focus:ring-2 focus:ring-orange-400 rounded-xl px-3 py-2 mt-1"
               value={formData.profesi}
               onChange={handleChange}
-            />
+            >
+              <option value="Pelajar">Pelajar</option>
+              <option value="Umum">Umum</option>
+            </select>
           </div>
+
           <div>
             <label className="font-semibold text-sm">Nama</label>
             <input
@@ -133,16 +138,20 @@ const EditProfileModal = ({
               onChange={handleChange}
             />
           </div>
+
           <div>
             <label className="font-semibold text-sm">Jenis Kelamin</label>
-            <input
-              type="text"
+            <select
               name="gender"
               className="w-full border border-[#E0DCD3] bg-[#F8F4EA] focus:ring-2 focus:ring-orange-400 rounded-xl px-3 py-2 mt-1"
               value={formData.gender}
               onChange={handleChange}
-            />
+            >
+              <option value="Pria">Pria</option>
+              <option value="Wanita">Wanita</option>
+            </select>
           </div>
+
           <div>
             <label className="font-semibold text-sm">Bio</label>
             <textarea

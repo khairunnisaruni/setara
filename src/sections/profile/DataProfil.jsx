@@ -12,6 +12,7 @@ const DataProfil = ({
   jenisKelamin,
   password,
   bio,
+  onSuccess
 }) => {
   const [openProfil, setOpenProfil] = useState(false);
   const [openPassword, setOpenPassword] = useState(false);
@@ -168,6 +169,7 @@ const DataProfil = ({
             bio: updatedUser.bio || "",
           });
         }}
+        onSuccess={onSuccess}
         namaPengguna={profileState.namaPengguna}
         profesi={profileState.profesi}
         nama={profileState.nama}
