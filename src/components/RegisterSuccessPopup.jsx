@@ -1,35 +1,52 @@
-import React from "react";
+import React, { useEffect } from "react";
+import successImg from "../assets/login-success.png"; // sesuaikan path PNG kamu
 
 const RegisterSuccessPopup = ({ onClose }) => {
+  
+  // AUTO CLOSE SETELAH 6.5 DETIK
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 6500);
+
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
   return (
-    <div className="fixed top-6 right-6 z-50">
-      <div className="bg-white rounded-3xl shadow-xl px-8 py-8 text-center max-w-sm w-full">
+    <div className="fixed top-10 right-6 z-50 animate-slideIn">
+      <div className="bg-white rounded-xl shadow-lg px-5 py-4 w-80 border border-gray-200 flex items-start gap-3">
 
-        {/* ICON PNG */}
-        <div className="flex justify-center mb-4">
-          <img 
-            src="../assets/images/login-success.png" 
-            alt="Success"
-            className="w-[151px] h-[75px] object-contain"
-          />
+        {/* ICON */}
+        <img
+          src={successImg}
+          alt="Success"
+          className="w-10 h-10 object-contain"
+        />
+
+        {/* TEXT */}
+        <div>
+          <h2 className="text-green-600 text-lg font-semibold">
+            Berhasil Daftar
+          </h2>
+          <p className="text-sm text-gray-600 leading-tight mt-1">
+            Akunmu berhasil dibuat.  
+          </p>
+          <p className="text-sm text-gray-600 leading-tight mt-1">  
+            Silakan login untuk mulai menjelajahi kegiatan volunteer.
+          </p>
         </div>
-
-        <h2 className="text-green-500 text-2xl font-bold mb-3">
-          Berhasil Daftar
-        </h2>
-
-        <p className="text-gray-600 text-md leading-relaxed">
-          Akunmu berhasil dibuat. <br />
-          Silahkan Login untuk jelajahi kegiatan dan peluang volunteer.
-        </p>
-
-        <button
-          onClick={onClose}
-          className="mt-5 px-6 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-all"
-        >
-          Tutup
-        </button>
       </div>
+
+      {/* ANIMASI */}
+      <style>{`
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateX(20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-slideIn {
+          animation: slideIn 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 };
