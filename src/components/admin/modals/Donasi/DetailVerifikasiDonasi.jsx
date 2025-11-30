@@ -160,3 +160,4 @@ const DetailVerifikasiDonasi = ({ isOpen, onClose, donasi }) => {
 };
 
 export default DetailVerifikasiDonasi;
+

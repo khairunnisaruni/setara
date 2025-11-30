@@ -22,16 +22,6 @@ const MainPBSection = () => {
 
   const [search, setSearch] = useState("");
 
-  const handleSubmit = () => {
-    setIsOpen(false);
-    setShowNotif(true);
-
-    // auto hide popup setelah 2.5 detik
-    setTimeout(() => {
-      setShowNotif(false);
-    }, 2500);
-  };
-
   const [openDetail, setOpenDetail] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
 
@@ -64,6 +54,58 @@ const MainPBSection = () => {
       link: "hey",
     },
   ];
+
+  const filteredBooks = bukuList.filter((b) =>
+    b.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // ⬇️ fungsi submit baru: kirim ke backend, desain tetap sama
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        title: formData.judul,
+        author: formData.penulis,
+        // mapping kategori form → category (fiksi / nonfiksi)
+        category:
+          formData.kategori === "Literasi Dasar" ? "fiksi" : "nonfiksi",
+        description: formData.deskripsi,
+        link: formData.link,
+      };
+
+      const response = await fetch("http://localhost:5000/api/books", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal menyimpan buku");
+      }
+
+      setIsOpen(false);
+      setShowNotif(true);
+
+      // reset form setelah sukses
+      setFormData({
+        judul: "",
+        penulis: "",
+        kategori: "",
+        deskripsi: "",
+        sampul: null,
+        link: "",
+      });
+
+      // auto hide popup setelah 2.5 detik
+      setTimeout(() => {
+        setShowNotif(false);
+      }, 2500);
+    } catch (error) {
+      console.error("Error saat menyimpan buku:", error);
+      alert("Gagal menyimpan buku, cek backend.");
+    }
+  };
 
   return (
     <div className=" flex flex-col items-center gap-y-7 py-20 px-12">

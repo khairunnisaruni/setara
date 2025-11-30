@@ -1,10 +1,13 @@
 // backend setara/routes/quizRoutes.js
 import express from "express";
-import { addQuiz } from "../controllers/quizController.js";
+import { getAllQuizzes, createQuiz } from "../controllers/quizController.js";
 
 const router = express.Router();
 
-// endpoint: POST http://localhost:5000/api/quizzes
-router.post("/", addQuiz);
+// GET /api/kuis
+router.get("/", getAllQuizzes);
 
-export default router;
+// POST /api/kuis
+router.post("/", createQuiz);
+
+export default router; 

@@ -54,7 +54,7 @@ const User = {
     });
   },
 
-  // === TAMBAHAN: cari user berdasarkan username (untuk login) ===
+  // cari user berdasarkan username (untuk login / cek duplikat)
   findByUsername: (username) => {
     console.log("🔍 Mencari username:", username);
     return new Promise((resolve, reject) => {
@@ -64,6 +64,24 @@ const User = {
         (err, results) => {
           if (err) {
             console.error("❌ Error di findByUsername:", err);
+            return reject(err);
+          }
+          resolve(results);
+        }
+      );
+    });
+  },
+
+  // update profil user berdasarkan id
+  updateById: (id, updateData) => {
+    console.log("✏️ Update user id:", id, "data:", updateData);
+    return new Promise((resolve, reject) => {
+      db.query(
+        "UPDATE users SET ? WHERE id = ?",
+        [updateData, id],
+        (err, results) => {
+          if (err) {
+            console.error("❌ Error di updateById:", err);
             return reject(err);
           }
           resolve(results);

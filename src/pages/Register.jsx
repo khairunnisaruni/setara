@@ -3,7 +3,7 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import gambarLatar from "../../src/assets/bg-login.png";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Register({ onActiveToLogin }) {
   const [nama, setNama] = useState("");
@@ -13,7 +13,9 @@ function Register({ onActiveToLogin }) {
   const [jenisKelamin, setJenisKelamin] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
 
+  // fungsi untuk kirim data ke backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -40,7 +42,6 @@ function Register({ onActiveToLogin }) {
       Wanita: "perempuan",
     };
 
-    // Karena profesi sudah dropdown, cukup langsung map
     const profesiEnum = profesi.toLowerCase(); // "pelajar" atau "umum"
 
     const registerData = {
@@ -48,7 +49,7 @@ function Register({ onActiveToLogin }) {
       email,
       username,
       profesi: profesiEnum,
-      gender: genderMapping[jenisKelamin],
+      gender: genderMapping[jenisKelamin] || null,
       password,
     };
 
@@ -62,10 +63,20 @@ function Register({ onActiveToLogin }) {
       });
 
       const data = await response.json();
+      console.log("Response register:", data);
 
       if (response.ok) {
         alert("Registrasi berhasil!");
 
+        // simpan token & user kalau tersedia
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+
+        // kosongkan form
         setNama("");
         setEmail("");
         setUsername("");
@@ -73,8 +84,12 @@ function Register({ onActiveToLogin }) {
         setJenisKelamin("");
         setPassword("");
         setConfirmPassword("");
+
+        // pindah ke halaman profile
+        navigate("/profile");
       } else {
-        alert("Registrasi gagal: " + data.message);
+        // jika backend kirim pesan error
+        alert(data.message || "Registrasi gagal");
       }
     } catch (error) {
       console.error("❌ Error saat register:", error);
@@ -121,7 +136,6 @@ function Register({ onActiveToLogin }) {
               onChange={(e) => setUsername(e.target.value)}
             />
 
-            {/* 🔽 PROFESI: DROPDOWN */}
             <Input
               label="Profesi"
               type="select"
@@ -158,11 +172,18 @@ function Register({ onActiveToLogin }) {
           </div>
 
           <div className="space-y-2 pt-4">
-            <Button text="Daftar" type="submit" className="cursor-pointer hover:bg-amber-500/70 font-bold" />
+            <Button
+              text="Daftar"
+              type="submit"
+              className="cursor-pointer hover:bg-amber-500/70 font-bold"
+            />
 
             <div className="text-sm font-semibold text-white">
               Sudah punya akun?{" "}
-              <Link to="/login" className="text-[#FF9500] font-bold cursor-pointer hover:text-[#FF9500]/50">
+              <Link
+                to="/login"
+                className="text-[#FF9500] font-bold cursor-pointer hover:text-[#FF9500]/50"
+              >
                 Masuk
               </Link>
             </div>
