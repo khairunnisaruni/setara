@@ -38,8 +38,8 @@ function Login({ onActiveToRegister }) {
           localStorage.setItem("user", JSON.stringify(data.user));
         }
 
-        // pindah ke halaman profile
-        navigate("/profile");
+        // setelah login, pindah ke halaman beranda
+        navigate("/beranda");
       } else {
         alert(data.message || "Login gagal");
       }

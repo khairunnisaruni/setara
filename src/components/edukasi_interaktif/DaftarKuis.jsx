@@ -1,9 +1,39 @@
+// src/sections/edukasi/DaftarKuis.jsx
 import React, { useState } from "react";
-import { Form } from "react-router-dom";
 import CardDaftarKuis from "./CardDaftarKuis";
+
+const DATA_KUIS = [
+  {
+    id: 1,
+    gambar: "src/assets/bxs_school.png",
+    kelas: "6 SD",
+    mapel: "Bahasa Inggris",
+    judul: "Past Tense",
+    deskripsi: "Materi Past Tense yang sesuai untuk kelas 6 Sekolah Dasar",
+    platform: "Kahoot",
+    gambarplatform: "src/assets/kahoot.png",
+  },
+  // kalau nanti ada kuis lain, tambah objek baru di sini
+];
 
 const DaftarKuis = () => {
   const [showForm, setShowForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // filter berdasarkan kata kunci
+  const filteredKuis = DATA_KUIS.filter((kuis) => {
+    if (!searchTerm.trim()) return true; // kalau search kosong, tampilkan semua
+
+    const term = searchTerm.toLowerCase();
+
+    return (
+      kuis.judul.toLowerCase().includes(term) ||
+      kuis.mapel.toLowerCase().includes(term) ||
+      kuis.kelas.toLowerCase().includes(term) ||
+      kuis.deskripsi.toLowerCase().includes(term) ||
+      kuis.platform.toLowerCase().includes(term)
+    );
+  });
 
   return (
     <div className="max-w-6xl mx-auto mt-16 mb-20">
@@ -22,6 +52,8 @@ const DaftarKuis = () => {
             type="text"
             placeholder="Cari Kuis & Game..."
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-[#6B7280]"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
@@ -83,22 +115,28 @@ const DaftarKuis = () => {
 
       {/* Grid Kuis */}
       <div className="grid md:grid-cols-4 gap-6 mt-10">
-        <CardDaftarKuis
-          gambar="src/assets/bxs_school.png"
-          kelas="6 SD"
-          mapel="Bahasa Inggris"
-          judul="Past Tense"
-          deskripsi="Materi Past Tense yang sesuai untuk kelas 6 Sekolah Dasar"
-          gambarplatform="src/assets/kahoot.png"
-        />
+        {filteredKuis.length === 0 ? (
+          <div className="col-span-4 text-center text-gray-500">
+            Kuis tidak ditemukan untuk kata kunci tersebut.
+          </div>
+        ) : (
+          filteredKuis.map((kuis) => (
+            <CardDaftarKuis
+              key={kuis.id}
+              gambar={kuis.gambar}
+              kelas={kuis.kelas}
+              mapel={kuis.mapel}
+              judul={kuis.judul}
+              deskripsi={kuis.deskripsi}
+              gambarplatform={kuis.gambarplatform}
+            />
+          ))
+        )}
       </div>
 
       {/* Pop Up Form */}
       {showForm && (
-        <form
-          method="POST"
-          action="http://localhost:5000/api/kuis"
-        >
+        <form method="POST" action="http://localhost:5000/api/kuis">
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl shadow-xl p-6 w-96 max-h-[90vh] overflow-y-auto animate-[fadeIn_.2s_ease]">
               <h2 className="text-xl font-bold mb-4 text-center">
@@ -112,7 +150,7 @@ const DaftarKuis = () => {
                   </label>
                   <input
                     type="text"
-                    name="title" 
+                    name="title"
                     className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400 placeholder-[#B0AA9C]"
                     placeholder="Masukkan judul Kuis & Game"
                   />
@@ -126,7 +164,6 @@ const DaftarKuis = () => {
                     name="description"
                     className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400 placeholder-[#B0AA9C]"
                     placeholder="Deskripsi singkat tentang kuis & game"
-                    id=""
                   ></textarea>
                 </div>
 
@@ -135,7 +172,7 @@ const DaftarKuis = () => {
                     Platform (Kahoot atau Wayground)
                   </label>
                   <select
-                    name="platform"  
+                    name="platform"
                     className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
                   >
                     <option
@@ -156,7 +193,7 @@ const DaftarKuis = () => {
                   <label className="text-sm font-medium">Link Kuis</label>
                   <input
                     type="url"
-                    name="link" 
+                    name="link"
                     className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] placeholder-[#B0AA9C] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
                     placeholder="Masukkan Link Kahoot atau Wayground"
                   />
@@ -166,9 +203,7 @@ const DaftarKuis = () => {
                   <label className="text-sm font-medium">
                     Kategori Mata Pelajaran
                   </label>
-                  <select
-                    className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
-                  >
+                  <select className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400">
                     <option
                       className="text-[#B0AA9C]"
                       value=""
@@ -189,9 +224,7 @@ const DaftarKuis = () => {
                   <label className="text-sm font-medium">
                     Kategori Kelas
                   </label>
-                  <select
-                    className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
-                  >
+                  <select className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400">
                     <option
                       className="text-[#B0AA9C]"
                       value=""
@@ -228,14 +261,14 @@ const DaftarKuis = () => {
 
               <div className="flex justify-end gap-3 mt-6">
                 <button
-                  type="button" 
+                  type="button"
                   onClick={() => setShowForm(false)}
                   className="font-bold px-4 py-2 w-36 rounded-xl border border-gray-300 hover:bg-gray-100 text-[#FFA01A]"
                 >
                   Batal
                 </button>
                 <button
-                  type="submit"  
+                  type="submit"
                   className="font-bold px-4 py-2 w-36 bg-orange-500 text-white rounded-xl hover:bg-orange-600"
                 >
                   Simpan

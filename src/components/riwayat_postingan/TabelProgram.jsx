@@ -1,3 +1,4 @@
+// src/components/ruang_volunteer/TabelProgram.jsx
 import React, { useState } from "react";
 import { HiFilter, HiLink, HiEye } from "react-icons/hi";
 import StatusBadge from "./StatusBadge";
@@ -23,11 +24,12 @@ const TabelProgram = () => {
       penyelenggara: "Komunitas Aksi Muda Indonesia",
       jenis: "Volunteer",
       lokasi: "SDN 09 Tapanuli Selatan",
-      deskripsi: "“Volunteer Mengajar Satu Desa” merupakan inisiatif nyata dari Komunitas Aksi Muda Indonesia untuk memperluas akses pendidikan dasar di wilayah pedesaan. Program ini mengajak mahasiswa dan pemuda untuk terjun langsung ke desa-desa terpencil, memberikan pendampingan belajar bagi anak-anak SD yang belum memperoleh fasilitas dan metode pembelajaran yang memadai.",
+      deskripsi:
+        "“Volunteer Mengajar Satu Desa” merupakan inisiatif nyata dari Komunitas Aksi Muda Indonesia untuk memperluas akses pendidikan dasar di wilayah pedesaan. Program ini mengajak mahasiswa dan pemuda untuk terjun langsung ke desa-desa terpencil, memberikan pendampingan belajar bagi anak-anak SD yang belum memperoleh fasilitas dan metode pembelajaran yang memadai.",
       periode: "Mei - Juni 2025",
-      deadline: "25 april 2025",
+      deadline: "25 April 2025",
       statusprogram: "Akan Datang",
-      tautan:"www.bukunasional.com",
+      tautan: "www.bukunasional.com",
       tanggal: "16-09-2005",
       status: "Disetujui",
       gambar: "./src/assets/inggris.png",
@@ -38,15 +40,15 @@ const TabelProgram = () => {
       penyelenggara: "Komunitas Aksi Muda Indonesia",
       jenis: "Pengabdian Masyarakat",
       lokasi: "SDN 09 Tapanuli Selatan",
-      deskripsi: "“Volunteer Mengajar Satu Desa” merupakan inisiatif nyata dari Komunitas Aksi Muda Indonesia untuk memperluas akses pendidikan dasar di wilayah pedesaan. Program ini mengajak mahasiswa dan pemuda untuk terjun langsung ke desa-desa terpencil, memberikan pendampingan belajar bagi anak-anak SD yang belum memperoleh fasilitas dan metode pembelajaran yang memadai.",
+      deskripsi:
+        "“Volunteer Mengajar Satu Desa” merupakan inisiatif nyata dari Komunitas Aksi Muda Indonesia untuk memperluas akses pendidikan dasar di wilayah pedesaan. Program ini mengajak mahasiswa dan pemuda untuk terjun langsung ke desa-desa terpencil, memberikan pendampingan belajar bagi anak-anak SD yang belum memperoleh fasilitas dan metode pembelajaran yang memadai.",
       periode: "Mei - Juni 2025",
-      deadline: "25 april 2025",
+      deadline: "25 April 2025",
       statusprogram: "Sedang Dibuka",
-      tautan:"www.bukunasional.com",
+      tautan: "www.bukunasional.com",
       tanggal: "16-09-2005",
       status: "Menunggu",
       gambar: "./src/assets/inggris.png",
-
     },
     {
       no: 3,
@@ -54,36 +56,44 @@ const TabelProgram = () => {
       penyelenggara: "Komunitas Aksi Muda Indonesia",
       jenis: "Beasiswa",
       lokasi: "SDN 09 Tapanuli Selatan",
-      deskripsi: "“Volunteer Mengajar Satu Desa” merupakan inisiatif nyata dari Komunitas Aksi Muda Indonesia untuk memperluas akses pendidikan dasar di wilayah pedesaan. Program ini mengajak mahasiswa dan pemuda untuk terjun langsung ke desa-desa terpencil, memberikan pendampingan belajar bagi anak-anak SD yang belum memperoleh fasilitas dan metode pembelajaran yang memadai.",
+      deskripsi:
+        "“Volunteer Mengajar Satu Desa” merupakan inisiatif nyata dari Komunitas Aksi Muda Indonesia untuk memperluas akses pendidikan dasar di wilayah pedesaan. Program ini mengajak mahasiswa dan pemuda untuk terjun langsung ke desa-desa terpencil, memberikan pendampingan belajar bagi anak-anak SD yang belum memperoleh fasilitas dan metode pembelajaran yang memadai.",
       periode: "Mei - Juni 2025",
-      deadline: "25 april 2025",
+      deadline: "25 April 2025",
       statusprogram: "Selesai",
-      tautan:"www.bukunasional.com",
+      tautan: "www.bukunasional.com",
       tanggal: "16-09-2005",
       status: "Ditolak",
       gambar: "./src/assets/inggris.png",
     },
   ];
 
-    //  FILTER STATUS + SEARCH
-    const filteredData = data.filter((item) => {
-      // Filter status
-      const matchStatus =
+  // FILTER STATUS + SEARCH
+  const filteredData = data.filter((item) => {
+    // Filter status (Disetujui / Menunggu / Ditolak / Semua)
+    const matchStatus =
       filterStatus === "Semua" || item.status === filterStatus;
 
-      // Filter search (case-insensitive)
-      const text = searchText.toLowerCase();
-      const matchSearch =
+    const text = searchText.toLowerCase();
+
+    // Kalau kolom search kosong, cukup pakai filter status saja
+    if (!text.trim()) {
+      return matchStatus;
+    }
+
+    // Search di beberapa kolom sekaligus (case-insensitive)
+    const matchSearch =
       item.judul.toLowerCase().includes(text) ||
       item.penyelenggara.toLowerCase().includes(text) ||
       item.jenis.toLowerCase().includes(text) ||
       item.lokasi.toLowerCase().includes(text) ||
       item.periode.toLowerCase().includes(text) ||
-      item.deadline.toLowerCase().includes(text);
-      item.statusprogram.toLowerCase().includes(text);
+      item.deadline.toLowerCase().includes(text) ||
+      item.statusprogram.toLowerCase().includes(text) ||
+      item.status.toLowerCase().includes(text);
 
-      return matchStatus && matchSearch;
-    });
+    return matchStatus && matchSearch;
+  });
 
   return (
     <>
@@ -117,17 +127,29 @@ const TabelProgram = () => {
           <thead className="bg-[#F8F4EA] text-gray-700">
             <tr>
               <th className="px-4 py-2 text-left w-[60px]">No</th>
-              <th className="px-4 py-2 text-left min-w-[180px]">Judul Program</th>
-              <th className="px-4 py-2 text-left min-w-[150px]">Penyelenggara</th>
+              <th className="px-4 py-2 text-left min-w-[180px]">
+                Judul Program
+              </th>
+              <th className="px-4 py-2 text-left min-w-[150px]">
+                Penyelenggara
+              </th>
               <th className="px-4 py-2 text-left">Jenis Program</th>
-              <th className="px-4 py-2 text-left min-w-[150px]">Lokasi Program</th>
-              <th className="px-4 py-2 text-left min-w-[200px]">Deskripsi Program</th>
+              <th className="px-4 py-2 text-left min-w-[150px]">
+                Lokasi Program
+              </th>
+              <th className="px-4 py-2 text-left min-w-[200px]">
+                Deskripsi Program
+              </th>
               <th className="px-4 py-2 text-left min-w-[150px]">Periode</th>
-              <th className="px-4 py-2 text-left min-w-[180px]">Deadline Pendaftaran</th>
+              <th className="px-4 py-2 text-left min-w-[180px]">
+                Deadline Pendaftaran
+              </th>
               <th className="px-4 py-2 text-left">Status Program</th>
               <th className="px-4 py-2 text-center">Tautan</th>
               <th className="px-4 py-2 text-left">Status</th>
-              <th className="px-4 py-2 text-left min-w-[150px]">Tanggal Submit</th>
+              <th className="px-4 py-2 text-left min-w-[150px]">
+                Tanggal Submit
+              </th>
               <th className="px-4 py-2 text-center">Detail</th>
             </tr>
           </thead>
@@ -139,14 +161,16 @@ const TabelProgram = () => {
                 <td className="px-4 py-2">{item.judul}</td>
                 <td className="px-4 py-2">{item.penyelenggara}</td>
                 <td className="px-4 py-2">
-                    <JenisProgramBadge jenis={item.jenis} />
+                  <JenisProgramBadge jenis={item.jenis} />
                 </td>
                 <td className="px-4 py-2">{item.lokasi}</td>
-                <td className="px-4 py-2">{truncateWords(item.deskripsi, 15)}</td>
+                <td className="px-4 py-2">
+                  {truncateWords(item.deskripsi, 15)}
+                </td>
                 <td className="px-4 py-2">{item.periode}</td>
                 <td className="px-4 py-2">{item.deadline}</td>
                 <td className="px-4 py-2">
-                    <StatusProgramBadge status={item.statusprogram} />
+                  <StatusProgramBadge status={item.statusprogram} />
                 </td>
                 <td className="px-4 py-2 text-center">
                   <a
@@ -179,7 +203,7 @@ const TabelProgram = () => {
             {/* Jika search/filter tidak ada hasil */}
             {filteredData.length === 0 && (
               <tr>
-                <td colSpan="10" className="text-center py-4 text-gray-500">
+                <td colSpan={13} className="text-center py-4 text-gray-500">
                   Tidak ada data yang cocok.
                 </td>
               </tr>
@@ -210,11 +234,13 @@ const TabelProgram = () => {
             <div className="p-6 space-y-4 text-sm text-black">
               <div className="flex justify-between">
                 <div>
-                    <p className="font-semibold">Judul Program</p>
-                    <p className="text-[#B0AA9C]">{selectedProgram.judul}</p>
+                  <p className="font-semibold">Judul Program</p>
+                  <p className="text-[#B0AA9C]">{selectedProgram.judul}</p>
                 </div>
                 <div>
-                    <StatusProgramBadge status={selectedProgram.statusprogram} />
+                  <StatusProgramBadge
+                    status={selectedProgram.statusprogram}
+                  />
                 </div>
               </div>
 
@@ -225,7 +251,9 @@ const TabelProgram = () => {
 
               <div>
                 <p className="font-semibold">Penyelenggara Program</p>
-                <p className="text-[#B0AA9C]">{selectedProgram.penyelenggara}</p>
+                <p className="text-[#B0AA9C]">
+                  {selectedProgram.penyelenggara}
+                </p>
               </div>
 
               <div>
@@ -245,7 +273,9 @@ const TabelProgram = () => {
 
               <div>
                 <p className="font-semibold">Deadline Pendaftaran</p>
-                <p className="mt-1 px-3 py-1 rounded-full font-semibold bg-[#317C76] text-[#FBF8F4] w-fit">{selectedProgram.deadline}</p>
+                <p className="mt-1 px-3 py-1 rounded-full font-semibold bg-[#317C76] text-[#FBF8F4] w-fit">
+                  {selectedProgram.deadline}
+                </p>
               </div>
 
               <div>
