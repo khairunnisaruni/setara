@@ -1,17 +1,12 @@
 import React from 'react'
-import BackButton from '../../components/edukasi_interaktif/BackButtonChatbot'
-import { Link } from 'react-router-dom';
 import Logo from '../../components/edukasi_interaktif/LogoChatbot';
 
 const HeaderChatBot = () => {
     return (
-        <div className="px-5 py-4 flex flex-col items-center gap-y-4">
-            {/* <Link to="/">
-                <BackButton />
-            </Link> */}
+        <div className="w-full flex flex-col items-center pt-3 pb-1">
             <Logo />
         </div>
     )
 }
 
-export default HeaderChatBot
+export default HeaderChatBot;
