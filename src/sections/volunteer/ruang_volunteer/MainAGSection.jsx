@@ -1,3 +1,4 @@
+// src/sections/volunteer/ruang_volunteer/MainAGSection.jsx
 import React, { useState } from "react";
 import { HiPlus } from "react-icons/hi";
 import InteractiveCalendar from "../../../components/ruang_volunteer/InteractiveCalendar";
@@ -63,33 +64,60 @@ export default function MainAGSection() {
     lokasi: "",
   });
 
-  const handleSubmitAgenda = () => {
-    const newAgenda = {
-      id: Date.now(),
-      title: formData.judul,
-      deskripsi: formData.deskripsi,
-      lokasi: formData.lokasi,
-      time: formData.waktu,
-      date: convertDateIndo(formData.tanggal),
-      keyDate: convertKey(formData.tanggal),
-      method: formData.lokasi,
-    };
+  const handleSubmitAgenda = async () => {
+    try {
+      // data yang dikirim ke backend (tabel agenda)
+      const payload = {
+        title: formData.judul,
+        description: formData.deskripsi,
+        date: formData.tanggal, // format: YYYY-MM-DD
+        waktu: formData.waktu,  // contoh: "09:00"
+        location: formData.lokasi,
+      };
 
-    setAgendas((prev) => [...prev, newAgenda]);
+      const response = await fetch("http://localhost:5000/api/agenda", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-    setOpenModal(false);
-    setShowNotifAdd(true);
+      if (!response.ok) {
+        throw new Error("Gagal menyimpan agenda");
+      }
 
-    // Reset
-    setFormData({
-      judul: "",
-      deskripsi: "",
-      tanggal: "",
-      waktu: "",
-      lokasi: "",
-    });
+      // kalau backend sukses, baru tambahkan ke state lokal
+      const newAgenda = {
+        id: Date.now(),
+        title: formData.judul,
+        deskripsi: formData.deskripsi,
+        lokasi: formData.lokasi,
+        time: formData.waktu,
+        date: convertDateIndo(formData.tanggal),
+        keyDate: convertKey(formData.tanggal),
+        method: formData.lokasi,
+      };
 
-    setTimeout(() => setShowNotifAdd(false), 2000);
+      setAgendas((prev) => [...prev, newAgenda]);
+
+      setOpenModal(false);
+      setShowNotifAdd(true);
+
+      // Reset
+      setFormData({
+        judul: "",
+        deskripsi: "",
+        tanggal: "",
+        waktu: "",
+        lokasi: "",
+      });
+
+      setTimeout(() => setShowNotifAdd(false), 2000);
+    } catch (error) {
+      console.error("Error saat menyimpan agenda:", error);
+      alert("Gagal menyimpan agenda, cek backend.");
+    }
   };
 
   // ========================================

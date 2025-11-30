@@ -64,14 +64,37 @@ const MainCLSection = () => {
   const [cerita, setCerita] = useState("");
   const [showNotif, setShowNotif] = useState(false);
 
-  const handleSubmit = () => {
-    setIsOpen(false);
-    setShowNotif(true);
+  // ⬇️ fungsi submit: kirim ke backend /api/cerita
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        title: judul,
+        content: cerita,
+      };
 
-    setJudul("");
-    setCerita("");
+      const response = await fetch("http://localhost:5000/api/cerita", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-    setTimeout(() => setShowNotif(false), 2500);
+      if (!response.ok) {
+        throw new Error("Gagal menyimpan cerita");
+      }
+
+      setIsOpen(false);
+      setShowNotif(true);
+
+      setJudul("");
+      setCerita("");
+
+      setTimeout(() => setShowNotif(false), 2500);
+    } catch (error) {
+      console.error("Error saat menyimpan cerita:", error);
+      alert("Gagal menyimpan cerita, cek backend.");
+    }
   };
 
   const [openDetail, setOpenDetail] = useState(false);

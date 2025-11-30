@@ -1,16 +1,45 @@
-import React, { useState } from "react";
-import { HiChevronDown, HiHome, HiBell } from "react-icons/hi";
-import { HiMenu, HiX } from "react-icons/hi";
-import { useLocation } from "react-router-dom";
+// src/components/NavbarVolunteer.jsx
+import React, { useState, useEffect } from "react";
+import { HiChevronDown, HiHome, HiBell, HiMenu, HiX } from "react-icons/hi";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 
 export default function NavbarVolunteer() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // ambil data user dari localStorage saat navbar dimuat
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error("Gagal parse user dari localStorage:", err);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  const displayName = user?.username || "User";
+  const displayRole =
+    user?.profesi === "pelajar"
+      ? "Pelajar"
+      : user?.profesi === "umum"
+      ? "Volunteer"
+      : user?.profesi || "Volunteer";
+
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <nav className="w-full bg-[#F4F0EC] py-4 px-6 shadow-sm fixed top-0 left-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-
         {/* LEFT — LOGO */}
         <div className="flex items-center gap-2 cursor-pointer">
           <h1 className="text-xl font-bold text-[#2C2C2C]">SETARA</h1>
@@ -26,7 +55,6 @@ export default function NavbarVolunteer() {
 
         {/* CENTER — NAVIGATION (DESKTOP) */}
         <div className="hidden lg:flex items-center gap-10 text-[15px] font-medium text-[#2C2C2C]">
-
           <Dropdown
             label="Edukasi Interaktif"
             items={[
@@ -58,7 +86,9 @@ export default function NavbarVolunteer() {
           <a
             href="/beranda"
             className={`flex items-center gap-1 ${
-              location.pathname === "/beranda" ? "text-[#FE9015]" : "hover:text-[#FE9015]"
+              location.pathname === "/beranda"
+                ? "text-[#FE9015]"
+                : "hover:text-[#FE9015]"
             }`}
           >
             <HiHome size={16} /> Beranda
@@ -75,10 +105,9 @@ export default function NavbarVolunteer() {
 
         {/* RIGHT — PROFILE */}
         <div className="hidden lg:flex items-center gap-3 relative group cursor-pointer">
-
           <div className="flex flex-col text-right leading-tight">
-            <span className="font-semibold">Yono</span>
-            <span className="text-xs text-gray-500">Volunteer</span>
+            <span className="font-semibold">{displayName}</span>
+            <span className="text-xs text-gray-500">{displayRole}</span>
           </div>
 
           <div
@@ -86,7 +115,7 @@ export default function NavbarVolunteer() {
         from-[#FFB54D] to-[#317B74] text-white flex items-center 
         justify-center font-bold"
           >
-            Y
+            {initial}
           </div>
 
           <div
@@ -95,22 +124,23 @@ export default function NavbarVolunteer() {
             group-hover:translate-y-0 transition-all duration-200 
             bg-white shadow-xl rounded-lg p-3 w-40 z-20"
           >
-            <a href="/profile" className="block py-1 hover:text-[#FE9015]">
+            <Link to="/profile" className="block py-1 hover:text-[#FE9015]">
               Profil Saya
-            </a>
+            </Link>
 
-            <button className="block py-1 w-full text-left hover:text-red-500">
+            <button
+              onClick={handleLogout}
+              className="block py-1 w-full text-left hover:text-red-500"
+            >
               Logout
             </button>
           </div>
         </div>
-
       </div>
 
       {/* MOBILE MENU */}
       {mobileOpen && (
         <div className="lg:hidden mt-4 border-t border-gray-300 pt-4 space-y-4">
-
           <MobileDropdown
             label="Edukasi Interaktif"
             items={[
@@ -148,7 +178,9 @@ export default function NavbarVolunteer() {
           >
             Beranda
           </a>
-          <a href="#" className="block py-1">Notifikasi</a>
+          <a href="#" className="block py-1">
+            Notifikasi
+          </a>
         </div>
       )}
     </nav>
@@ -187,7 +219,9 @@ function Dropdown({ label, items }) {
               key={i}
               href={item.link}
               className={`block py-1 ${
-                active ? "text-[#FE9015] font-semibold" : "hover:text-[#FE9015]"
+                active
+                  ? "text-[#FE9015] font-semibold"
+                  : "hover:text-[#FE9015]"
               }`}
             >
               {item.label}
