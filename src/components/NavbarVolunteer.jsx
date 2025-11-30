@@ -32,7 +32,6 @@ export default function NavbarVolunteer() {
             items={[
               { label: "Chatbot", link: "/edukasi-chatbot" },
               { label: "Kuis & Game", link: "/edukasi-kuis" },
-              { label: "Donasi", link: "/donasi" },
             ]}
           />
 
@@ -57,9 +56,9 @@ export default function NavbarVolunteer() {
 
           {/* BERANDA */}
           <a
-            href="/"
+            href="/beranda"
             className={`flex items-center gap-1 ${
-              location.pathname === "/" ? "text-[#FE9015]" : "hover:text-[#FE9015]"
+              location.pathname === "/beranda" ? "text-[#FE9015]" : "hover:text-[#FE9015]"
             }`}
           >
             <HiHome size={16} /> Beranda

@@ -6,7 +6,7 @@ import { FiTarget, FiTrendingUp } from "react-icons/fi";
 
 const TentangSection = () => {
     return (
-        <div className="flex flex-col gap-y-14 items-center px-20 ">
+        <div id="tentang-section" className="flex flex-col gap-y-14 items-center px-20 ">
             <div className="flex flex-col gap-y-8 items-center ">
                 <MiniHeader
                     icon={<FiTarget className="w-5 h-5" />}

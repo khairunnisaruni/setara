@@ -208,16 +208,18 @@ export default function MainAGSection() {
   // UI
   // ========================================
   return (
-    <div className="w-full min-h-screen bg-[#F4F0EC] pb-24 px-12 flex flex-col items-center">
+    <div className="w-full min-h-screen bg-[#F4F0EC] pb-24 px-12 flex flex-col items-center pt-12">
+
       {/* HEADER */}
       <div className="text-6xl font-bold text-center flex flex-col items-center gap-y-4 mt-14 p-[42px_128px] rounded-[20px] bg-[linear-gradient(85deg,rgba(255,157,1,0.85)_22.33%,rgba(49,123,116,0.85)_77.67%)]">
-        <span className="bg-white bg-clip-text text-transparent drop-shadow-md">
+        <span className="text-white drop-shadow-lg">
           Agenda
         </span>
         <p className="text-lg font-normal text-white max-w-[60%]">
           Kelola jadwal mengajar dan kegiatan volunteer Anda
         </p>
       </div>
+
 
       {/* MAIN CONTENT */}
       <div className="w-full max-w-7xl mt-10 flex gap-10">

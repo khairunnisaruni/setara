@@ -10,13 +10,22 @@ import {
   HiOutlineMap,
 } from "react-icons/hi";
 import Button from "../../components/Button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const FiturSection = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleLihatDaftarProgram = () => {
-    navigate("/referensi_aksi-program_tersedia");
+  // cek apakah sedang berada di halaman /beranda
+  const isBeranda = location.pathname === "/beranda";
+  const isLanding = location.pathname === "/"; // ← tambahan
+
+  const handleButtonClick = () => {
+    if (isLanding) {
+      navigate("/login"); // Landing → login
+    } else {
+      navigate("/referensi_aksi-program_tersedia"); // Beranda → daftar program
+    }
   };
 
   return (
@@ -39,58 +48,59 @@ const FiturSection = () => {
       </div>
 
       <div className="flex justify-between gap-x-12 w-full">
-        {/* EDUKASI INTERAKTIF */}
         <FiturCard
           icon={<HiOutlineLightBulb />}
           label="Edukasi Interaktif"
           value="Chatbot AI, kuis edukatif, dan game pembelajaran untuk membuat belajar lebih menyenangkan"
           className="text-[#FF9500]"
           to="/edukasi-chatbot"
+          showPelajari={isBeranda}
         />
 
-        {/* RUANG VOLUNTEER */}
         <FiturCard
           icon={<HiOutlineBookOpen />}
           label="Ruang Volunteer"
           value="Akses panduan mengajar, materi multimedia, agenda pribadi, dan cerita inspiratif dari lapangan"
           className="text-[#317C76]"
-          to="/volunteer-home"
+          to="/volunteer-panduan-mengajar"
+          showPelajari={isBeranda}
         />
 
-        {/* REFERENSI & AKSI */}
         <FiturCard
           icon={<HiOutlineMap />}
           label="Referensi & Aksi"
           value="Informasi program beasiswa, peta persebaran sekolah, dan peluang untuk berkontribusi nyata"
           className="text-[#FF9500]"
           to="/referensi_aksi-program_tersedia"
+          showPelajari={isBeranda}
         />
       </div>
 
       <div className="w-full py-12 px-12 bg-linear-to-br from-[#FF9500] via-[#FF9500]/90 to-[#317C76] border border-[#E7E1DA] rounded-xl flex items-center justify-between relative overflow-hidden">
         <div className="w-48 h-48 rounded-full bg-[#FBF8F4]/10 absolute -bottom-24 -left-24"></div>
         <div className="w-48 h-48 rounded-full bg-[#FBF8F4]/10 absolute -top-16 -right-16"></div>
-        <div className="w-full flex flex-col px-48  gap-y-4 items-center justify-center">
-          <div>
-            <HiOutlineUsers className="w-16 h-16 text-white" />
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-white">
-              Siap Menjadi Bagian dari Perubahan?
-            </p>
-          </div>
+
+        <div className="w-full flex flex-col px-48 gap-y-4 items-center justify-center">
+          <HiOutlineUsers className="w-16 h-16 text-white" />
+
+          <p className="text-3xl font-bold text-white">
+            Siap Menjadi Bagian dari Perubahan?
+          </p>
+
           <div className="text-center">
-            <p className="text- text-white">
+            <p className="text-white">
               Bergabunglah dengan ribuan volunteer yang telah membawa dampak
               nyata untuk pendidikan anak-anak Indonesia
             </p>
           </div>
+
+          {/* TOMBOL DINAMIS */}
           <Button
-            text="Lihat Daftar Program"
+            text={isLanding ? "Mulai Jadi Volunteer" : "Lihat Daftar Program"}
             variant="third"
             className="text-[#FF9500] w-2/3 justify-center gap-x-5"
             withArrow={true}
-            onClick={handleLihatDaftarProgram}
+            onClick={handleButtonClick}
           />
         </div>
       </div>
