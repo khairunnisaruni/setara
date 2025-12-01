@@ -1,4 +1,4 @@
-// src/sections/edukasi/DaftarKuis.jsx
+// src/sections/edukasi_interaktif/DaftarKuis.jsx
 import React, { useState } from "react";
 import CardDaftarKuis from "./CardDaftarKuis";
 
@@ -13,26 +13,44 @@ const DATA_KUIS = [
     platform: "Kahoot",
     gambarplatform: "src/assets/kahoot.png",
   },
-  // kalau nanti ada kuis lain, tambah objek baru di sini
+  // tambah kuis lain di sini
 ];
 
 const DaftarKuis = () => {
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // filter berdasarkan kata kunci
+  const [kelasFilter, setKelasFilter] = useState("Semua Kelas");
+  const [mapelFilter, setMapelFilter] = useState("Semua Mata Pelajaran");
+  const [platformFilter, setPlatformFilter] = useState("Semua Platform");
+
+  // filter berdasarkan kata kunci + dropdown
   const filteredKuis = DATA_KUIS.filter((kuis) => {
-    if (!searchTerm.trim()) return true; // kalau search kosong, tampilkan semua
+    const term = searchTerm.trim().toLowerCase();
 
-    const term = searchTerm.toLowerCase();
-
-    return (
+    // cocokkan teks pencarian (judul / mapel / kelas / deskripsi / platform)
+    const matchSearch =
+      !term ||
       kuis.judul.toLowerCase().includes(term) ||
       kuis.mapel.toLowerCase().includes(term) ||
       kuis.kelas.toLowerCase().includes(term) ||
       kuis.deskripsi.toLowerCase().includes(term) ||
-      kuis.platform.toLowerCase().includes(term)
-    );
+      kuis.platform.toLowerCase().includes(term);
+
+    // cocokkan kelas (jika bukan "Semua Kelas")
+    const matchKelas =
+      kelasFilter === "Semua Kelas" || kuis.kelas === kelasFilter;
+
+    // cocokkan mapel
+    const matchMapel =
+      mapelFilter === "Semua Mata Pelajaran" || kuis.mapel === mapelFilter;
+
+    // cocokkan platform
+    const matchPlatform =
+      platformFilter === "Semua Platform" || kuis.platform === platformFilter;
+
+    // semua kondisi harus true
+    return matchSearch && matchKelas && matchMapel && matchPlatform;
   });
 
   return (
@@ -58,50 +76,48 @@ const DaftarKuis = () => {
         </div>
 
         {/* Dropdown Kelas */}
-        <select className="bg-white w-full md:w-40 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
-          <option
-            className="text-[#B0AA9C]"
-            value=""
-            disabled
-            selected
-            hidden
-          >
+        <select
+          className="bg-white w-full md:w-40 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500"
+          value={kelasFilter}
+          onChange={(e) => setKelasFilter(e.target.value)}
+        >
+          <option value="Semua Kelas" className="text-[#B0AA9C]">
             Semua Kelas
           </option>
-          <option>Kelas 1</option>
-          <option>Kelas 2</option>
-          <option>Kelas 3</option>
+          <option value="1 SD">1 SD</option>
+          <option value="2 SD">2 SD</option>
+          <option value="3 SD">3 SD</option>
+          <option value="4 SD">4 SD</option>
+          <option value="5 SD">5 SD</option>
+          <option value="6 SD">6 SD</option>
         </select>
 
         {/* Dropdown Mapel */}
-        <select className="bg-white w-full md:w-48 py-2 px-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
-          <option
-            className="text-[#B0AA9C]"
-            value=""
-            disabled
-            selected
-            hidden
-          >
+        <select
+          className="bg-white w-full md:w-48 py-2 px-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500"
+          value={mapelFilter}
+          onChange={(e) => setMapelFilter(e.target.value)}
+        >
+          <option value="Semua Mata Pelajaran" className="text-[#B0AA9C]">
             Semua Mata Pelajaran
           </option>
-          <option>Matematika</option>
-          <option>IPA</option>
-          <option>IPS</option>
+          <option value="Bahasa Inggris">Bahasa Inggris</option>
+          <option value="Matematika">Matematika</option>
+          <option value="IPA">IPA</option>
+          <option value="IPS">IPS</option>
         </select>
 
         {/* Dropdown Platform */}
-        <select className="bg-white w-full md:w-44 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
-          <option
-            className="text-[#B0AA9C]"
-            value=""
-            disabled
-            selected
-            hidden
-          >
+        <select
+          className="bg-white w-full md:w-44 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500"
+          value={platformFilter}
+          onChange={(e) => setPlatformFilter(e.target.value)}
+        >
+          <option value="Semua Platform" className="text-[#B0AA9C]">
             Semua Platform
           </option>
-          <option>Kahoot</option>
-          <option>Wayground</option>
+          <option value="Kahoot">Kahoot</option>
+          <option value="Wayground">Wayground</option>
         </select>
 
         {/* Tombol Tambah Kuis */}
@@ -117,7 +133,7 @@ const DaftarKuis = () => {
       <div className="grid md:grid-cols-4 gap-6 mt-10">
         {filteredKuis.length === 0 ? (
           <div className="col-span-4 text-center text-gray-500">
-            Kuis tidak ditemukan untuk kata kunci tersebut.
+            Kuis tidak ditemukan untuk kata kunci / filter tersebut.
           </div>
         ) : (
           filteredKuis.map((kuis) => (
@@ -174,18 +190,18 @@ const DaftarKuis = () => {
                   <select
                     name="platform"
                     className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
+                    defaultValue=""
                   >
                     <option
                       className="text-[#B0AA9C]"
                       value=""
                       disabled
-                      selected
                       hidden
                     >
                       Pilih Platform
                     </option>
-                    <option value="kahoot">Kahoot</option>
-                    <option value="wayground">Wayground</option>
+                    <option value="Kahoot">Kahoot</option>
+                    <option value="Wayground">Wayground</option>
                   </select>
                 </div>
 
@@ -203,12 +219,15 @@ const DaftarKuis = () => {
                   <label className="text-sm font-medium">
                     Kategori Mata Pelajaran
                   </label>
-                  <select className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400">
+                  <select
+                    name="subject"
+                    className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
+                    defaultValue=""
+                  >
                     <option
                       className="text-[#B0AA9C]"
                       value=""
                       disabled
-                      selected
                       hidden
                     >
                       Pilih Mapel
@@ -221,15 +240,16 @@ const DaftarKuis = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">
-                    Kategori Kelas
-                  </label>
-                  <select className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400">
+                  <label className="text-sm font-medium">Kategori Kelas</label>
+                  <select
+                    name="grade"
+                    className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
+                    defaultValue=""
+                  >
                     <option
                       className="text-[#B0AA9C]"
                       value=""
                       disabled
-                      selected
                       hidden
                     >
                       Pilih Kelas
