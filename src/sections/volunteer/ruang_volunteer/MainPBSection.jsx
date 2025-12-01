@@ -1,3 +1,4 @@
+// src/sections/volunteer/ruang_volunteer/MainPBSection.jsx
 import React, { useState } from "react";
 import { FiFilter } from "react-icons/fi";
 import { HiPlus } from "react-icons/hi";
@@ -55,19 +56,27 @@ const MainPBSection = () => {
     },
   ];
 
-  const filteredBooks = bukuList.filter((b) =>
-    b.title.toLowerCase().includes(search.toLowerCase())
-  );
+  // filter daftar buku berdasarkan kata kunci
+  const filteredBooks = bukuList.filter((b) => {
+    if (!search.trim()) return true; // kalau search kosong, tampilkan semua
 
-  // ⬇️ fungsi submit baru: kirim ke backend, desain tetap sama
+    const term = search.toLowerCase();
+    return (
+      b.title.toLowerCase().includes(term) ||
+      b.category.toLowerCase().includes(term) ||
+      b.desc.toLowerCase().includes(term) ||
+      b.penulis.toLowerCase().includes(term)
+    );
+  });
+
+  // fungsi submit: kirim ke backend
   const handleSubmit = async () => {
     try {
       const payload = {
         title: formData.judul,
         author: formData.penulis,
         // mapping kategori form → category (fiksi / nonfiksi)
-        category:
-          formData.kategori === "Literasi Dasar" ? "fiksi" : "nonfiksi",
+        category: formData.kategori === "Literasi Dasar" ? "fiksi" : "nonfiksi",
         description: formData.deskripsi,
         link: formData.link,
       };
@@ -108,9 +117,8 @@ const MainPBSection = () => {
   };
 
   return (
-    <div className=" flex flex-col items-center gap-y-7 py-20 px-12">
-      <div className=" text-6xl font-bold text-center flex flex-col items-center gap-y-4  p-[42px_128px] rounded-[20px] bg-[linear-gradient(85deg,rgba(255,157,1,0.85)_22.33%,rgba(49,123,116,0.85)_77.67%)]">
-        {" "}
+    <div className="flex flex-col items-center gap-y-7 py-20 px-12">
+      <div className="text-6xl font-bold text-center flex flex-col items-center gap-y-4 p-[42px_128px] rounded-[20px] bg-[linear-gradient(85deg,rgba(255,157,1,0.85)_22.33%,rgba(49,123,116,0.85)_77.67%)]">
         <div>
           <span className="bg-[#FFFFFF] bg-clip-text text-transparent drop-shadow-md">
             Pojok
@@ -120,9 +128,7 @@ const MainPBSection = () => {
           </span>
         </div>
         <div className="flex max-w-[55%] text-lg font-normal text-[#FFFFFF] text-center flex-col items-center font-sans">
-          <div>
-            Bagikan dan temukan rekomendasi buku terbaik untuk pembelajaran
-          </div>
+          <div>Bagikan dan temukan rekomendasi buku terbaik untuk pembelajaran</div>
         </div>
       </div>
 
@@ -168,21 +174,27 @@ const MainPBSection = () => {
 
       {/* Card Buku */}
       <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {bukuList.map((book) => (
-          <CardBuku
-            key={book.id}
-            title={book.title}
-            category={book.category}
-            desc={book.desc}
-            cover={book.cover}
-            penulis={book.penulis}
-            link={book.link}
-            onDetail={() => {
-              setSelectedBook(book);
-              setOpenDetail(true);
-            }}
-          />
-        ))}
+        {filteredBooks.length === 0 ? (
+          <div className="col-span-3 text-center text-gray-500">
+            Buku tidak ditemukan untuk kata kunci tersebut.
+          </div>
+        ) : (
+          filteredBooks.map((book) => (
+            <CardBuku
+              key={book.id}
+              title={book.title}
+              category={book.category}
+              desc={book.desc}
+              cover={book.cover}
+              penulis={book.penulis}
+              link={book.link}
+              onDetail={() => {
+                setSelectedBook(book);
+                setOpenDetail(true);
+              }}
+            />
+          ))
+        )}
       </div>
 
       <ModalDetailBuku

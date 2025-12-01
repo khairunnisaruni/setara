@@ -1,3 +1,4 @@
+// src/components/ruang_volunteer/CardMateri.jsx
 import React from "react";
 import { HiDownload } from "react-icons/hi";
 
@@ -30,11 +31,13 @@ const CardMateri = ({ id, name, subject, type, byte, extension, total }) => {
 
   return (
     <div className="border border-[#000000]/25 rounded-[20px] px-7 py-[25px] flex flex-col gap-y-4 justify-between">
+      {/* Bagian info materi */}
       <div className="flex justify-between">
         <div className="flex flex-col gap-y-4">
           <div
             className={`w-16 h-16 border rounded-[20px] ${colors.bg} ${colors.border}`}
           ></div>
+
           <div>
             <div className="font-bold">{name}</div>
             <div className="font-medium text-sm">{type}</div>
@@ -42,9 +45,11 @@ const CardMateri = ({ id, name, subject, type, byte, extension, total }) => {
               {subject}
             </div>
           </div>
+
           <div className="font-medium text-sm">{byte}</div>
         </div>
-        <div className="flex flex-col justify-between ">
+
+        <div className="flex flex-col justify-between">
           <div
             className={`px-2 mx-3 py-1 border rounded-[20px] flex justify-center text-sm ${colors.bg} ${colors.border} ${colors.text}`}
           >
@@ -54,9 +59,10 @@ const CardMateri = ({ id, name, subject, type, byte, extension, total }) => {
         </div>
       </div>
 
-      {/* TOMBOL DOWNLOAD → panggil backend */}
+      {/* Tombol Download: memanggil backend */}
       <a
         href={`http://localhost:5000/api/materials/${id}/download`}
+        download
         className="py-1 w-full border border-[#000000] flex justify-center items-center gap-x-1 rounded-[20px]"
       >
         <HiDownload />

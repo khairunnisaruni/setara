@@ -71,16 +71,22 @@ const MainMMSection = () => {
   ];
 
   const filteredMaterials = allMaterials.filter((material) => {
+    // filter berdasarkan tombol SD 1 / SD 2 / dst
     if (activeFilter !== "Semua" && material.type !== activeFilter) {
       return false;
     }
-    if (
-      search &&
-      !material.name.toLowerCase().includes(search.toLowerCase())
-    ) {
-      return false;
-    }
-    return true;
+
+    // kalau search kosong, cukup cek filter kelas saja
+    if (!search.trim()) return true;
+
+    const term = search.toLowerCase();
+
+    // cek di: nama modul, mapel, dan kelas
+    const matchByName = material.name.toLowerCase().includes(term);
+    const matchBySubject = material.subject.toLowerCase().includes(term);
+    const matchByType = material.type.toLowerCase().includes(term);
+
+    return matchByName || matchBySubject || matchByType;
   });
 
   // Kirim data rekomendasi buku ke backend
@@ -90,8 +96,7 @@ const MainMMSection = () => {
         title: formData.judul,
         author: formData.penulis,
         // mapping sederhana kategori → category (bisa diubah sesuai kebutuhan)
-        category:
-          formData.kategori === "Literasi Dasar" ? "fiksi" : "nonfiksi",
+        category: formData.kategori === "Literasi Dasar" ? "fiksi" : "nonfiksi",
         description: formData.deskripsi,
         link: formData.link,
       };
@@ -194,7 +199,7 @@ const MainMMSection = () => {
 
         {filteredMaterials.length === 0 && (
           <div className="text-center col-span-3 text-gray-500">
-            Tidak ada materi untuk filter ini.
+            Tidak ada materi untuk kata kunci atau filter ini.
           </div>
         )}
       </div>
@@ -215,4 +220,3 @@ const MainMMSection = () => {
 };
 
 export default MainMMSection;
-
