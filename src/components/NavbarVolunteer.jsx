@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { HiChevronDown, HiHome, HiBell, HiMenu, HiX } from "react-icons/hi";
 import { useLocation, useNavigate, Link } from "react-router-dom";
+import NotificationDropdown from "./NotificationDropdown";
+import logoImg from "../assets/logo setara.png";
+
 
 export default function NavbarVolunteer() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -42,7 +45,13 @@ export default function NavbarVolunteer() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* LEFT — LOGO */}
         <div className="flex items-center gap-2 cursor-pointer">
-          <h1 className="text-xl font-bold text-[#2C2C2C]">SETARA</h1>
+          {/* LOGO PNG */}
+          <img
+            src={logoImg}
+            alt="SETARA Logo"
+            className="w-8 h-8 object-contain"
+          />
+          <h1 className="text-xl font-bold text-[#FF9500]">SETARA</h1>
         </div>
 
         {/* HAMBURGER MOBILE */}
@@ -94,13 +103,10 @@ export default function NavbarVolunteer() {
             <HiHome size={16} /> Beranda
           </a>
 
-          {/* NOTIF */}
-          <a
-            href="#"
-            className="flex items-center gap-1 hover:text-[#FE9015]"
-          >
-            <HiBell size={16} /> Notifikasi
-          </a>
+          {/* NOTIFICATION DROPDOWN */}
+<div className="relative">
+  <NotificationDropdown />
+</div>
         </div>
 
         {/* RIGHT — PROFILE */}
