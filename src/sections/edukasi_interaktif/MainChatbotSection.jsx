@@ -1,12 +1,8 @@
 // src/sections/edukasi/MainChatbotSection.jsx
 import React, { useState, useEffect } from "react";
 import { FaPaperPlane } from "react-icons/fa";
-<<<<<<< HEAD
-import { kirimPesanKeGemini } from "../../backend/ChatbotApi";
-=======
 import { kirimPesanKeGemini } from '../../backend/ChatbotApi';
 import ReactMarkdown from "react-markdown";
->>>>>>> 7754ba11b8fe44edbcee3c749ebbc20c3d4ef546
 
 const MainChatbot = () => {
   const [input, setInput] = useState("");
