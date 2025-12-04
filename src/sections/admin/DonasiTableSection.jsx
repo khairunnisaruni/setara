@@ -25,7 +25,7 @@ const DonasiTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
 
   // 1. FETCH DATA
   const fetchDonasi = () => {
-    fetch('http://localhost:3000/admin/donations')
+    fetch('http://localhost:5000/admin/donations')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setDonasiList(data);
@@ -62,7 +62,7 @@ const DonasiTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
   const handleEditSubmit = (formData) => {
     if (!selectedDonasi) return;
 
-    const url = `http://localhost:3000/admin/donations/${selectedDonasi.id}`;
+    const url = `http://localhost:5000/admin/donations/${selectedDonasi.id}`;
     const dataToSend = new FormData();
 
     dataToSend.append("title", formData.title);
@@ -91,7 +91,7 @@ const DonasiTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
   // === 2. LOGIKA DELETE ===
   const handleConfirmDelete = () => {
     if (!selectedDonasi) return;
-    fetch(`http://localhost:3000/admin/donations/${selectedDonasi.id}`, { method: 'DELETE' })
+    fetch(`http://localhost:5000/admin/donations/${selectedDonasi.id}`, { method: 'DELETE' })
       .then(res => res.json())
       .then(() => {
         setDonasiList(donasiList.filter(d => d.id !== selectedDonasi.id));
@@ -104,7 +104,7 @@ const DonasiTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
   // === 3. LOGIKA STATUS (APPROVE/REJECT) ===
   const updateStatus = (newStatus) => {
     if(!selectedDonasi) return;
-    fetch(`http://localhost:3000/admin/donations/${selectedDonasi.id}/status`, {
+    fetch(`http://localhost:5000/admin/donations/${selectedDonasi.id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })

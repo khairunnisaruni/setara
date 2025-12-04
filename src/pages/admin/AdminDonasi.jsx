@@ -24,7 +24,7 @@ const DonasiAdmin = () => {
 
   // 1. Hitung Badge Pending
   useEffect(() => {
-    fetch('http://localhost:3000/admin/donations')
+    fetch('http://localhost:5000/admin/donations')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -59,7 +59,7 @@ const DonasiAdmin = () => {
       }
 
       // Fetch POST
-      const response = await fetch('http://localhost:3000/admin/donations', {
+      const response = await fetch('http://localhost:5000/admin/donations', {
         method: 'POST',
         body: dataToSend, // Header Content-Type akan otomatis di-set browser
       });
