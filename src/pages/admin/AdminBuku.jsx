@@ -2,34 +2,82 @@ import { useState, useEffect } from "react";
 import AdminLayout from "../../sections/admin/AdminLayout";
 import TabButton from "../../components/admin/TabButton";
 import ToolbarSection from "../../sections/admin/ToolbarSection";
-import BookTableSection from "../../sections/admin/BookTableSection"; // Tabel yang sudah ada CRUD-nya
+import BookTableSection from "../../sections/admin/BookTableSection"; 
 import Pagination from "../../components/admin/Pagination";
+
+// Import Modal
+import AddBookModal from "../../components/admin/modals/Buku/AddBuku"; 
+import SuccessModal from "../../components/admin/modals/Success";
+import FailedModal from "../../components/admin/modals/Failed";
 
 const Buku = () => {
   const [activeTab, setActiveTab] = useState("daftar");
   const [search, setSearch] = useState("");
-  
-  // 1. State untuk Badge Notifikasi
   const [pendingCount, setPendingCount] = useState(0);
 
-  // 2. Fungsi Hitung Data Pending
-  const fetchPendingCount = () => {
-    fetch('http://localhost:3000/admin/buku') // Endpoint Buku
+  // State Modal & Refresh
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailedModal, setShowFailedModal] = useState(false);
+  
+  // Refresh Trigger untuk memberitahu TableSection agar reload data
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Fetch Pending Count
+  useEffect(() => {
+    fetch('http://localhost:3000/admin/buku') 
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          // Filter hanya yang statusnya 'pending'
           const count = data.filter(b => b.status === 'pending').length;
           setPendingCount(count);
         }
       })
       .catch(err => console.error("Gagal hitung pending:", err));
-  };
+  }, [activeTab, refreshTrigger]); 
 
-  // 3. Jalankan saat halaman dibuka atau tab berubah
-  useEffect(() => {
-    fetchPendingCount();
-  }, [activeTab]); 
+  // ✅ FUNGSI SUBMIT YANG SUDAH DIPERBAIKI
+  const handleAddSubmit = async (formData) => {
+    try {
+      console.log("📦 Mengirim Data Buku...", formData);
+
+      const dataToSend = new FormData();
+      dataToSend.append("title", formData.title);
+      dataToSend.append("author", formData.author);
+      dataToSend.append("description", formData.description);
+      dataToSend.append("link", formData.link);
+      
+      // 🔥 PERBAIKAN: Gunakan 'kategori_id' (bukan category)
+      if(formData.kategori_id) {
+          dataToSend.append("kategori_id", formData.kategori_id);
+      } else {
+          alert("Pilih kategori dulu!");
+          return;
+      }
+      
+      // 🔥 PERBAIKAN: Gunakan 'gambar' (bukan cover/file)
+      if (formData.gambar) {
+        dataToSend.append("gambar", formData.gambar); 
+      }
+
+      const response = await fetch('http://localhost:3000/admin/buku', {
+        method: 'POST',
+        body: dataToSend, 
+      });
+
+      if (!response.ok) throw new Error("Gagal upload buku");
+
+      // Jika Sukses:
+      setRefreshTrigger(prev => prev + 1); // Refresh Tabel
+      setIsAddModalOpen(false); // Tutup Modal Form
+      setShowSuccessModal(true); // Tampilkan Modal Sukses
+
+    } catch (error) {
+      console.error(error);
+      setIsAddModalOpen(false); // Tutup Modal Form
+      setShowFailedModal(true); // Tampilkan Modal Gagal
+    }
+  };
 
   return (
     <AdminLayout>
@@ -51,7 +99,6 @@ const Buku = () => {
             <TabButton
               active={activeTab === "verifikasi"}
               onClick={() => setActiveTab("verifikasi")}
-              // 👇 Tampilkan Badge sesuai jumlah pending (hanya jika > 0)
               badge={pendingCount > 0 ? pendingCount : null}
             >
               Verifikasi Rekomendasi Buku
@@ -59,18 +106,43 @@ const Buku = () => {
           </div>
         </div>
 
-        {/* Toolbar: Search Only (Tombol Tambah sudah ada di dalam TableSection) */}
         <ToolbarSection
           search={search}
           setSearch={setSearch}
           activeTab={activeTab}
+          onAddClick={() => setIsAddModalOpen(true)} 
         />
 
-        {/* Table: Mengurus semua CRUD (Add, Edit, Delete) */}
-        <BookTableSection activeTab={activeTab} search={search} />
+        {/* Kirim refreshTrigger ke TableSection */}
+        <BookTableSection 
+            activeTab={activeTab} 
+            search={search} 
+            key={refreshTrigger} // Trik React: Ganti key agar komponen re-render/fetch ulang
+        />
 
-        {/* Pagination */}
         <Pagination />
+
+        {/* Modal Tambah */}
+        <AddBookModal 
+          isOpen={isAddModalOpen} 
+          onClose={() => setIsAddModalOpen(false)} 
+          onSubmit={handleAddSubmit}
+        />
+
+        {/* Modal Notifikasi */}
+        {showSuccessModal && (
+          <SuccessModal 
+            isOpen={showSuccessModal} 
+            onClose={() => setShowSuccessModal(false)} 
+          />
+        )}
+
+        {showFailedModal && (
+          <FailedModal 
+            isOpen={showFailedModal} 
+            onClose={() => setShowFailedModal(false)} 
+          />
+        )}
 
       </div>
     </AdminLayout>

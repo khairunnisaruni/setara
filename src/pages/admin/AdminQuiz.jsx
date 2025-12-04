@@ -5,27 +5,58 @@ import ToolbarSection from "../../sections/admin/ToolbarSection";
 import QuizTableSection from "../../sections/admin/QuizTableSection"; 
 import Pagination from "../../components/admin/Pagination";
 
+// ✅ 1. Import Modal-modalnya
+import AddQuizModal from "../../components/admin/modals/Quiz/AddQuiz"; // Pastikan path benar
+import SuccessModal from "../../components/admin/modals/Success";
+import FailedModal from "../../components/admin/modals/Failed";
+
 const KuisGame = () => {
   const [activeTab, setActiveTab] = useState("daftar");
   const [search, setSearch] = useState("");
   
-  // 1. State untuk Badge & Refresh Trigger
   const [pendingCount, setPendingCount] = useState(0);
-  const [refreshTrigger, setRefreshTrigger] = useState(0); // Sinyal update dari child
+  
+  // ✅ 2. Tambahkan State Modal & Refresh
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailedModal, setShowFailedModal] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // 2. Fetch Jumlah Pending (Real-time dari DB)
+  // Fetch Pending Count
   useEffect(() => {
-    fetch('http://localhost:3000/admin/quiz') // Pastikan endpoint backend benar
+    fetch('http://localhost:3000/admin/quiz')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          // Hitung data yang statusnya 'pending'
           const count = data.filter(item => item.status === 'pending').length;
           setPendingCount(count);
         }
       })
       .catch(err => console.error("Gagal hitung pending kuis:", err));
-  }, [activeTab, refreshTrigger]); // Refresh saat tab ganti atau ada trigger baru
+  }, [activeTab, refreshTrigger]);
+
+  // ✅ 3. Fungsi Submit ke Backend
+  const handleAddSubmit = async (formData) => {
+    try {
+      const response = await fetch('http://localhost:3000/admin/quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) throw new Error("Gagal tambah kuis");
+
+      // Jika Sukses
+      setRefreshTrigger(prev => prev + 1);
+      setIsAddModalOpen(false);
+      setShowSuccessModal(true);
+
+    } catch (error) {
+      console.error(error);
+      setIsAddModalOpen(false);
+      setShowFailedModal(true);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -47,7 +78,6 @@ const KuisGame = () => {
             <TabButton
               active={activeTab === "verifikasi"}
               onClick={() => setActiveTab("verifikasi")}
-              // 🔥 Badge Dinamis (Bukan angka 5 lagi)
               badge={pendingCount > 0 ? pendingCount : null}
             >
               Verifikasi Kuis & Game
@@ -55,24 +85,44 @@ const KuisGame = () => {
           </div>
         </div>
 
-        {/* Toolbar: Tombol Tambah diurus oleh TableSection */}
+        {/* ✅ 4. Toolbar: Pasang onAddClick */}
         <ToolbarSection
           search={search}
           setSearch={setSearch}
           activeTab={activeTab}
+          onAddClick={() => setIsAddModalOpen(true)} // Pemicu Modal
         />
 
-        {/* Table: Mengurus semua CRUD (Add, Edit, Delete) */}
-        {/* Kita kirim setRefreshTrigger agar tabel bisa update badge di sini */}
+        {/* Table */}
         <QuizTableSection 
             activeTab={activeTab} 
             search={search} 
             refreshTrigger={refreshTrigger}
-            setRefreshTrigger={setRefreshTrigger}
         />
 
         <Pagination />
         
+        {/* ✅ 5. Render Modal Disini */}
+        <AddQuizModal 
+          isOpen={isAddModalOpen} 
+          onClose={() => setIsAddModalOpen(false)} 
+          onSubmit={handleAddSubmit}
+        />
+
+        {showSuccessModal && (
+          <SuccessModal 
+            isOpen={showSuccessModal} 
+            onClose={() => setShowSuccessModal(false)} 
+          />
+        )}
+
+        {showFailedModal && (
+          <FailedModal 
+            isOpen={showFailedModal} 
+            onClose={() => setShowFailedModal(false)} 
+          />
+        )}
+
       </div>
     </AdminLayout>
   );

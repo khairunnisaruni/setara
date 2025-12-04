@@ -78,7 +78,7 @@ const InformasiTableSection = ({ search, refreshTrigger }) => {
         deskripsi_panduan: formData.deskripsi_panduan
     };
     
-    const url = `http://localhost:3000/admin/guides/${selectedInformasi.id}`;
+    const url = `http://localhost:3000/admin/info/${selectedInformasi.id}`;
 
     fetch(url, {
         method: 'PUT',
@@ -98,7 +98,7 @@ const InformasiTableSection = ({ search, refreshTrigger }) => {
   const handleConfirmDelete = () => {
     if (!selectedInformasi) return;
 
-    fetch(`http://localhost:3000/admin/guides/${selectedInformasi.id}`, { method: 'DELETE' })
+    fetch(`http://localhost:3000/admin/info/${selectedInformasi.id}`, { method: 'DELETE' })
     .then(res => res.json())
     .then(() => {
         setPanduanList(panduanList.filter(p => p.id !== selectedInformasi.id));

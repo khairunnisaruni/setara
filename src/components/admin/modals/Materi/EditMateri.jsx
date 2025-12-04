@@ -25,27 +25,63 @@ const EditMateriModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   }, [isOpen]);
 
   // 2. Isi Data (Reset saat Tambah, Isi saat Edit)
+  // ... (import dan state lain tetap sama)
+
+  // 2. ISI DATA (LOGIKA YANG SUDAH DIPERBAIKI)
   useEffect(() => {
-    if (isOpen) {
-      if (initialData) {
-        setFormData({
-          title: initialData.judul || "",
-          description: initialData.description || "",
-          file_type: initialData.jenisFile ? initialData.jenisFile.toLowerCase() : "pdf",
-          youtube_link: initialData.jenisFile === "VIDEO" ? initialData.file_path : "",
-          file_material: null,
-          kategori_id: initialData.original_kategori_id || "",
-          kategori_kelas_id: initialData.original_kelas_id || "",
-        });
-      } else {
-        setFormData({
-          title: "", description: "", file_type: "pdf", youtube_link: "", 
-          file_material: null, kategori_id: "", kategori_kelas_id: ""
-        });
-      }
+    if (isOpen && initialData) {
+      // 🔍 DEBUGGING: Lihat isi data asli di Console Browser (F12)
+      console.log("Data diterima untuk Edit:", initialData); 
+
+      // Tentukan tipe file (mengantisipasi huruf besar/kecil atau nama kolom beda)
+      // Cek apakah kolomnya 'type', 'file_type', atau 'jenis_file'
+      const rawType = initialData.type || initialData.file_type || initialData.jenis_file || "pdf";
+      const fileType = rawType.toLowerCase(); 
+
+      // Tentukan Link Youtube atau File Path
+      // Cek kolom 'file_path', 'link', atau 'url'
+      const rawLink = initialData.file_path || initialData.link || initialData.url || "";
+
+      setFormData({
+        // 1. JUDUL: Cek 'title' atau 'judul'
+        title: initialData.title || initialData.judul || "", 
+        
+        // 2. DESKRIPSI: Cek 'description' atau 'deskripsi'
+        description: initialData.description || initialData.deskripsi || "",
+        
+        // 3. TIPE FILE
+        file_type: fileType,
+        
+        // 4. LINK YOUTUBE (Hanya isi jika tipe video)
+        youtube_link: fileType === "video" ? rawLink : "",
+        
+        // 5. FILE MATERIAL (Selalu null saat edit, user harus upload ulang jika mau ganti)
+        file_material: null, 
+        
+        // 6. KATEGORI (MATA PELAJARAN)
+        // 🔥 PENTING: Dropdown butuh ID, bukan Nama.
+        // Cek 'kategori_id', 'category_id', atau 'id_kategori'
+        kategori_id: initialData.kategori_id || initialData.category_id || initialData.id_kategori || "", 
+        
+        // 7. KELAS
+        // Cek 'kategori_kelas_id', 'class_category_id', atau 'id_kelas'
+        kategori_kelas_id: initialData.kategori_kelas_id || initialData.class_category_id || initialData.id_kelas || "",
+      });
+    } else if (isOpen && !initialData) {
+      // Reset Form untuk Mode Tambah
+      setFormData({
+        title: "", 
+        description: "", 
+        file_type: "pdf", 
+        youtube_link: "", 
+        file_material: null, 
+        kategori_id: "", 
+        kategori_kelas_id: ""
+      });
     }
   }, [isOpen, initialData]);
 
+// ... (sisa kode return dll tetap sama)
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData({ ...formData, [name]: files ? files[0] : value });

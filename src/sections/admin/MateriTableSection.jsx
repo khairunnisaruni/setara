@@ -28,25 +28,38 @@ const MateriTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
     fetch('http://localhost:3000/admin/materials')
       .then(res => res.json())
       .then(data => {
+        // Validasi: Pastikan data adalah array
         if (!Array.isArray(data)) {
+            console.error("Data bukan array:", data);
             setMateriList([]);
             return;
         }
+
         const formattedData = data.map(item => ({
+            // === 1. DATA UNTUK TAMPILAN TABEL (JANGAN DIUBAH SEMBARANGAN) ===
+            // Pastikan key ini sesuai dengan yang dipanggil di <tbody> tabel kamu
             id: item.id,
-            judul: item.title,
-            jenisFile: item.file_type ? item.file_type.toUpperCase() : "-", 
-            kategoriPelajar: item.nama_kelas || "-",
+            title: item.title,      // Tabel biasanya butuh 'title'
+            judul: item.title,      // Cadangan jika tabel pakai 'judul'
+            
             kategori: item.nama_kategori || "-",
+            kelas: item.nama_kelas || "-",          // Tabel biasanya butuh 'kelas'
+            kategoriPelajar: item.nama_kelas || "-", // Cadangan jika tabel pakai ini
+            
+            jenisFile: item.file_type ? item.file_type.toUpperCase() : "-", // Untuk Label Kuning/Biru di tabel
             submitter: item.nama_pengupload || "Admin",
             date: item.created_at,
             status: item.status || "pending",
-            original_kategori_id: item.kategori_id,
-            original_kelas_id: item.kategori_kelas_id,
+
+            // === 2. DATA UNTUK MODAL EDIT (WAJIB ADA) ===
+            // Nama key ini HARUS SAMA dengan yang dicari di EditMateriModal
             description: item.description,
-            file_path: item.file_path,
-            jenisFileOriginal: item.file_type
+            file_type: item.file_type,        // Penting untuk logic Video/PDF
+            file_path: item.file_path,        // Penting untuk link Youtube
+            kategori_id: item.kategori_id,    // Penting untuk Dropdown Mapel
+            kategori_kelas_id: item.kategori_kelas_id // Penting untuk Dropdown Kelas
         }));
+
         setMateriList(formattedData);
       })
       .catch(err => console.error("Gagal ambil materi:", err));
