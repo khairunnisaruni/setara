@@ -1,3 +1,4 @@
+// src/sections/volunteer/ruang_volunteer/MainAGSection.jsx
 import React, { useState } from "react";
 import { HiPlus } from "react-icons/hi";
 import InteractiveCalendar from "../../../components/ruang_volunteer/InteractiveCalendar";
@@ -63,33 +64,60 @@ export default function MainAGSection() {
     lokasi: "",
   });
 
-  const handleSubmitAgenda = () => {
-    const newAgenda = {
-      id: Date.now(),
-      title: formData.judul,
-      deskripsi: formData.deskripsi,
-      lokasi: formData.lokasi,
-      time: formData.waktu,
-      date: convertDateIndo(formData.tanggal),
-      keyDate: convertKey(formData.tanggal),
-      method: formData.lokasi,
-    };
+  const handleSubmitAgenda = async () => {
+    try {
+      // data yang dikirim ke backend (tabel agenda)
+      const payload = {
+        title: formData.judul,
+        description: formData.deskripsi,
+        date: formData.tanggal, // format: YYYY-MM-DD
+        waktu: formData.waktu,  // contoh: "09:00"
+        location: formData.lokasi,
+      };
 
-    setAgendas((prev) => [...prev, newAgenda]);
+      const response = await fetch("http://localhost:5000/api/agenda", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-    setOpenModal(false);
-    setShowNotifAdd(true);
+      if (!response.ok) {
+        throw new Error("Gagal menyimpan agenda");
+      }
 
-    // Reset
-    setFormData({
-      judul: "",
-      deskripsi: "",
-      tanggal: "",
-      waktu: "",
-      lokasi: "",
-    });
+      // kalau backend sukses, baru tambahkan ke state lokal
+      const newAgenda = {
+        id: Date.now(),
+        title: formData.judul,
+        deskripsi: formData.deskripsi,
+        lokasi: formData.lokasi,
+        time: formData.waktu,
+        date: convertDateIndo(formData.tanggal),
+        keyDate: convertKey(formData.tanggal),
+        method: formData.lokasi,
+      };
 
-    setTimeout(() => setShowNotifAdd(false), 2000);
+      setAgendas((prev) => [...prev, newAgenda]);
+
+      setOpenModal(false);
+      setShowNotifAdd(true);
+
+      // Reset
+      setFormData({
+        judul: "",
+        deskripsi: "",
+        tanggal: "",
+        waktu: "",
+        lokasi: "",
+      });
+
+      setTimeout(() => setShowNotifAdd(false), 2000);
+    } catch (error) {
+      console.error("Error saat menyimpan agenda:", error);
+      alert("Gagal menyimpan agenda, cek backend.");
+    }
   };
 
   // ========================================
@@ -208,16 +236,18 @@ export default function MainAGSection() {
   // UI
   // ========================================
   return (
-    <div className="w-full min-h-screen bg-[#F4F0EC] pb-24 px-12 flex flex-col items-center">
+    <div className="w-full min-h-screen bg-[#F4F0EC] pb-24 px-12 flex flex-col items-center pt-12">
+
       {/* HEADER */}
       <div className="text-6xl font-bold text-center flex flex-col items-center gap-y-4 mt-14 p-[42px_128px] rounded-[20px] bg-[linear-gradient(85deg,rgba(255,157,1,0.85)_22.33%,rgba(49,123,116,0.85)_77.67%)]">
-        <span className="bg-white bg-clip-text text-transparent drop-shadow-md">
+        <span className="text-white drop-shadow-lg">
           Agenda
         </span>
         <p className="text-lg font-normal text-white max-w-[60%]">
           Kelola jadwal mengajar dan kegiatan volunteer Anda
         </p>
       </div>
+
 
       {/* MAIN CONTENT */}
       <div className="w-full max-w-7xl mt-10 flex gap-10">

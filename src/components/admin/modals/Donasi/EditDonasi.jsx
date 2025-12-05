@@ -179,6 +179,7 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit, initialData }) => {
           </div>
 
           {/* Tautan */}
+
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Tautan ke sumber resmi donasi
@@ -207,6 +208,7 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               placeholder="Masukkan nama penanggung jawab"
               required
+
             />
           </div>
 
@@ -223,6 +225,7 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               placeholder="No HP / Kontak"
               required
+
             />
           </div>
 
@@ -240,6 +243,7 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               className="bg-amber-400 text-white text-sm px-4 py-1.5 rounded-md font-medium hover:bg-amber-500"
             >
               {initialData ? "Perbarui" : "Simpan"}
+
             </button>
           </div>
         </form>
@@ -249,3 +253,4 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit, initialData }) => {
 };
 
 export default EditDonasiModal;
+

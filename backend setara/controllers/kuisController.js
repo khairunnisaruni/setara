@@ -8,7 +8,7 @@ export const getQuiz = (req, res) => {
     });
 };
 
-export const createQuiz = (req, res) => {
+export const createQuizs = (req, res) => {
     const data = { ...req.body, added_by: 1 }; // Default Admin ID = 1
 
     Kuis.create(data, (err, result) => {

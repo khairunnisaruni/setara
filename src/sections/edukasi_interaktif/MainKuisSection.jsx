@@ -67,16 +67,38 @@ const MainKuisSection = () => {
             <h2 className="text-white text-2xl font-semibold mb-3">Siap Bermain?</h2>
           </div>
           <p className="text-white/90 mb-6">Klik tombol di bawah untuk membuka Kahoot atau Wayground dan mulai membuat kuis interaktif!</p>
+          
           <div className="flex justify-center gap-4">
-              <button className="cursor-pointer flex items-center gap-x-3 bg-white text-[#FF9602] font-semibold px-6 py-2 rounded-xl hover:bg-orange-100 transition">
-                <div className="w-5"><img src="src/assets/SVG (4).png" alt="" /></div>
-                  Buka Kahoot
-              </button>
-              <button className="cursor-pointer flex items-center gap-x-3 bg-white text-[#FF9602] font-semibold px-6 py-2 rounded-xl hover:bg-orange-100 transition">
-                  <div className="w-5"><img src="src/assets/SVG (4).png" alt="" /></div>
-                  Buka Wayground
-              </button>
-          </div>
+          {/* Buka Kahoot */}
+          <a
+            href="https://kahoot.com"
+            target="_blank"
+            rel="noreferrer"
+            className="cursor-pointer flex items-center gap-x-3 bg-white text-[#FF9602] font-semibold px-6 py-2 rounded-xl hover:bg-orange-100 transition"
+          >
+            <div className="w-5">
+              <img src="src/assets/SVG (4).png" alt="" />
+            </div>
+            Buka Kahoot
+          </a>
+
+          {/* Buka Wayground */}
+          <a
+            href="https://wayground.com"
+            target="_blank"
+            rel="noreferrer"
+            className="cursor-pointer flex items-center gap-x-3 bg-white text-[#FF9602] font-semibold px-6 py-2 rounded-xl hover:bg-orange-100 transition"
+          >
+            <div className="w-5">
+              <img src="src/assets/SVG (4).png" alt="" />
+            </div>
+            Buka Wayground
+          </a>
+        </div>
+
+
+
+
         </section>
             
        {/* Daftar Kuis */}

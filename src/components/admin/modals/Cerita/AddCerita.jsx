@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 
 const AddCeritaModal = ({ isOpen, onClose, onSubmit }) => {
@@ -21,6 +22,7 @@ const AddCeritaModal = ({ isOpen, onClose, onSubmit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
+
   };
 
   if (!isOpen) return null;
@@ -86,3 +88,4 @@ const AddCeritaModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 export default AddCeritaModal;
+

@@ -1,3 +1,6 @@
+
+// src/components/admin/modals/Quiz/AddQuiz.jsx
+
 import { useState } from "react";
 import { Upload } from "lucide-react";
 import FailedModal from "../../modals/Failed";

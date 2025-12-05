@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Upload } from "lucide-react";
 
 const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
+
   // 1. State untuk Form
   const [formData, setFormData] = useState({
     title: "",
@@ -51,6 +52,7 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
             link: "",
             gambar: null
         });
+
     }
   }, [isOpen, initialData]);
 
@@ -72,6 +74,7 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
       <div className="bg-white rounded-xl p-4 w-full max-w-md shadow-lg">
+
         <h2 className="text-lg font-semibold mb-3 text-gray-800">
           {initialData ? "Perbarui Rekomendasi Buku" : "Tambah Buku Baru"}
         </h2>
@@ -81,25 +84,30 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
           {/* Judul Buku */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Judul Buku</label>
+
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
+
               className="w-full p-2 border border-gray-300 rounded-md text-sm"
               placeholder="Masukkan judul buku"
               required
+
             />
           </div>
 
           {/* Penulis Buku */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Penulis Buku</label>
+
             <input
               type="text"
               name="author"
               value={formData.author}
               onChange={handleChange}
+
               className="w-full p-2 border border-gray-300 rounded-md text-sm"
               placeholder="Masukkan nama penulis"
               required
@@ -125,17 +133,20 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                 </option>
               ))}
 
+
             </select>
           </div>
 
           {/* Deskripsi */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Deskripsi</label>
+
             <textarea
               name="description"
               rows="3"
               value={formData.description}
               onChange={handleChange}
+
               className="w-full p-2 border border-gray-400 rounded-md text-sm"
               placeholder="Deskripsi singkat"
             />
@@ -152,12 +163,14 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                 onChange={handleChange}
                 className="hidden"
                 accept="image/*"
+
               />
               <label
                 htmlFor="edit-book-file-upload"
                 className="flex items-center gap-2 border border-gray-400 rounded-md px-3 py-1.5 cursor-pointer text-gray-600 hover:bg-gray-50"
               >
                 <Upload className="w-4 h-4 text-gray-500" />
+
                 {formData.gambar ? formData.gambar.name : "Pilih File Baru (Opsional)"}
               </label>
             </div>
@@ -169,6 +182,7 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
           {/* Tautan */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Tautan Buku</label>
+
             <input
               type="url"
               name="link"
@@ -187,6 +201,7 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
             </button>
           </div>
 
+
         </form>
       </div>
     </div>
@@ -194,3 +209,4 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
 };
 
 export default EditBookModal;
+

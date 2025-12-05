@@ -23,7 +23,6 @@ const SuccessModal = ({ isOpen, onClose }) => {
         >
           Oke, Mengerti
         </button>
-        
       </div>
     </div>
   );

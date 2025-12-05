@@ -1,3 +1,4 @@
+
 import { XCircle, AlertTriangle } from "lucide-react";
 
 const RejectedModal = ({ isOpen, onClose, onConfirm }) => {

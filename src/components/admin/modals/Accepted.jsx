@@ -1,3 +1,4 @@
+
 import { CheckCircle, HelpCircle } from "lucide-react";
 
 const AcceptedModal = ({ isOpen, onClose, onConfirm }) => {
@@ -43,6 +44,7 @@ const AcceptedModal = ({ isOpen, onClose, onConfirm }) => {
               Ya, Setujui
             </button>
           </div>
+
         </div>
       </div>
     </div>

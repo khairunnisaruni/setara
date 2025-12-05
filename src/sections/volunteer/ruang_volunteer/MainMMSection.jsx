@@ -1,7 +1,8 @@
+// src/sections/volunteer/ruang_volunteer/MainMMSection.jsx
+import React, { useState } from "react";
 import CardMateri from "../../../components/ruang_volunteer/CardMateri";
 import FilterMateri from "../../../components/ruang_volunteer/FilterMateri";
-import React, { useState } from "react";
-import ModalTambahBuku from "../../../components/ruang_volunteer/ModalTambahBuku";
+import ModalTambahMateri from "../../../components/ruang_volunteer/ModalTambahMateri";
 import SuccessPopup from "../../../components/ruang_volunteer/notification/SuccessPopup";
 
 const allMaterials = [
@@ -45,9 +46,10 @@ const allMaterials = [
 
 const MainMMSection = () => {
   const [activeFilter, setActiveFilter] = useState("Semua");
+  const [search, setSearch] = useState("");
 
-  // ✅ state untuk modal
   const [isOpen, setIsOpen] = useState(false);
+  const [showNotif, setShowNotif] = useState(false);
 
   const [formData, setFormData] = useState({
     judul: "",
@@ -57,28 +59,6 @@ const MainMMSection = () => {
     sampul: null,
     link: "",
   });
-
-  const [showNotif, setShowNotif] = useState(false);
-
-  // ✅ fungsi submit
-  const handleSubmit = () => {
-    console.log("Materi Baru:", formData);
-
-    setIsOpen(false);
-    setShowNotif(true);
-
-    // reset form
-    setFormData({
-      judul: "",
-      penulis: "",
-      kategori: "",
-      deskripsi: "",
-      sampul: null,
-      link: "",
-    });
-
-    setTimeout(() => setShowNotif(false), 2500);
-  };
 
   const filters = [
     { name: "Semua", value: "Semua", total: 14 },
@@ -91,11 +71,67 @@ const MainMMSection = () => {
   ];
 
   const filteredMaterials = allMaterials.filter((material) => {
-    if (activeFilter === "Semua") return true;
-    return material.type === activeFilter;
+    // filter berdasarkan tombol SD 1 / SD 2 / dst
+    if (activeFilter !== "Semua" && material.type !== activeFilter) {
+      return false;
+    }
+
+    // kalau search kosong, cukup cek filter kelas saja
+    if (!search.trim()) return true;
+
+    const term = search.toLowerCase();
+
+    // cek di: nama modul, mapel, dan kelas
+    const matchByName = material.name.toLowerCase().includes(term);
+    const matchBySubject = material.subject.toLowerCase().includes(term);
+    const matchByType = material.type.toLowerCase().includes(term);
+
+    return matchByName || matchBySubject || matchByType;
   });
 
-  const [search, setSearch] = useState("");
+  // Kirim data rekomendasi buku ke backend
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        title: formData.judul,
+        author: formData.penulis,
+        // mapping sederhana kategori → category (bisa diubah sesuai kebutuhan)
+        category: formData.kategori === "Literasi Dasar" ? "fiksi" : "nonfiksi",
+        description: formData.deskripsi,
+        link: formData.link,
+      };
+
+      const response = await fetch("http://localhost:5000/api/books", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal menyimpan buku");
+      }
+
+      setIsOpen(false);
+      setShowNotif(true);
+
+      // reset form
+      setFormData({
+        judul: "",
+        penulis: "",
+        kategori: "",
+        deskripsi: "",
+        sampul: null,
+        link: "",
+      });
+
+      setTimeout(() => setShowNotif(false), 2500);
+    } catch (error) {
+      console.error("Error saat menyimpan buku:", error);
+      alert("Gagal menyimpan buku, cek console backend.");
+    }
+  };
 
   return (
     <div className="flex flex-col items-center gap-y-7 py-20 px-12">
@@ -111,8 +147,8 @@ const MainMMSection = () => {
         </div>
 
         <div className="flex max-w-[55%] text-lg font-normal text-white text-center flex-col items-center font-sans">
-          Akses berbagai format materi pembelajaran yang siap digunakan dalam
-          kegiatan mengajar
+          Akses berbagai format materi pembelajaran yang siap digunakan
+          dalam kegiatan mengajar
         </div>
       </div>
 
@@ -151,6 +187,7 @@ const MainMMSection = () => {
         {filteredMaterials.map((material) => (
           <CardMateri
             key={material.id}
+            id={material.id}
             name={material.name}
             subject={material.subject}
             type={material.type}
@@ -162,13 +199,13 @@ const MainMMSection = () => {
 
         {filteredMaterials.length === 0 && (
           <div className="text-center col-span-3 text-gray-500">
-            Tidak ada materi untuk filter ini.
+            Tidak ada materi untuk kata kunci atau filter ini.
           </div>
         )}
       </div>
 
       {/* MODAL ADD MATERI */}
-      <ModalTambahBuku
+      <ModalTambahMateri
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         formData={formData}
@@ -177,7 +214,7 @@ const MainMMSection = () => {
       />
 
       {/* POPUP SUKSES */}
-      <SuccessPopup show={showNotif} entity="Materi Multimedia" />
+      <SuccessPopup show={showNotif} entity="Rekomendasi Buku" />
     </div>
   );
 };

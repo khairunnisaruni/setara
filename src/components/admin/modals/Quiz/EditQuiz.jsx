@@ -169,6 +169,7 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                   {item.nama}
                 </option>
               ))}
+
             </select>
           </div>
 
@@ -220,3 +221,4 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
 };
 
 export default EditQuizModal;
+

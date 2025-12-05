@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 
 const AddInformasiModal = ({ isOpen, onClose, onSubmit }) => {
@@ -29,6 +30,7 @@ const AddInformasiModal = ({ isOpen, onClose, onSubmit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData); 
+
   };
 
   if (!isOpen) return null;
@@ -98,3 +100,4 @@ const AddInformasiModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 export default AddInformasiModal;
+

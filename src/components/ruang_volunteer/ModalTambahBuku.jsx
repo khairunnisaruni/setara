@@ -14,7 +14,7 @@ export default function ModalTambahBuku({
     "px-4 py-2 bg-[#FFF7E8] border border-gray-300 rounded-md text-sm outline-none w-full";
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[999]">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-999">
       {/* ✅ container sesuai request */}
       <div className="bg-white w-full max-w-[450px] rounded-2xl shadow-xl max-h-[90vh] flex flex-col animate-fadeIn">
         {/* HEADER */}

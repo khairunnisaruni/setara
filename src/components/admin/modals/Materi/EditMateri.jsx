@@ -163,6 +163,7 @@ const EditMateriModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                     {listKelas.map(k => <option key={k.id} value={k.id}>{k.nama}</option>)}
                 </select>
              </div>
+
           </div>
 
           {/* Deskripsi */}
@@ -175,6 +176,7 @@ const EditMateriModal = ({ isOpen, onClose, onSubmit, initialData }) => {
           <div className="flex justify-end gap-2 mt-4">
             <button type="button" onClick={onClose} className="text-amber-500 text-sm px-4 py-1.5 rounded-md font-medium border border-gray-200 hover:bg-amber-50">Batal</button>
             <button type="submit" className="bg-amber-400 text-white text-sm px-4 py-1.5 rounded-md font-medium hover:bg-amber-500">{initialData ? "Simpan" : "Tambah"}</button>
+
           </div>
         </form>
       </div>

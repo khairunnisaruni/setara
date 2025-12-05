@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 
 const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
@@ -23,6 +24,7 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
     }
   }, [isOpen]);
 
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData({
@@ -35,6 +37,7 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
     e.preventDefault();
     // Kirim data ke Parent (DonasiTableSection)
     onSubmit(formData);
+
   };
 
   if (!isOpen) return null;
@@ -209,3 +212,4 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 export default AddDonasiModal;
+

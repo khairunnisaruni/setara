@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Upload } from "lucide-react";
 
@@ -29,6 +30,7 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
     }
   }, [isOpen]);
 
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData({
@@ -46,6 +48,7 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
     setFormData({
         title: "", author: "", kategori_id: "", description: "", link: "", gambar: null
     });
+
   };
 
   if (!isOpen) return null;
@@ -117,3 +120,4 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 export default AddBookModal;
+

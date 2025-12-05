@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 
+
 const EditCeritaModal = ({ isOpen, onClose, onSubmit, initialData }) => {
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -28,6 +30,7 @@ const EditCeritaModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData); // Kirim data ke Parent
+
   };
 
   if (!isOpen) return null;
@@ -43,12 +46,14 @@ const EditCeritaModal = ({ isOpen, onClose, onSubmit, initialData }) => {
           {/* Judul */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Judul Cerita</label>
+
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm"
+
               placeholder="Masukkan judul cerita"
               required
             />
@@ -57,6 +62,7 @@ const EditCeritaModal = ({ isOpen, onClose, onSubmit, initialData }) => {
           {/* Deskripsi */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Deskripsi Cerita</label>
+
             <textarea
               name="description"
               rows="4"
@@ -64,6 +70,7 @@ const EditCeritaModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm"
               placeholder="Tuliskan isi cerita..."
+
               required
             />
           </div>
@@ -74,6 +81,7 @@ const EditCeritaModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               type="button"
               onClick={onClose}
               className="text-amber-500 text-sm px-4 py-1.5 rounded-md border border-gray-200 hover:bg-amber-50"
+
             >
               Batal
             </button>
@@ -82,6 +90,7 @@ const EditCeritaModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               className="bg-amber-400 text-white text-sm px-4 py-1.5 rounded-md hover:bg-amber-500"
             >
               Simpan
+
             </button>
           </div>
         </form>

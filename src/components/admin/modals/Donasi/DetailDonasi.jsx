@@ -106,3 +106,4 @@ const DetailDonasi = ({ isOpen, onClose, donasi }) => {
 };
 
 export default DetailDonasi;
+

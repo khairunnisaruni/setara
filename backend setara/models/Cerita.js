@@ -1,8 +1,10 @@
-// models/Cerita.js
+
+// backend_setara/models/Cerita.js
 import db from "../config/db.js";
 
 const Cerita = {
-    getAll: (callback) => {
+
+  getAlls: (callback) => {
         const sql = `
             SELECT 
                 cerita.*, 
@@ -14,7 +16,7 @@ const Cerita = {
         db.query(sql, callback);
     },
 
-    create: (data, callback) => {
+    creates: (data, callback) => {
         // Kita tampung 'content' atau 'deskripsi' (jaga-jaga nama field di frontend beda)
         const title = data.title;
         const content = data.content || data.description; 
@@ -29,7 +31,7 @@ const Cerita = {
         db.query(sql, [title, content, user_id], callback);
     },
 
-    update: (id, data, callback) => {
+    updates: (id, data, callback) => {
         const title = data.title;
         const content = data.content || data.description; // Handle jika frontend kirim 'description'
 
@@ -37,15 +39,35 @@ const Cerita = {
         db.query(sql, [title, content, id], callback);
     },
 
-    delete: (id, callback) => {
+    deletes: (id, callback) => {
         const sql = "DELETE FROM cerita WHERE id = ?";
         db.query(sql, [id], callback);
     },
 
-    updateStatus: (id, status, callback) => {
+    updateStatuss: (id, status, callback) => {
         const sql = "UPDATE cerita SET status = ?, approved_at = NOW() WHERE id = ?";
         db.query(sql, [status, id], callback);
-    }
+    },
+
+
+  create: (data, callback) => {
+    const { title, content, user_id, status, approved_at } = data;
+
+    const sql = `
+      INSERT INTO cerita
+      (title, content, user_id, status, approved_at)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+      sql,
+      [title, content, user_id, status, approved_at],
+      (err, results) => {
+        if (err) return callback(err, null);
+        callback(null, { id: results.insertId, ...data });
+      }
+    );
+  },
 };
 
 export default Cerita;

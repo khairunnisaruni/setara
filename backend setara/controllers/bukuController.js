@@ -8,7 +8,7 @@ export const getBooks = (req, res) => {
     });
 };
 
-export const createBook = (req, res) => {
+export const createBooks = (req, res) => {
     // Ambil nama file gambar jika ada upload
     const gambar = req.file ? req.file.filename : null;
     const data = { ...req.body, added_by: 1 }; // Default Admin ID = 1
