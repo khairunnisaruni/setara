@@ -12,7 +12,7 @@ export const createCerita = (req, res) => {
         .json({ message: "Judul dan isi cerita wajib diisi." });
     }
 
-    const user_id = 1;
+    const user_id = req.user.id; // pemilik cerita
     const status = "pending";
     const approved_at = null;
 
@@ -40,7 +40,6 @@ export const createCerita = (req, res) => {
 
 /**
  * GET /api/cerita/approved
- * Ambil semua cerita yang sudah disetujui admin (status = 'approved')
  */
 export const getApprovedCerita = (req, res) => {
   const sql = `

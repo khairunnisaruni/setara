@@ -38,7 +38,7 @@ const mapClassToKelasId = (classCategory) => {
   }
 };
 
-// ===== GET /api/kuis -> semua kuis (opsional, untuk admin) =====
+// GET /api/kuis
 export const getAllQuizzes = (req, res) => {
   const sql = "SELECT * FROM kuis ORDER BY created_at DESC";
 
@@ -51,7 +51,7 @@ export const getAllQuizzes = (req, res) => {
   });
 };
 
-// ===== GET /api/kuis/approved -> hanya kuis yang sudah disetujui admin =====
+// GET /api/kuis/approved
 export const getApprovedQuizzes = (req, res) => {
   const sql = `
     SELECT
@@ -82,7 +82,7 @@ export const getApprovedQuizzes = (req, res) => {
   });
 };
 
-// ===== POST /api/kuis -> tambah kuis baru =====
+// POST /api/kuis
 export const createQuiz = (req, res) => {
   const {
     title,
@@ -93,22 +93,18 @@ export const createQuiz = (req, res) => {
     classCategory,
   } = req.body;
 
-  // Validasi dasar
   if (!title || !platform || !link) {
     return res
       .status(400)
       .json({ message: "Title, platform, dan link wajib diisi" });
   }
 
-  // Path file gambar (kalau ada upload)
   const gambar = req.file ? `/uploads/kuis/${req.file.filename}` : null;
 
-  // Mapping kategori string -> id int
   const kategori_id = mapSubjectToCategoryId(subjectCategory);
   const kategori_kelas_id = mapClassToKelasId(classCategory);
 
-  // TODO: nanti kalau sudah ada auth, isi dari req.user.id
-  const added_by = null;
+  const added_by = req.user.id; // pemilik kuis
 
   const sql = `
     INSERT INTO kuis
@@ -134,7 +130,6 @@ export const createQuiz = (req, res) => {
       return res.status(500).json({ message: "Gagal menyimpan kuis" });
     }
 
-    // Frontend pakai fetch, jadi kirim JSON, bukan redirect
     return res.status(201).json({ id: result.insertId });
   });
 };

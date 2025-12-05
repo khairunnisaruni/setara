@@ -1,3 +1,4 @@
+// src/sections/volunteer/ruang_volunteer/MainCLSection.jsx
 import React, { useState, useEffect } from "react";
 import CardCerita from "../../../components/ruang_volunteer/CardCerita";
 import ModalCerita from "../../../components/ruang_volunteer/ModalCerita";
@@ -87,21 +88,38 @@ const MainCLSection = () => {
   // submit: kirim ke backend /api/cerita (status masih pending)
   const handleSubmit = async () => {
     try {
+      if (!judul || !cerita) {
+        alert("Judul dan cerita wajib diisi.");
+        return;
+      }
+
       const payload = {
         title: judul,
         content: cerita,
       };
 
+      // 🔹 ambil token dari localStorage (ganti 'token' kalau key-nya beda)
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert(
+          "Tidak ada token. Kamu mungkin belum login / session habis. Silakan login ulang."
+        );
+        return;
+      }
+
       const response = await fetch("http://localhost:5000/api/cerita", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ← kirim JWT ke backend
         },
         body: JSON.stringify(payload),
       });
 
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error("Gagal menyimpan cerita");
+        console.error("Respon gagal dari backend cerita:", data);
+        throw new Error(data.message || "Gagal menyimpan cerita");
       }
 
       setIsOpen(false);
@@ -169,9 +187,7 @@ const MainCLSection = () => {
         onClose={() => setOpenDetail(false)}
         data={selectedStory}
         isLiked={selectedStory && likedStories[selectedStory.id]}
-        onToggleLike={() =>
-          selectedStory && toggleLike(selectedStory.id)
-        }
+        onToggleLike={() => selectedStory && toggleLike(selectedStory.id)}
       />
 
       {/* LIST CERITA */}

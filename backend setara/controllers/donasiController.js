@@ -1,7 +1,7 @@
-// controllers/donasiController.js
+// backend_setara/controllers/donasiController.js
 import db from "../config/db.js";
 
-// CREATE: simpan donasi baru (sudah ada)
+// CREATE: simpan donasi baru
 const createDonasi = (req, res) => {
   const {
     title,
@@ -15,6 +15,7 @@ const createDonasi = (req, res) => {
   } = req.body;
 
   const posterFile = req.file ? req.file.filename : null;
+  const added_by = req.user.id; // user yang menambah donasi
 
   const sql = `
     INSERT INTO donasi
@@ -41,7 +42,7 @@ const createDonasi = (req, res) => {
     link,
     responsible,
     contact,
-    null,
+    added_by,
   ];
 
   db.query(sql, values, (err, result) => {
@@ -57,7 +58,7 @@ const createDonasi = (req, res) => {
   });
 };
 
-// READ: ambil semua donasi (untuk admin, dll)
+// READ: ambil semua donasi
 const getDonasi = (req, res) => {
   const sql = `
     SELECT id, title, kategori, penerima_manfaat, description,

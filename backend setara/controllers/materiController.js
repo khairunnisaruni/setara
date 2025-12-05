@@ -69,7 +69,6 @@ export const createMateri = async (req, res) => {
       fileType,
     } = req.body;
 
-    // Kalau masih tidak ada file -> kirim pesan ini
     if (!req.file) {
       return res.status(400).json({
         message:
@@ -78,7 +77,6 @@ export const createMateri = async (req, res) => {
     }
 
     const uploadedFile = req.file;
-
     const safeTitle = title && title.trim() ? title.trim() : "Tanpa Judul";
 
     let mappedFileType = mapFileTypeFromBody(fileType);
@@ -88,7 +86,7 @@ export const createMateri = async (req, res) => {
 
     const kategoriKelasId = mapClassCategoryToId(classCategory);
     const kategoriId = mapMaterialCategoryToId(materialCategory);
-    const uploadedBy = null;
+    const uploadedBy = req.user.id; // user yang upload materi
 
     const filePath = `/uploads/materi/${uploadedFile.filename}`;
 
@@ -135,7 +133,7 @@ export const createMateri = async (req, res) => {
   }
 };
 
-// ===== LIST MATERI APPROVED (UNTUK CARD) =====
+// ===== LIST MATERI APPROVED =====
 export const getApprovedMateri = (req, res) => {
   const sql = `
     SELECT
@@ -191,13 +189,11 @@ export const downloadMateri = (req, res) => {
 
     const materi = rows[0];
 
-    // file_path disimpan seperti: /uploads/materi/xxxxx.pdf
     const relativePath =
       materi.file_path && materi.file_path.startsWith("/")
         ? materi.file_path.slice(1)
         : materi.file_path;
 
-    // absolute path: backend_setara/uploads/materi/xxxxx.pdf
     const absolutePath = path.join(__dirname, "..", relativePath);
 
     if (!fs.existsSync(absolutePath)) {

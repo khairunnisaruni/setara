@@ -1,9 +1,7 @@
-
 // src/sections/referensi_aksi/HeroDonasi.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import AddDonasiModal from "../../components/referensi_aksi/AddDonasiModal";
-
 
 /* Popup sukses */
 const SuccessModal = ({ isOpen, onClose }) => {
@@ -11,9 +9,7 @@ const SuccessModal = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-2xl shadow-lg px-6 py-5 max-w-sm w-full text-center">
-        <h3 className="text-lg font-semibold text-green-700 mb-2">
-          Berhasil
-        </h3>
+        <h3 className="text-lg font-semibold text-green-700 mb-2">Berhasil</h3>
         <p className="text-sm text-gray-600 mb-4">
           Program donasi berhasil ditambahkan.
         </p>
@@ -29,16 +25,13 @@ const SuccessModal = ({ isOpen, onClose }) => {
   );
 };
 
-
 /* Popup gagal */
 const FailedModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-2xl shadow-lg px-6 py-5 max-w-sm w-full text-center">
-        <h3 className="text-lg font-semibold text-red-600 mb-2">
-          Gagal
-        </h3>
+        <h3 className="text-lg font-semibold text-red-600 mb-2">Gagal</h3>
         <p className="text-sm text-gray-600 mb-4">
           Terjadi kesalahan saat menyimpan donasi. Coba lagi nanti.
         </p>
@@ -54,12 +47,10 @@ const FailedModal = ({ isOpen, onClose }) => {
   );
 };
 
-
 const HeroDonasi = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFailedModal, setShowFailedModal] = useState(false);
-
 
   // dipanggil dari AddDonasiModal
   const handleSubmitDonasi = async (formData) => {
@@ -70,22 +61,32 @@ const HeroDonasi = () => {
       }
     });
 
-
     try {
-      await axios.post("http://localhost:5000/api/donasi", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // 🔹 Ambil token dari localStorage
+      // GANTI "token" jika di Login.jsx kamu pakai key lain (mis. "accessToken")
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert(
+          "Tidak ada token. Kamu mungkin belum login atau sesi sudah habis. Silakan login ulang."
+        );
+        return;
+      }
 
+      await axios.post("http://localhost:5000/api/donasi", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, // kirim JWT ke backend
+        },
+      });
 
       setIsModalOpen(false);
       setShowSuccessModal(true);
     } catch (error) {
-      console.error("Gagal kirim donasi:", error);
+      console.error("Gagal kirim donasi:", error?.response?.data || error);
       setIsModalOpen(false);
       setShowFailedModal(true);
     }
   };
-
 
   return (
     <>
@@ -114,7 +115,6 @@ const HeroDonasi = () => {
           </svg>
         </div>
 
-
         <h1 className="text-3xl md:text-4xl font-bold text-[#317B74]">
           Bersama Wujudkan Akses Pendidikan yang Setara
         </h1>
@@ -122,7 +122,6 @@ const HeroDonasi = () => {
           Dukung sekolah-sekolah yang membutuhkan bantuan fasilitas, buku, dan
           sarana belajar.
         </p>
-
 
         <div className="flex justify-center gap-4">
           <button
@@ -134,8 +133,7 @@ const HeroDonasi = () => {
             className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg transition-all"
           >
             Lihat Daftar Donasi
-          </button>d
-
+          </button>
 
           <button
             onClick={() => setIsModalOpen(true)}
@@ -144,7 +142,6 @@ const HeroDonasi = () => {
             + Tambahkan Program Donasi
           </button>
         </div>
-
 
         {/* Modal Donasi */}
         {isModalOpen && (
@@ -155,7 +152,6 @@ const HeroDonasi = () => {
           />
         )}
       </section>
-
 
       {/* Popup sukses / gagal */}
       <SuccessModal
@@ -169,6 +165,5 @@ const HeroDonasi = () => {
     </>
   );
 };
-
 
 export default HeroDonasi;

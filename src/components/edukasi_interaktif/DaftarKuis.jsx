@@ -75,8 +75,18 @@ const DaftarKuis = () => {
       body.append("file", formData.file);
     }
 
+    // 🔹 Ambil token dari localStorage, sama seperti bagian lain (materi, donasi, dll)
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // ini yang muncul di console: "Tidak ada token, akses ditolak"
+      throw new Error("Tidak ada token, akses ditolak");
+    }
+
     const res = await fetch("http://localhost:5000/api/kuis", {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`, // kirim JWT ke backend
+      },
       body,
     });
 

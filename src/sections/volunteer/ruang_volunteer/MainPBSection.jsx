@@ -86,7 +86,7 @@ const MainPBSection = () => {
         title: row.title,
         category: mapKategoriLabel(row.kategori_id),
         desc: row.description || "",
-        cover: row.gambar || "", // sementara kosong -> No Cover
+        cover: row.gambar || "",
         penulis: row.author || "",
         link: row.link || "",
       }));
@@ -119,7 +119,7 @@ const MainPBSection = () => {
     );
   });
 
-  // fungsi submit: kirim ke backend
+  // fungsi submit: kirim ke backend (sudah pakai Bearer token)
   const handleSubmit = async () => {
     try {
       const payload = {
@@ -131,16 +131,26 @@ const MainPBSection = () => {
         link: formData.link,
       };
 
+      // ambil token dari localStorage (diset waktu login)
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Kamu belum login. Silakan login dulu.");
+        return;
+      }
+
       const response = await fetch("http://localhost:5000/api/books", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // penting supaya tidak 401
         },
         body: JSON.stringify(payload),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Gagal menyimpan buku");
+        throw new Error(data.message || "Gagal menyimpan buku");
       }
 
       setIsOpen(false);
@@ -156,7 +166,7 @@ const MainPBSection = () => {
         link: "",
       });
 
-      // refresh daftar buku approved (kalau sudah di-approve admin, nanti akan muncul)
+      // refresh daftar buku approved
       fetchApprovedBooks();
 
       setTimeout(() => {
@@ -164,7 +174,7 @@ const MainPBSection = () => {
       }, 2500);
     } catch (error) {
       console.error("Error saat menyimpan buku:", error);
-      alert("Gagal menyimpan buku, cek backend.");
+      alert(error.message || "Gagal menyimpan buku, cek backend.");
     }
   };
 

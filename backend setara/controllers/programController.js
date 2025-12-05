@@ -3,7 +3,6 @@ import db from "../config/db.js";
 
 /**
  * GET /api/programs/approved
- * Ambil semua program yang sudah disetujui admin (status = 'approved')
  */
 export const getApprovedPrograms = (req, res) => {
   const sql = `
@@ -42,7 +41,6 @@ export const getApprovedPrograms = (req, res) => {
 
 /**
  * GET /api/programs
- * Ambil semua program (misalnya untuk admin)
  */
 export const getAllPrograms = (req, res) => {
   const sql = `
@@ -80,23 +78,21 @@ export const getAllPrograms = (req, res) => {
 
 /**
  * POST /api/programs
- * Tambah program baru (dari form di HeaderProgramSection)
  */
 export const createProgram = (req, res) => {
   try {
     const {
-      title,          // judul program
-      organizer,      // penyelenggara
-      type,           // jenis program (Volunteer / Beasiswa / dll)
-      location,       // lokasi_program
-      description,    // deskripsi_program
-      period,         // periode_tanggal
-      deadline,       // deadline_pendaftaran
-      statusProgram,  // status_program (akan datang / sedang dibuka / selesai)
-      sourceLink,     // tautan_sumber_resmi
+      title,
+      organizer,
+      type,
+      location,
+      description,
+      period,
+      deadline,
+      statusProgram,
+      sourceLink,
     } = req.body;
 
-    // Validasi sederhana
     if (!title || !organizer || !type || !sourceLink) {
       return res.status(400).json({
         message:
@@ -104,9 +100,9 @@ export const createProgram = (req, res) => {
       });
     }
 
-    const poster_banner = null; // bisa diisi upload nanti
-    const added_by = 1;         // sementara hardcode
-    const status = "pending";   // butuh persetujuan admin
+    const poster_banner = null;
+    const added_by = req.user.id; // dari token user yang login
+    const status = "pending";
 
     const sql = `
       INSERT INTO programs (
@@ -143,9 +139,7 @@ export const createProgram = (req, res) => {
     db.query(sql, params, (err, result) => {
       if (err) {
         console.error("Error insert program:", err);
-        return res
-          .status(500)
-          .json({ message: "Gagal menyimpan program" });
+        return res.status(500).json({ message: "Gagal menyimpan program" });
       }
 
       return res.status(201).json({

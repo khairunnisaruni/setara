@@ -2,7 +2,7 @@
 import Book from "../models/Book.js";
 import db from "../config/db.js";
 
-// CREATE (sudah ada, biarkan persis seperti sekarang)
+// CREATE
 export const createBook = (req, res) => {
   try {
     const { title, author, category, description, link } = req.body;
@@ -17,7 +17,7 @@ export const createBook = (req, res) => {
     if (category === "fiksi") kategori_id = 1;
     else if (category === "nonfiksi") kategori_id = 2;
 
-    const added_by = 1;
+    const added_by = req.user.id; // user yang menambah rekomendasi buku
     const status = "pending";
     const gambar = null;
 
@@ -44,7 +44,6 @@ export const createBook = (req, res) => {
 
 /**
  * GET /api/books/approved
- * Ambil semua buku rekomendasi yang sudah disetujui admin (status = 'approved')
  */
 export const getApprovedBooks = (req, res) => {
   const sql = `

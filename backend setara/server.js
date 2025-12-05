@@ -11,6 +11,7 @@ import programRoutes from "./routes/programRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import donasiRoutes from "./routes/donasiRoutes.js";
 import materialRoutes from "./routes/materialRoutes.js"; // route materi multimedia
+import notificationRoutes from "./routes/notificationRoutes.js";
 import "./config/db.js";
 
 dotenv.config();
@@ -39,6 +40,7 @@ app.use("/api/agenda", agendaRoutes);
 app.use("/api/programs", programRoutes);
 app.use("/api/kuis", quizRoutes);
 app.use("/api/donasi", donasiRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // route baru materi multimedia
 app.use("/api/materials", materialRoutes);

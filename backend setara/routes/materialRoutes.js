@@ -6,16 +6,12 @@ import {
   getApprovedMateri,
   downloadMateri,
 } from "../controllers/materiController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Upload materi
-router.post("/", uploadMateri.single("file"), createMateri);
-
-// Ambil hanya materi yang sudah approved
+router.post("/", protect, uploadMateri.single("file"), createMateri);
 router.get("/approved", getApprovedMateri);
-
-// Download file materi by id
 router.get("/:id/download", downloadMateri);
 
 export default router;

@@ -66,25 +66,43 @@ export default function MainAGSection() {
 
   const handleSubmitAgenda = async () => {
     try {
+      // Validasi sederhana
+      if (!formData.judul || !formData.tanggal || !formData.waktu) {
+        alert("Judul, tanggal, dan waktu wajib diisi.");
+        return;
+      }
+
       // data yang dikirim ke backend (tabel agenda)
       const payload = {
         title: formData.judul,
         description: formData.deskripsi,
         date: formData.tanggal, // format: YYYY-MM-DD
-        waktu: formData.waktu,  // contoh: "09:00"
+        waktu: formData.waktu, // contoh: "09:00"
+        // optional: kalau backend kamu pakai 'time', kirim juga:
+        time: formData.waktu,
         location: formData.lokasi,
       };
+
+      // 🔹 ambil token dari localStorage (ganti 'token' kalau key-nya beda)
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Tidak ada token. Kamu mungkin belum login, silakan login ulang.");
+        return;
+      }
 
       const response = await fetch("http://localhost:5000/api/agenda", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // kirim JWT ke backend
         },
         body: JSON.stringify(payload),
       });
 
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error("Gagal menyimpan agenda");
+        console.error("Respon gagal dari backend agenda:", data);
+        throw new Error(data.message || "Gagal menyimpan agenda");
       }
 
       // kalau backend sukses, baru tambahkan ke state lokal
@@ -237,17 +255,13 @@ export default function MainAGSection() {
   // ========================================
   return (
     <div className="w-full min-h-screen bg-[#F4F0EC] pb-24 px-12 flex flex-col items-center pt-12">
-
       {/* HEADER */}
       <div className="text-6xl font-bold text-center flex flex-col items-center gap-y-4 mt-14 p-[42px_128px] rounded-[20px] bg-[linear-gradient(85deg,rgba(255,157,1,0.85)_22.33%,rgba(49,123,116,0.85)_77.67%)]">
-        <span className="text-white drop-shadow-lg">
-          Agenda
-        </span>
+        <span className="text-white drop-shadow-lg">Agenda</span>
         <p className="text-lg font-normal text-white max-w-[60%]">
           Kelola jadwal mengajar dan kegiatan volunteer Anda
         </p>
       </div>
-
 
       {/* MAIN CONTENT */}
       <div className="w-full max-w-7xl mt-10 flex gap-10">

@@ -5,6 +5,7 @@ import {
   getAllPrograms,
   createProgram,
 } from "../controllers/programController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -15,6 +16,6 @@ router.get("/approved", getApprovedPrograms);
 router.get("/", getAllPrograms);
 
 // Tambah program baru
-router.post("/", createProgram);
+router.post("/", protect, createProgram);
 
 export default router;

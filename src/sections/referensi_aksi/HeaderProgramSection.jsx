@@ -42,9 +42,24 @@ const HeaderProgramSection = () => {
         sourceLink: form.sourceLink,
       };
 
+      // 🔹 Ambil token dari localStorage
+      // GANTI 'token' kalau di Login.jsx kamu pakai key lain
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert(
+          "Tidak ada token. Kamu mungkin belum login atau session sudah habis. Silakan login ulang."
+        );
+        return;
+      }
+
       const res = await axios.post(
         "http://localhost:5000/api/programs",
-        payload
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // 🔥 kirim JWT ke backend
+          },
+        }
       );
 
       console.log("✅ Program tersimpan:", res.data);

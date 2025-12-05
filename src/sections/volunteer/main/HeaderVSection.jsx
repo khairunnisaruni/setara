@@ -1,4 +1,5 @@
-import React from 'react';
+// src/sections/volunteer/main/HeaderVSection.jsx
+import React from "react";
 import { FaRegHeart } from "react-icons/fa";
 import { HiUsers, HiBookOpen } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +19,7 @@ const HeaderVSection = () => {
   return (
     <div className="h-[600px] w-full relative bg-cover flex pb-24 items-center px-20 justify-center bg-linear-to-br from-[#FF9D01] to-[#317B74]/85">
       <div className="flex gap-x-12 text-[#FBF8F4]">
-        <div className='flex flex-col gap-y-6'>
+        <div className="flex flex-col gap-y-6">
           <div className="flex text-7xl font-bold flex-col items-start w-4/5">
             <div>Ruang</div>
             <div className="bg-linear-to-r from-[#FFB54D] via-[#FBF8F4] to-[#FFB54D] bg-clip-text text-transparent drop-shadow-md">
@@ -26,7 +27,9 @@ const HeaderVSection = () => {
             </div>
             <div className="flex text-sm font-normal mt-4 font-sans">
               <div>
-                Akses panduan mengajar, materi pembelajaran, dan berbagi pengalaman dengan sesama volunteer. Mari wujudkan pendidikan berkualitas untuk semua anak Indonesia.
+                Akses panduan mengajar, materi pembelajaran, dan berbagi
+                pengalaman dengan sesama volunteer. Mari wujudkan pendidikan
+                berkualitas untuk semua anak Indonesia.
               </div>
             </div>
           </div>
@@ -45,7 +48,11 @@ const HeaderVSection = () => {
           </div>
         </div>
         <div>
-          <img src="src/assets/bg-image-volunteer.png" className='w-full' alt="" />
+          <img
+            src="src/assets/bg-image-volunteer.png"
+            className="w-full"
+            alt=""
+          />
         </div>
       </div>
       <div className="absolute bottom-0 left-0 w-full">
