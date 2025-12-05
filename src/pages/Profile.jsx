@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import DataProfil from "../sections/profile/DataProfil";
 import RiwayatPostingan from "../sections/profile/RiwayatPostingan";
 import NavbarVolunteer from "../components/NavbarVolunteer";
+import Toast from "../components/Toast";
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -11,18 +12,21 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSuccess = () => {
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
+
+  const handleSuccess = (msg = "Berhasil diperbarui!") => {
+    setSuccessMessage(msg);
     setShowSuccessPopup(true);
     setTimeout(() => setShowSuccessPopup(false), 2000);
   };
-
 
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
 
-      // kalau belum login, redirect ke login
       if (!token) {
         navigate("/login");
         return;
@@ -37,7 +41,6 @@ const Profile = () => {
         });
 
         if (response.status === 401) {
-          // token tidak valid / kedaluwarsa
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           navigate("/login");
@@ -79,7 +82,6 @@ const Profile = () => {
     );
   }
 
-  // mapping tampilan
   const displayProfesi =
     profile.profesi === "pelajar"
       ? "Pelajar"
@@ -107,18 +109,29 @@ const Profile = () => {
         profesi={displayProfesi}
         nama={profile.name}
         jenisKelamin={displayGender}
-        password={"********"} // tidak menampilkan password asli
+        password={"********"}
         bio={profile.bio || "Belum ada bio."}
         onSuccess={handleSuccess}
+        setToastMessage={setToastMessage}
+        setToastType={setToastType}
       />
       <RiwayatPostingan />
 
       {showSuccessPopup && (
         <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded-xl shadow-lg z-[9999] animate-fadeIn">
-          Profil berhasil diperbarui!
+          {successMessage}
         </div>
       )}
 
+      <Toast
+        message={toastMessage}
+        type={toastType}
+        duration={3000}
+        onClose={() => {
+          setToastMessage("");
+          setShowSuccessPopup(false);
+        }}
+      />
     </div>
   );
 };

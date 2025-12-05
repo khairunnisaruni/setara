@@ -17,7 +17,7 @@ export default function FilterProgramSection({
       }}
     >
       <div
-        className="bg-white border border-[#E7E1DA] rounded-xl shadow-sm w-[80%] max-w-6xl"
+        className=" mt-10 bg-white border border-[#E7E1DA] rounded-xl shadow-sm w-[80%] max-w-6xl"
         style={{
           height: "133.6px",
           padding: "24px 32px",

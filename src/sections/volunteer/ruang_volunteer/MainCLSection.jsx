@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import CardCerita from "../../../components/ruang_volunteer/CardCerita";
 import ModalCerita from "../../../components/ruang_volunteer/ModalCerita";
-import ModalDetailCerita from "../../../components/ruang_volunteer/ModalDetailCerita"; // ✅ WAJIB ADA
+import ModalDetailCerita from "../../../components/ruang_volunteer/ModalDetailCerita";
 import SuccessPopup from "../../../components/ruang_volunteer/notification/SuccessPopup";
 import { HiPlus, HiArrowRight } from "react-icons/hi";
-import { useState } from "react";
-import { Link } from "react-router-dom";
 
-const stories = [
+// data contoh (fallback jika fetch gagal / belum ada data)
+const STORIES_DUMMY = [
   {
     id: 1,
     name: "Sri Rafena",
@@ -16,47 +15,17 @@ const stories = [
     content:
       "Angin laut yang kencang tak menghalangi semangat anak-anak mengikuti kelas literasi. Mereka begitu antusias membaca cerita rakyat Nusantara...",
   },
-  {
-    id: 2,
-    name: "Wella",
-    date: "3 Oktober 2025",
-    title: "Belajar Matematika dengan Media Alam",
-    content:
-      "Saya mengajak anak-anak menghitung batu di sungai sebagai cara belajar penjumlahan. Ternyata metode sederhana ini membuat mereka sangat cepat memahami konsep dasar...",
-  },
-  {
-    id: 3,
-    name: "Nadia Putri",
-    date: "18 Oktober 2025",
-    title: "Tertawa Bersama Saat Mengajar di Rumah Panggung",
-    content:
-      "Di dalam rumah panggung sederhana, kami belajar sambil bermain tebak kata. Suasana hangat dan penuh tawa membuat anak-anak berani membaca lantang...",
-  },
-  {
-    id: 4,
-    name: "Gilang Saputra",
-    date: "26 Oktober 2025",
-    title: "Menembus Hutan untuk Mengajar",
-    content:
-      "Butuh hampir dua jam berjalan kaki melewati hutan untuk mencapai lokasi belajar. Namun rasa lelah hilang seketika melihat anak-anak berbaris rapi menyambut kedatangan saya...",
-  },
-  {
-    id: 5,
-    name: "Siti Rahmah",
-    date: "2 November 2025",
-    title: "Serunya Kelas Menggambar di Desa Sungai Kapuas",
-    content:
-      "Anak-anak sangat senang saat diberi kertas dan crayon. Mereka menggambar rumah, sungai, dan hewan-hewan setempat. Kreativitas mereka benar-benar mengejutkan...",
-  },
-  {
-    id: 6,
-    name: "Jonathan Marbun",
-    date: "10 November 2025",
-    title: "Kegiatan Baca Buku di Halaman Sekolah",
-    content:
-      "Kami menggelar kegiatan membaca di bawah pohon besar. Dengan suara pelan namun penuh semangat, mereka menceritakan kembali isi buku yang baru saja dibaca...",
-  },
 ];
+
+const formatTanggal = (isoString) => {
+  if (!isoString) return "";
+  const tanggal = new Date(isoString);
+  return tanggal.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
 
 const MainCLSection = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,7 +33,58 @@ const MainCLSection = () => {
   const [cerita, setCerita] = useState("");
   const [showNotif, setShowNotif] = useState(false);
 
-  // ⬇️ fungsi submit: kirim ke backend /api/cerita
+  const [openDetail, setOpenDetail] = useState(false);
+  const [selectedStory, setSelectedStory] = useState(null);
+
+  const [likedStories, setLikedStories] = useState({});
+
+  // cerita approved dari backend
+  const [stories, setStories] = useState([]);
+
+  const toggleLike = (id) => {
+    setLikedStories((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  // ambil cerita yang sudah approved dari backend
+  const fetchApprovedStories = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/cerita/approved");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Gagal mengambil cerita approved");
+      }
+
+      const mapped = data.map((row) => ({
+        id: row.id,
+        name: "Relawan SETARA", // bisa diganti kalau nanti join ke tabel users
+        date: formatTanggal(row.created_at),
+        title: row.title,
+        // tampilkan ringkasan (mis. 200 karakter pertama)
+        content:
+          row.content && row.content.length > 200
+            ? row.content.slice(0, 200) + "..."
+            : row.content || "",
+        fullContent: row.content || "",
+      }));
+
+      setStories(mapped);
+    } catch (err) {
+      console.error("Gagal fetch cerita approved:", err);
+      // fallback ke dummy kalau error
+      setStories(STORIES_DUMMY);
+    }
+  };
+
+  // panggil sekali saat halaman dibuka
+  useEffect(() => {
+    fetchApprovedStories();
+  }, []);
+
+  // submit: kirim ke backend /api/cerita (status masih pending)
   const handleSubmit = async () => {
     try {
       const payload = {
@@ -90,6 +110,9 @@ const MainCLSection = () => {
       setJudul("");
       setCerita("");
 
+      // kalau admin langsung approve, setelah refresh berikutnya akan ikut tampil
+      fetchApprovedStories();
+
       setTimeout(() => setShowNotif(false), 2500);
     } catch (error) {
       console.error("Error saat menyimpan cerita:", error);
@@ -97,24 +120,17 @@ const MainCLSection = () => {
     }
   };
 
-  const [openDetail, setOpenDetail] = useState(false);
-  const [selectedStory, setSelectedStory] = useState(null);
-
-  const [likedStories, setLikedStories] = useState({});
-
-  const toggleLike = (id) => {
-    setLikedStories((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+  const sourceStories =
+    stories && stories.length > 0 ? stories : STORIES_DUMMY;
 
   return (
     <div className="flex flex-col items-center gap-y-7 py-20 px-12">
       {/* HEADER */}
       <div className="text-6xl font-bold text-center flex flex-col items-center gap-y-4 p-[42px_128px] rounded-[20px] bg-[linear-gradient(85deg,rgba(255,157,1,0.85)_22.33%,rgba(49,123,116,0.85)_77.67%)]">
         <div>
-          <span className="bg-white bg-clip-text text-transparent">Cerita</span>{" "}
+          <span className="bg-white bg-clip-text text-transparent">
+            Cerita
+          </span>{" "}
           <span className="bg-[linear-gradient(90deg,#FFB54D_0%,#FBF8F4_25.48%,#FFB54D_100%)] bg-clip-text text-transparent">
             Lapangan
           </span>
@@ -152,13 +168,15 @@ const MainCLSection = () => {
         isOpen={openDetail}
         onClose={() => setOpenDetail(false)}
         data={selectedStory}
-        isLiked={likedStories[selectedStory?.id]}
-        onToggleLike={() => toggleLike(selectedStory.id)}
+        isLiked={selectedStory && likedStories[selectedStory.id]}
+        onToggleLike={() =>
+          selectedStory && toggleLike(selectedStory.id)
+        }
       />
 
       {/* LIST CERITA */}
       <div className="max-w-7xl w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {stories.map((story) => (
+        {sourceStories.map((story) => (
           <div
             key={story.id}
             className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition"

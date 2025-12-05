@@ -1,10 +1,11 @@
 // src/sections/volunteer/ruang_volunteer/MainMMSection.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CardMateri from "../../../components/ruang_volunteer/CardMateri";
 import FilterMateri from "../../../components/ruang_volunteer/FilterMateri";
-import ModalTambahBuku from "../../../components/ruang_volunteer/ModalTambahBuku";
+import ModalTambahMateri from "../../../components/ruang_volunteer/ModalTambahMateri";
 import SuccessPopup from "../../../components/ruang_volunteer/notification/SuccessPopup";
 
+// Data dummy awal (fallback kalau fetch gagal / kosong)
 const allMaterials = [
   {
     id: 1,
@@ -51,14 +52,26 @@ const MainMMSection = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
 
+  // State di parent, disesuaikan dengan field yang dipakai ModalTambahMateri
   const [formData, setFormData] = useState({
+    // field lama (kalau nanti masih dipakai fitur buku)
     judul: "",
     penulis: "",
     kategori: "",
     deskripsi: "",
     sampul: null,
     link: "",
+    // field untuk materi multimedia (dipakai modal)
+    title: "",
+    fileType: "",
+    classCategory: "",
+    materialCategory: "",
+    description: "",
+    file: null,
   });
+
+  // Data materi yang sudah disetujui admin (diambil dari backend)
+  const [materials, setMaterials] = useState([]);
 
   const filters = [
     { name: "Semua", value: "Semua", total: 14 },
@@ -70,7 +83,68 @@ const MainMMSection = () => {
     { name: "SD 6", value: "SD Kelas 6", total: 8 },
   ];
 
-  const filteredMaterials = allMaterials.filter((material) => {
+  // Helper untuk map kategori_kelas_id -> label kelas (sesuai desain lama)
+  const mapKelasLabel = (id) => {
+    switch (id) {
+      case 1:
+        return "SD Kelas 1";
+      case 2:
+        return "SD Kelas 2";
+      case 3:
+        return "SD Kelas 3";
+      case 4:
+        return "SD Kelas 4";
+      case 5:
+        return "SD Kelas 5";
+      case 6:
+        return "SD Kelas 6";
+      default:
+        return "SD Kelas 1";
+    }
+  };
+
+  // Ambil materi yang status-nya approved dari backend
+  const fetchApprovedMaterials = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/materials/approved");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Gagal mengambil materi");
+      }
+
+      // Mapping baris DB -> properti yang dipakai CardMateri
+      const mapped = data.map((row) => ({
+        id: row.id,
+        name: row.title,
+        subject: "—", // ganti kalau nanti ada kolom mapel di tabel
+        type: mapKelasLabel(row.kategori_kelas_id),
+        byte: "—", // bisa diisi ukuran file kalau disimpan di DB
+        extension:
+          row.file_type === "audio"
+            ? "Audio"
+            : row.file_type === "video"
+            ? "Video"
+            : "PDF",
+        total: "0 Downloads",
+      }));
+
+      setMaterials(mapped);
+    } catch (err) {
+      console.error("Gagal fetch materi approved:", err);
+      // Kalau error, biarkan materials kosong -> fallback ke allMaterials
+    }
+  };
+
+  // Panggil sekali saat halaman dibuka
+  useEffect(() => {
+    fetchApprovedMaterials();
+  }, []);
+
+  // Pakai data dari DB kalau sudah ada, kalau belum pakai dummy
+  const sourceMaterials = materials.length > 0 ? materials : allMaterials;
+
+  const filteredMaterials = sourceMaterials.filter((material) => {
     // filter berdasarkan tombol SD 1 / SD 2 / dst
     if (activeFilter !== "Semua" && material.type !== activeFilter) {
       return false;
@@ -89,34 +163,50 @@ const MainMMSection = () => {
     return matchByName || matchBySubject || matchByType;
   });
 
-  // Kirim data rekomendasi buku ke backend
+  // Kirim data MATERI multimedia ke backend (pakai FormData + file)
   const handleSubmit = async () => {
     try {
-      const payload = {
-        title: formData.judul,
-        author: formData.penulis,
-        // mapping sederhana kategori → category (bisa diubah sesuai kebutuhan)
-        category: formData.kategori === "Literasi Dasar" ? "fiksi" : "nonfiksi",
-        description: formData.deskripsi,
-        link: formData.link,
+      const materiData = {
+        title: formData.title,
+        description: formData.description,
+        fileType: formData.fileType,
+        classCategory: formData.classCategory,
+        materialCategory: formData.materialCategory,
+        file: formData.file,
       };
 
-      const response = await fetch("http://localhost:5000/api/books", {
+      console.log("Data materi dari form (parent):", materiData);
+
+      // Validasi minimal: judul & file wajib
+      if (!materiData.title || !materiData.file) {
+        alert("Judul dan file wajib diisi.");
+        return;
+      }
+
+      const fd = new FormData();
+      fd.append("title", materiData.title);
+      fd.append("description", materiData.description || "");
+      fd.append("fileType", materiData.fileType || "");
+      fd.append("classCategory", materiData.classCategory || "");
+      fd.append("materialCategory", materiData.materialCategory || "");
+      fd.append("file", materiData.file);
+
+      const response = await fetch("http://localhost:5000/api/materials", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+        body: fd, // browser otomatis set multipart/form-data [web:114][web:121]
       });
 
+      const result = await response.json();
+      console.log("Response backend materi:", result);
+
       if (!response.ok) {
-        throw new Error("Gagal menyimpan buku");
+        throw new Error(result.message || "Gagal menyimpan materi");
       }
 
       setIsOpen(false);
       setShowNotif(true);
 
-      // reset form
+      // reset semua field form
       setFormData({
         judul: "",
         penulis: "",
@@ -124,15 +214,25 @@ const MainMMSection = () => {
         deskripsi: "",
         sampul: null,
         link: "",
+        title: "",
+        fileType: "",
+        classCategory: "",
+        materialCategory: "",
+        description: "",
+        file: null,
       });
+
+      // Refresh list materi approved (kalau admin sudah approve, akan muncul)
+      fetchApprovedMaterials();
 
       setTimeout(() => setShowNotif(false), 2500);
     } catch (error) {
-      console.error("Error saat menyimpan buku:", error);
-      alert("Gagal menyimpan buku, cek console backend.");
+      console.error("Error saat menyimpan materi:", error);
+      alert(error.message || "Gagal menyimpan materi, cek console backend.");
     }
   };
 
+  // ====== DESAIN DI BAWAH INI TIDAK DIUBAH ======
   return (
     <div className="flex flex-col items-center gap-y-7 py-20 px-12">
       {/* HEADER */}
@@ -205,7 +305,7 @@ const MainMMSection = () => {
       </div>
 
       {/* MODAL ADD MATERI */}
-      <ModalTambahBuku
+      <ModalTambahMateri
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         formData={formData}

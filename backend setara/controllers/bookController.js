@@ -1,6 +1,8 @@
 // backend_setara/controllers/bookController.js
 import Book from "../models/Book.js";
+import db from "../config/db.js";
 
+// CREATE (sudah ada, biarkan persis seperti sekarang)
 export const createBook = (req, res) => {
   try {
     const { title, author, category, description, link } = req.body;
@@ -15,8 +17,8 @@ export const createBook = (req, res) => {
     if (category === "fiksi") kategori_id = 1;
     else if (category === "nonfiksi") kategori_id = 2;
 
-    const added_by = 1; 
-    const status = "pending"; 
+    const added_by = 1;
+    const status = "pending";
     const gambar = null;
 
     Book.create(
@@ -38,4 +40,37 @@ export const createBook = (req, res) => {
     console.error("createBook error:", error);
     res.status(500).json({ message: "Terjadi kesalahan server." });
   }
+};
+
+/**
+ * GET /api/books/approved
+ * Ambil semua buku rekomendasi yang sudah disetujui admin (status = 'approved')
+ */
+export const getApprovedBooks = (req, res) => {
+  const sql = `
+    SELECT
+      id,
+      title,
+      author,
+      gambar,
+      description,
+      link,
+      kategori_id,
+      status,
+      approved_at
+    FROM rekomendasi_buku
+    WHERE status = 'approved'
+    ORDER BY approved_at DESC, created_at DESC
+  `;
+
+  db.query(sql, (err, rows) => {
+    if (err) {
+      console.error("Error mengambil buku approved:", err);
+      return res
+        .status(500)
+        .json({ message: "Gagal mengambil buku approved" });
+    }
+
+    return res.json(rows);
+  });
 };
