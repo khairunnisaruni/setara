@@ -11,7 +11,7 @@ export default function ProgramTersedia() {
   const [status, setStatus] = useState("Semua");
 
   return (
-    <div className="bg-[#FAF8F4] min-h-screen text-[#323230]">
+    <div className="bg-[#FAF8F4] min-h-screen mt-10 text-[#323230]">
       <NavbarVolunteer />
       <HeaderProgramSection />
 

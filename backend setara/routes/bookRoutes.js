@@ -1,6 +1,6 @@
 // backend_setara/routes/bookRoutes.js
 import express from "express";
-import { createBook } from "../controllers/bookController.js";
+import { createBook, getApprovedBooks } from "../controllers/bookController.js";
 import { 
     getBooks, 
     createBooks, 
@@ -8,9 +8,13 @@ import {
     deleteBook, 
     updateBookStatus 
 } from "../controllers/bukuController.js";
-import upload from "../middleware/upload.js"; 
+
 
 const router = express.Router();
+
+// Ambil buku yang sudah di-approve admin
+// GET /api/books/approved
+router.get("/approved", getApprovedBooks);
 
 // POST /api/books
 router.post("/", createBook);

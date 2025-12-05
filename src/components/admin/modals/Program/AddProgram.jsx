@@ -1,3 +1,4 @@
+// src/components/admin/modals/Program/AddProgram.jsx
 import { useState } from "react";
 import FailedModal from "../../modals/Failed";
 import SuccessModal from "../../modals/Success";
@@ -35,15 +36,29 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
     e.preventDefault();
     try {
       await onSubmit(formData);
-      onClose();
-      setShowSuccessModal(true);
+      onClose();                 // tutup form input
+      setShowSuccessModal(true); // tampilkan popup sukses
+
+      // auto-hide popup sukses
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 2000);
     } catch (error) {
+      console.error("Gagal menambah program:", error);
       onClose();
       setShowFailedModal(true);
+
+      // auto-hide popup gagal (opsional)
+      setTimeout(() => {
+        setShowFailedModal(false);
+      }, 2000);
     }
   };
 
-  if (!isOpen) return null;
+  // Sama seperti AddQuiz:
+  // komponen benar-benar hilang hanya jika
+  // form tertutup DAN tidak ada popup sukses/gagal
+  if (!isOpen && !showSuccessModal && !showFailedModal) return null;
 
   const typeOptions = [
     { value: "volunteer", label: "Volunteer" },
@@ -169,7 +184,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
                 name="deadline"
                 value={formData.deadline}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md  placeholder-gray-400text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
               />
             </div>
 

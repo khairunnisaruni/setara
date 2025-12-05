@@ -1,5 +1,5 @@
 // src/sections/volunteer/ruang_volunteer/MainPBSection.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiFilter } from "react-icons/fi";
 import { HiPlus } from "react-icons/hi";
 import CardBuku from "../../../components/ruang_volunteer/CardBuku";
@@ -20,12 +20,12 @@ const MainPBSection = () => {
   });
 
   const [showNotif, setShowNotif] = useState(false);
-
   const [search, setSearch] = useState("");
 
   const [openDetail, setOpenDetail] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
 
+  // dummy awal (fallback)
   const bukuList = [
     {
       id: 1,
@@ -56,16 +56,66 @@ const MainPBSection = () => {
     },
   ];
 
+  // data buku approved dari backend
+  const [books, setBooks] = useState([]);
+
+  // mapping kategori_id -> label kategori
+  const mapKategoriLabel = (kategoriId) => {
+    switch (kategoriId) {
+      case 1:
+        return "Literasi Dasar";
+      case 2:
+        return "Literasi Lanjutan";
+      default:
+        return "Literasi Dasar";
+    }
+  };
+
+  // ambil buku yang sudah approved dari backend
+  const fetchApprovedBooks = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/books/approved");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Gagal mengambil buku approved");
+      }
+
+      const mapped = data.map((row) => ({
+        id: row.id,
+        title: row.title,
+        category: mapKategoriLabel(row.kategori_id),
+        desc: row.description || "",
+        cover: row.gambar || "", // sementara kosong -> No Cover
+        penulis: row.author || "",
+        link: row.link || "",
+      }));
+
+      setBooks(mapped);
+    } catch (err) {
+      console.error("Gagal fetch buku approved:", err);
+      // kalau error, biarkan books kosong -> fallback ke dummy
+    }
+  };
+
+  // panggil sekali saat halaman dibuka
+  useEffect(() => {
+    fetchApprovedBooks();
+  }, []);
+
+  // gunakan data backend kalau ada, jika tidak pakai dummy
+  const sourceBooks = books.length > 0 ? books : bukuList;
+
   // filter daftar buku berdasarkan kata kunci
-  const filteredBooks = bukuList.filter((b) => {
-    if (!search.trim()) return true; // kalau search kosong, tampilkan semua
+  const filteredBooks = sourceBooks.filter((b) => {
+    if (!search.trim()) return true;
 
     const term = search.toLowerCase();
     return (
       b.title.toLowerCase().includes(term) ||
       b.category.toLowerCase().includes(term) ||
       b.desc.toLowerCase().includes(term) ||
-      b.penulis.toLowerCase().includes(term)
+      (b.penulis || "").toLowerCase().includes(term)
     );
   });
 
@@ -106,7 +156,9 @@ const MainPBSection = () => {
         link: "",
       });
 
-      // auto hide popup setelah 2.5 detik
+      // refresh daftar buku approved (kalau sudah di-approve admin, nanti akan muncul)
+      fetchApprovedBooks();
+
       setTimeout(() => {
         setShowNotif(false);
       }, 2500);
@@ -116,6 +168,7 @@ const MainPBSection = () => {
     }
   };
 
+  // ====== DESAIN DI BAWAH INI TIDAK DIUBAH ======
   return (
     <div className="flex flex-col items-center gap-y-7 py-20 px-12">
       <div className="text-6xl font-bold text-center flex flex-col items-center gap-y-4 p-[42px_128px] rounded-[20px] bg-[linear-gradient(85deg,rgba(255,157,1,0.85)_22.33%,rgba(49,123,116,0.85)_77.67%)]">
@@ -128,7 +181,9 @@ const MainPBSection = () => {
           </span>
         </div>
         <div className="flex max-w-[55%] text-lg font-normal text-[#FFFFFF] text-center flex-col items-center font-sans">
-          <div>Bagikan dan temukan rekomendasi buku terbaik untuk pembelajaran</div>
+          <div>
+            Bagikan dan temukan rekomendasi buku terbaik untuk pembelajaran
+          </div>
         </div>
       </div>
 

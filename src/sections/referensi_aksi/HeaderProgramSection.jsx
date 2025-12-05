@@ -1,62 +1,274 @@
 // src/sections/referensi_aksi/HeaderProgramSection.jsx
 import React, { useState } from "react";
 import axios from "axios";
-import AddProgramButton from "../../components/referensi_aksi/AddProgramButton";
-import AddProgramModal from "../../components/referensi_aksi/AddProgramModal";
 
-export default function HeaderProgramSection() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const HeaderProgramSection = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleAddProgram = async (formData) => {
+  const [form, setForm] = useState({
+    title: "",
+    organizer: "",
+    type: "Volunteer",
+    location: "",
+    description: "",
+    period: "",
+    deadline: "",
+    statusProgram: "akan datang",
+    sourceLink: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddProgram = async (e) => {
+    e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/programs", {
-        title: formData.title,
-        organizer: formData.organizer,
-        programType: formData.programType,
-        location: formData.location,
-        description: formData.description,
-        period: formData.period,
-        deadline: formData.deadline,
-        status: formData.status,
-        link: formData.link,
-        banner: formData.banner ? formData.banner.name : null,
-        added_by: 1,
+      setLoading(true);
+
+      // payload HARUS sama dengan yang dibaca controller createProgram
+      const payload = {
+        title: form.title,
+        organizer: form.organizer,
+        type: form.type,
+        location: form.location,
+        description: form.description,
+        period: form.period,
+        deadline: form.deadline,
+        statusProgram: form.statusProgram,
+        sourceLink: form.sourceLink,
+      };
+
+      const res = await axios.post(
+        "http://localhost:5000/api/programs",
+        payload
+      );
+
+      console.log("✅ Program tersimpan:", res.data);
+
+      alert("Program berhasil diajukan, menunggu verifikasi admin.");
+
+      // reset form
+      setForm({
+        title: "",
+        organizer: "",
+        type: "Volunteer",
+        location: "",
+        description: "",
+        period: "",
+        deadline: "",
+        statusProgram: "akan datang",
+        sourceLink: "",
       });
 
-      // kalau berhasil, cukup tutup modal saja
-      setIsModalOpen(false);
+      setIsOpen(false);
     } catch (error) {
       console.error("❌ Error saat simpan program:", error);
-      alert("Gagal menyimpan program. Cek console/backend untuk detail.");
+      alert("Gagal menyimpan program, cek kembali data atau backend.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <header
-      className="relative flex justify-center items-center"
-      style={{
-        height: "410px",
-        background:
-          "linear-gradient(135deg, rgba(255,157,1,0.45) 0%, rgba(49,123,116,0.45) 100%)",
-        padding: "80px 300px",
-      }}
-    >
-      <div className="flex flex-col items-center text-center gap-6 max-w-3xl">
-        <h1 className="text-4xl font-bold text-[#317B74]">
-          Program Tersedia di SETARA
+    <>
+      {/* HEADER / HERO */}
+      <section className="py-16 px-8 bg-gradient-to-r from-orange-200/70 to-teal-200/70 flex flex-col items-center text-center">
+        <h1 className="text-3xl md:text-4xl font-bold text-[#317B74]">
+          Program Volunteer, Beasiswa, dan Aksi Sosial
         </h1>
-        <p className="text-[#323230] text-base leading-relaxed">
-          Temukan berbagai kesempatan untuk berkontribusi melalui program
-          volunteer, beasiswa, dan pengabdian masyarakat.
+        <p className="mt-3 max-w-2xl text-gray-700">
+          Temukan berbagai program untuk mengajar, mengabdi, dan mendukung
+          pendidikan yang lebih setara di seluruh Indonesia.
         </p>
-        <AddProgramButton onClick={() => setIsModalOpen(true)} />
-      </div>
 
-      <AddProgramModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleAddProgram}
-      />
-    </header>
+        <div className="mt-6 flex gap-4">
+          <button
+            onClick={() =>
+              document
+                .getElementById("daftar-program")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg transition-all"
+          >
+            Lihat Program Tersedia
+          </button>
+
+          <button
+            onClick={() => setIsOpen(true)}
+            className="bg-white border border-gray-300 hover:bg-gray-50 font-semibold px-6 py-2 rounded-lg transition-all"
+          >
+            + Tambahkan Program
+          </button>
+        </div>
+      </section>
+
+      {/* MODAL TAMBAH PROGRAM */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-lg w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 relative">
+            <button
+              className="absolute top-3 right-4 text-2xl font-bold cursor-pointer"
+              onClick={() => setIsOpen(false)}
+            >
+              ×
+            </button>
+
+            <h2 className="text-xl font-bold mb-4 text-center">
+              Tambahkan Program Baru
+            </h2>
+
+            <form onSubmit={handleAddProgram} className="space-y-3">
+              <div>
+                <label className="text-sm font-medium">Judul Program</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={form.title}
+                  onChange={handleChange}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+                  placeholder="Contoh: Volunteer Mengajar Satu Desa"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Penyelenggara</label>
+                <input
+                  type="text"
+                  name="organizer"
+                  value={form.organizer}
+                  onChange={handleChange}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+                  placeholder="Contoh: Kemendikbud"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium">Jenis Program</label>
+                  <select
+                    name="type"
+                    value={form.type}
+                    onChange={handleChange}
+                    className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+                  >
+                    <option value="Volunteer">Volunteer</option>
+                    <option value="Beasiswa">Beasiswa</option>
+                    <option value="Pengabdian Masyarakat">
+                      Pengabdian Masyarakat
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Status Program</label>
+                  <select
+                    name="statusProgram"
+                    value={form.statusProgram}
+                    onChange={handleChange}
+                    className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+                  >
+                    <option value="akan datang">Akan Datang</option>
+                    <option value="sedang dibuka">Sedang Dibuka</option>
+                    <option value="selesai">Selesai</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Lokasi Program</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={form.location}
+                  onChange={handleChange}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+                  placeholder="Contoh: Seluruh Indonesia / Medan / Online"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">
+                  Periode Pelaksanaan
+                </label>
+                <input
+                  type="text"
+                  name="period"
+                  value={form.period}
+                  onChange={handleChange}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+                  placeholder="Contoh: April – Juni 2025"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">
+                  Deadline Pendaftaran
+                </label>
+                <input
+                  type="text"
+                  name="deadline"
+                  value={form.deadline}
+                  onChange={handleChange}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+                  placeholder="Contoh: 25 Maret 2025"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Link Sumber Resmi</label>
+                <input
+                  type="url"
+                  name="sourceLink"
+                  value={form.sourceLink}
+                  onChange={handleChange}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+                  placeholder="https://..."
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Deskripsi Program</label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+                  rows={3}
+                  placeholder="Ceritakan secara singkat tujuan dan kegiatan program"
+                />
+              </div>
+
+              <div className="mt-4 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="px-4 py-2 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-100"
+                  disabled={loading}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-semibold bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-60"
+                  disabled={loading}
+                >
+                  {loading ? "Menyimpan..." : "Simpan Program"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
-}
+
+};
+
+export default HeaderProgramSection;

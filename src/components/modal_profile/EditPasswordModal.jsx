@@ -2,6 +2,7 @@
 // src/components/modal_profile/EditPasswordModal.jsx
 import React, { useState } from "react";
 import { MdVisibilityOff, MdVisibility } from "react-icons/md";
+import Toast from "../Toast";
 
 const EditPasswordModal = ({ open, onClose, password }) => {
   if (!open) return null;
@@ -12,28 +13,37 @@ const EditPasswordModal = ({ open, onClose, password }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!oldPassword || !newPassword || !confirmPassword) {
-      alert("Semua field wajib diisi");
+      setToastMessage("Semua field wajib diisi!");
+      setToastType("error");
       return;
     }
 
     if (newPassword.length < 6) {
-      alert("Password baru minimal 6 karakter");
+      setToastMessage("Password baru minimal 6 karakter!");
+      setToastType("error");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      alert("Konfirmasi password baru tidak sama");
+      setToastMessage("Konfirmasi password tidak cocok!");
+      setToastType("error");
       return;
     }
+
 
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Sesi login berakhir. Silakan login ulang.");
+        // alert("Sesi login berakhir. Silakan login ulang.");
+        setToastMessage("Sesi login berakhir. Silakan login ulang!");
+        setToastType("error");
         return;
       }
 
@@ -50,18 +60,25 @@ const EditPasswordModal = ({ open, onClose, password }) => {
       console.log("Response update password:", data);
 
       if (response.ok) {
-        alert("Password berhasil diperbarui");
-        // reset form
+        setToastMessage("Password berhasil diperbarui!");
+        setToastType("success");
+               
         setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
-        onClose();
+        setTimeout(() => {
+          onClose();
+        }, 2000); // biar toast muncul dulu
       } else {
-        alert(data.message || "Gagal mengupdate password");
+        // alert(data.message || "Gagal mengupdate password");
+        setToastMessage(data.message || "Gagal mengupdate password");
+        setToastType("error");
       }
     } catch (error) {
-      console.error("❌ Error update password:", error);
-      alert("Terjadi kesalahan saat menghubungi server.");
+      // console.error("❌ Error update password:", error);
+      // alert("Terjadi kesalahan saat menghubungi server.");
+      setToastMessage("Terjadi kesalahan saat menghubungi server!");
+      setToastType("error");
     }
   };
 
@@ -160,6 +177,10 @@ const EditPasswordModal = ({ open, onClose, password }) => {
             </button>
           </div>
         </form>
+        {toastMessage && (
+          <Toast message={toastMessage} type={toastType} />
+        )}
+
       </div>
     </div>
   );

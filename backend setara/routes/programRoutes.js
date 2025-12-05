@@ -1,10 +1,20 @@
 // backend_setara/routes/programRoutes.js
 import express from "express";
-import { createProgram, getAllPrograms } from "../controllers/programController.js";
+import {
+  getApprovedPrograms,
+  getAllPrograms,
+  createProgram,
+} from "../controllers/programController.js";
 
 const router = express.Router();
 
-router.post("/", createProgram);
+// Hanya program yang sudah di-approve admin
+router.get("/approved", getApprovedPrograms);
+
+// Semua program (opsional, untuk admin)
 router.get("/", getAllPrograms);
+
+// Tambah program baru
+router.post("/", createProgram);
 
 export default router;
