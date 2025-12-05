@@ -25,7 +25,7 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
 
   // 1. FETCH DATA
   const fetchPrograms = () => {
-    fetch('http://localhost:3000/admin/programs')
+    fetch('http://localhost:5000/admin/programs')
       .then(res => res.json())
       .then(data => {
         if(Array.isArray(data)) setProgramList(data);
@@ -72,7 +72,7 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
   const updateStatus = (newStatus) => {
     if(!selectedProgram) return;
 
-    fetch(`http://localhost:3000/admin/programs/${selectedProgram.id}/status`, {
+    fetch(`http://localhost:5000/admin/programs/${selectedProgram.id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }) // Kirim status baru ('approved' / 'rejected')
@@ -90,8 +90,8 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
   const handleFormSubmit = (formData) => {
     const isEditMode = !!selectedProgram;
     const url = isEditMode 
-        ? `http://localhost:3000/admin/programs/${selectedProgram.id}` 
-        : 'http://localhost:3000/admin/programs';
+        ? `http://localhost:5000/admin/programs/${selectedProgram.id}` 
+        : 'http://localhost:5000/admin/programs';
     const method = isEditMode ? 'PUT' : 'POST';
 
     const dataToSend = new FormData();
@@ -120,7 +120,7 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
   // === DELETE ===
   const handleConfirmDelete = () => {
     if (!selectedProgram) return;
-    fetch(`http://localhost:3000/admin/programs/${selectedProgram.id}`, { method: 'DELETE' })
+    fetch(`http://localhost:5000/admin/programs/${selectedProgram.id}`, { method: 'DELETE' })
       .then(res => res.json())
       .then(() => {
         fetchPrograms();

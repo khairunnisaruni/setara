@@ -19,7 +19,7 @@ const ProgramAdmin = () => {
 
   // Fungsi untuk mengambil jumlah data pending (Buat Badge)
   const fetchPendingCount = () => {
-    fetch('http://localhost:3000/admin/programs')
+    fetch('http://localhost:5000/admin/programs')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -64,7 +64,7 @@ const ProgramAdmin = () => {
       }
 
       // 3. Kirim ke Backend
-      const response = await fetch('http://localhost:3000/admin/programs', {
+      const response = await fetch('http://localhost:5000/admin/programs', {
         method: 'POST',
         // Jangan set Content-Type header manual untuk FormData
         body: dataToSend,

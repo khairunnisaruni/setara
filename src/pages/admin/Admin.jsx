@@ -47,7 +47,7 @@ const DashboardUtama = () => {
 
 
   const fetchActivities = () => {
-    fetch('http://localhost:3000/admin/activities')
+    fetch('http://localhost:5000/admin/activities')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setActivities(data);
@@ -78,7 +78,7 @@ const DashboardUtama = () => {
   const [chartData, setChartData] = useState([]);
 
   const fetchChartStats = () => {
-    fetch('http://localhost:3000/admin/chart-stats')
+    fetch('http://localhost:5000/admin/chart-stats')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -95,7 +95,7 @@ const DashboardUtama = () => {
 
   // 1. FETCH DATA DARI BACKEND
   const fetchStats = () => {
-    fetch('http://localhost:3000/admin')
+    fetch('http://localhost:5000/admin')
       .then(res => {
         if (!res.ok) throw new Error("Gagal fetch");
         return res.json();
@@ -133,7 +133,7 @@ const DashboardUtama = () => {
     dataToSend.append("tautan_sumber_resmi", formData.link);
     if (formData.poster) dataToSend.append("poster", formData.poster);
 
-    fetch('http://localhost:3000/admin/programs', { method: 'POST', body: dataToSend })
+    fetch('http://localhost:5000/admin/programs', { method: 'POST', body: dataToSend })
       .then(res => res.json()).then(() => handleSuccess(setShowProgram))
       .catch(() => setShowFailedModal(true));
   };
@@ -148,7 +148,7 @@ const DashboardUtama = () => {
     if (formData.file_type === 'video') dataToSend.append("youtube_link", formData.youtube_link);
     else if (formData.file_material) dataToSend.append("file_material", formData.file_material);
 
-    fetch('http://localhost:3000/admin/materials', { method: 'POST', body: dataToSend })
+    fetch('http://localhost:5000/admin/materials', { method: 'POST', body: dataToSend })
       .then(res => res.json()).then(() => handleSuccess(setShowMultimedia))
       .catch(() => setShowFailedModal(true));
   };
@@ -162,7 +162,7 @@ const DashboardUtama = () => {
     dataToSend.append("kategori_id", formData.kategori_id);
     if (formData.gambar) dataToSend.append("gambar", formData.gambar);
 
-    fetch('http://localhost:3000/admin/books', { method: 'POST', body: dataToSend })
+    fetch('http://localhost:5000/admin/books', { method: 'POST', body: dataToSend })
       .then(res => res.json()).then(() => handleSuccess(setShowBuku))
       .catch(() => setShowFailedModal(true));
   };
@@ -179,7 +179,7 @@ const DashboardUtama = () => {
     dataToSend.append("contact_person", formData.contact_person);
     if (formData.poster) dataToSend.append("poster", formData.poster);
 
-    fetch('http://localhost:3000/admin/donations', { method: 'POST', body: dataToSend })
+    fetch('http://localhost:5000/admin/donations', { method: 'POST', body: dataToSend })
       .then(res => res.json()).then(() => handleSuccess(setShowDonasi))
       .catch(() => setShowFailedModal(true));
   };
@@ -196,7 +196,7 @@ const DashboardUtama = () => {
       kategori_kelas_id: formData.kategori_kelas_id
     };
 
-    fetch('http://localhost:3000/admin/quiz', {
+    fetch('http://localhost:5000/admin/quiz', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dataToSend)
@@ -217,7 +217,7 @@ const DashboardUtama = () => {
       content: formData.description
     };
 
-    fetch('http://localhost:3000/admin/stories', {
+    fetch('http://localhost:5000/admin/stories', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dataToSend)

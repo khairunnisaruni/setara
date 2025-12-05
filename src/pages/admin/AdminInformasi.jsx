@@ -23,7 +23,7 @@ const Informasi = () => {
     try {
       console.log("📦 Mengirim...", dataInput);
 
-      const response = await fetch('http://localhost:3000/admin/info', {
+      const response = await fetch('http://localhost:5000/admin/info', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

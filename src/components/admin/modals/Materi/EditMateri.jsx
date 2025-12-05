@@ -19,8 +19,8 @@ const EditMateriModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   // 1. Ambil Data Dropdown saat modal dibuka
   useEffect(() => {
     if (isOpen) {
-        fetch('http://localhost:3000/admin/categories').then(res => res.json()).then(setListKategori);
-        fetch('http://localhost:3000/admin/class-categories').then(res => res.json()).then(setListKelas);
+        fetch('http://localhost:5000/admin/categories').then(res => res.json()).then(setListKategori);
+        fetch('http://localhost:5000/admin/class-categories').then(res => res.json()).then(setListKelas);
     }
   }, [isOpen]);
 

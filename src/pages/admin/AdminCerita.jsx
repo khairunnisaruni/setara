@@ -25,7 +25,7 @@ const Cerita = () => {
 
   // Fetch Badge
   const fetchPendingCount = () => {
-    fetch('http://localhost:3000/admin/stories')
+    fetch('http://localhost:5000/admin/stories')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -43,7 +43,7 @@ const Cerita = () => {
   // ✅ 3. Fungsi Submit ke Backend
   const handleAddSubmit = async (formData) => {
     try {
-      const response = await fetch('http://localhost:3000/admin/stories', {
+      const response = await fetch('http://localhost:5000/admin/stories', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

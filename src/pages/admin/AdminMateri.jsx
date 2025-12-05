@@ -23,7 +23,7 @@ const Materi = () => {
 
   // 1. Hitung Badge Pending
   useEffect(() => {
-    fetch('http://localhost:3000/admin/materials')
+    fetch('http://localhost:5000/admin/materials')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -55,7 +55,7 @@ const Materi = () => {
       }
 
       // Fetch POST
-      const response = await fetch('http://localhost:3000/admin/materials', {
+      const response = await fetch('http://localhost:5000/admin/materials', {
         method: 'POST',
         body: dataToSend,
       });

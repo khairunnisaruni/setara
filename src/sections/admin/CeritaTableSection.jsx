@@ -24,7 +24,7 @@ const CeritaTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
   const [stories, setStories] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/admin/stories')
+    fetch('http://localhost:5000/admin/stories')
       .then(res => res.json())
       .then(data => {
         setStories(data);
@@ -34,7 +34,7 @@ const CeritaTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
 
 
   const fetchStories = () => {
-    fetch('http://localhost:3000/admin/stories')
+    fetch('http://localhost:5000/admin/stories')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -94,7 +94,7 @@ const CeritaTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
   const handleConfirmDelete = () => {
     if (!selectedCerita) return;
 
-    fetch(`http://localhost:3000/admin/stories/${selectedCerita.id}`, {
+    fetch(`http://localhost:5000/admin/stories/${selectedCerita.id}`, {
       method: 'DELETE',
     })
       .then((res) => res.json())
@@ -113,7 +113,7 @@ const CeritaTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
     if (!selectedCerita) return; // Jaga-jaga
 
     // Kirim data ke Backend
-    fetch(`http://localhost:3000/admin/stories/${selectedCerita.id}`, {
+    fetch(`http://localhost:5000/admin/stories/${selectedCerita.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData), // Kirim {title, description}
@@ -121,7 +121,7 @@ const CeritaTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
       .then((res) => res.json())
       .then((data) => {
         console.log("Sukses update:", data);
-        fetch('http://localhost:3000/admin/stories')
+        fetch('http://localhost:5000/admin/stories')
           .then(res => res.json())
           .then(data => setStories(data));
 
@@ -135,7 +135,7 @@ const CeritaTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
   }, [refreshTrigger]);
   const updateStatus = (newStatus) => {
     if(!selectedCerita) return;
-    fetch(`http://localhost:3000/admin/stories/${selectedCerita.id}/status`, {
+    fetch(`http://localhost:5000/admin/stories/${selectedCerita.id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })

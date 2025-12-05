@@ -20,7 +20,7 @@ const AddMateriModal = ({ isOpen, onClose, onSubmit }) => {
   useEffect(() => {
     if (isOpen) {
         // Fetch Kategori Mapel
-        fetch('http://localhost:3000/admin/categories')
+        fetch('http://localhost:5000/admin/categories')
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setListKategori(data);
@@ -28,7 +28,7 @@ const AddMateriModal = ({ isOpen, onClose, onSubmit }) => {
             .catch(err => console.error(err));
 
         // Fetch Kategori Kelas
-        fetch('http://localhost:3000/admin/class-categories')
+        fetch('http://localhost:5000/admin/class-categories')
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setListKelas(data);

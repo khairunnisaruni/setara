@@ -25,7 +25,7 @@ const MateriTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
 
   // 1. FETCH DATA
   const fetchMateri = () => {
-    fetch('http://localhost:3000/admin/materials')
+    fetch('http://localhost:5000/admin/materials')
       .then(res => res.json())
       .then(data => {
         // Validasi: Pastikan data adalah array
@@ -107,7 +107,7 @@ const MateriTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
   const handleUpdateSubmit = (formData) => {
     if (!selectedMateri) return; 
 
-    const url = `http://localhost:3000/admin/materials/${selectedMateri.id}`;
+    const url = `http://localhost:5000/admin/materials/${selectedMateri.id}`;
     const dataToSend = new FormData();
 
     dataToSend.append("title", formData.title);
@@ -139,7 +139,7 @@ const MateriTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
   // === LOGIKA DELETE ===
   const handleConfirmDelete = () => {
     if (!selectedMateri) return;
-    fetch(`http://localhost:3000/admin/materials/${selectedMateri.id}`, { method: 'DELETE' })
+    fetch(`http://localhost:5000/admin/materials/${selectedMateri.id}`, { method: 'DELETE' })
     .then(res => res.json())
     .then(() => {
         setMateriList(materiList.filter(m => m.id !== selectedMateri.id));
@@ -152,7 +152,7 @@ const MateriTableSection = ({ activeTab, search, refreshTrigger, setRefreshTrigg
   // === LOGIKA UPDATE STATUS ===
   const updateStatus = (newStatus) => {
     if(!selectedMateri) return;
-    fetch(`http://localhost:3000/admin/materials/${selectedMateri.id}/status`, {
+    fetch(`http://localhost:5000/admin/materials/${selectedMateri.id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })

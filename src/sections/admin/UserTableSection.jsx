@@ -14,7 +14,7 @@ const UserTableSection = ({ search = "" }) => {
 
   useEffect(() => {
     // UBAH URL DISINI:
-    fetch('http://localhost:3000/admin/users') // <--- Tambahkan /admin
+    fetch('http://localhost:5000/admin/users') // <--- Tambahkan /admin
       .then(response => response.json())
       .then(data => {
         console.log("Data dari DB:", data);
@@ -55,7 +55,7 @@ const UserTableSection = ({ search = "" }) => {
     if (!selectedUser) return;
 
     // 2. Kirim perintah DELETE ke Backend
-    fetch(`http://localhost:3000/admin/users/${selectedUser.id}`, {
+    fetch(`http://localhost:5000/admin/users/${selectedUser.id}`, {
       method: 'DELETE',
     })
       .then((res) => res.json())
