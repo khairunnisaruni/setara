@@ -1,8 +1,9 @@
 // src/sections/referensi_aksi/ListDonasi.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DonasiCard from "../../components/referensi_aksi/DonasiCard";
 
-const donasiData = [
+// fallback kalau fetch error / belum ada data
+const DONASI_DUMMY = [
   {
     id: 1,
     title: "Donasi Buku & Alat Tulis SD SDN 09 Sipirok",
@@ -14,59 +15,68 @@ const donasiData = [
     link: "#",
     image: "src/assets/DonasiBuku.png",
   },
-  {
-    id: 2,
-    title: "Bantu Volunteer Ajar di Komunitas Cahaya Ilmu",
-    location: "Relawan pengajar literasi di daerah pinggiran Medan",
-    description:
-      "Komunitas Cahaya Ilmu berdedikasi membantu anak-anak putus sekolah dengan kegiatan belajar dan dorongan untuk tetap semangat.",
-    category: "Kegiatan Relawan & Volunteer",
-    status: "Sedang Berjalan",
-    link: "#",
-    image: "src/assets/BantuVolunteer.png",
-  },
-  {
-    id: 3,
-    title: "Bangun Sekolah SDN 102 Sei Rampah",
-    location: "SDN 102 Sei Rampah",
-    description:
-      "SDN 102 Sei Rampah masih kekurangan fasilitas ruang kelas yang layak. Ayo bantu pembangunan ruang belajar yang nyaman.",
-    category: "Fasilitas Belajar & Infrastruktur",
-    status: "Sedang Berjalan",
-    link: "#",
-    image: "src/assets/BangunSekolah.png",
-  },
-  {
-    id: 4,
-    title: "Bantuan Beasiswa Satu Anak Satu Harapan",
-    location:
-      "Pelajar berprestasi di daerah Tapanuli yang terkendala biaya sekolah",
-    description:
-      "Donasi ini membantu biaya sekolah, seragam, dan perlengkapan belajar bagi siswa SD–SMP yang kurang mampu agar tetap bersekolah.",
-    category: "Beasiswa & Bantuan Pendidikan",
-    status: "Sedang Berjalan",
-    link: "#",
-    image: "src/assets/BantuanBeasiswa.png",
-  },
-  {
-    id: 5,
-    title: "Perbaikan Taman Baca Masyarakat ‘Harapan Baru’",
-    location: "Komunitas Belajar Sei Agul, Medan",
-    description:
-      "Taman bacaan ini butuh renovasi untuk ruang baca anak. Bantuan dana dan peralatan bahan bacaan sangat dibutuhkan.",
-    category: "Fasilitas Belajar & Infrastruktur",
-    status: "Sedang Berjalan",
-    link: "#",
-    image: "src/assets/PerbaikanTamanBaca.png",
-  },
 ];
+
+const mapKategoriLabel = (kategori) => {
+  // kolom enum di DB sudah pakai teks lengkap, kita pakai langsung saja
+  return kategori || "Edukasi dan Literasi";
+};
+
+const mapStatusLabel = (rowStatus) => {
+  // status di DB: pending / approved / rejected
+  // status yang tampil di kartu: Sedang Berjalan / Akan Datang / Selesai
+  if (rowStatus === "approved") return "Sedang Berjalan";
+  if (rowStatus === "pending") return "Akan Datang";
+  if (rowStatus === "rejected") return "Selesai";
+  return "Sedang Berjalan";
+};
 
 const ListDonasi = ({
   searchText = "",
   jenis = "Semua",
   status = "Semua",
 }) => {
-  const filteredDonasi = donasiData.filter((item) => {
+  const [donasi, setDonasi] = useState([]);
+
+  // ambil donasi yang sudah approved dari backend
+  useEffect(() => {
+    const fetchApprovedDonasi = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/donasi/approved");
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Gagal mengambil donasi approved");
+        }
+
+        const mapped = data.map((row) => ({
+          id: row.id,
+          title: row.title,
+          location: row.penerima_manfaat || "",
+          description: row.description || "",
+          category: mapKategoriLabel(row.kategori),
+          status: mapStatusLabel(row.status),
+          link: row.link || "#",
+          // kalau sudah implement upload poster: sesuaikan path-nya
+          image: row.poster
+            ? `http://localhost:5000/uploads/donasi/${row.poster}`
+            : "src/assets/DonasiBuku.png",
+        }));
+
+        setDonasi(mapped);
+      } catch (err) {
+        console.error("Gagal fetch donasi approved:", err);
+        // fallback ke dummy kalau error
+        setDonasi(DONASI_DUMMY);
+      }
+    };
+
+    fetchApprovedDonasi();
+  }, []);
+
+  const source = donasi.length > 0 ? donasi : DONASI_DUMMY;
+
+  const filteredDonasi = source.filter((item) => {
     // filter dropdown jenis
     const matchJenis = jenis === "Semua" || item.category === jenis;
     // filter dropdown status
@@ -79,7 +89,7 @@ const ListDonasi = ({
       item.title.toLowerCase().includes(q) ||
       item.location.toLowerCase().includes(q) ||
       item.description.toLowerCase().includes(q) ||
-      item.category.toLowerCase().includes(q); // kombinasi beberapa field [web:340]
+      item.category.toLowerCase().includes(q);
 
     return matchJenis && matchStatus && matchSearch;
   });
@@ -96,7 +106,7 @@ const ListDonasi = ({
         )}
       </div>
     </section>
-  );
+  );D
 };
 
 export default ListDonasi;

@@ -146,7 +146,7 @@ export default function ModalAgenda({
             <label className="font-medium text-[#3B3B3B] mb-1">Lokasi</label>
             <input
               type="text"
-              placeholder="Desa Gonggu"
+              placeholder="Masukkan Lokasi"
               value={formData.lokasi}
               onChange={(e) =>
                 setFormData({ ...formData, lokasi: e.target.value })

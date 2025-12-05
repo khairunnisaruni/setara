@@ -1,8 +1,7 @@
 // src/components/admin/modals/Quiz/AddQuiz.jsx
 import { useState } from "react";
-import { Upload } from "lucide-react";
+import { Check } from "lucide-react";
 import FailedModal from "../../modals/Failed";
-import SuccessModal from "../../modals/Success";
 
 const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -15,85 +14,99 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
     file: null,
   });
 
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showFailedModal, setShowFailedModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: files ? files[0] : value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await onSubmit(formData);   // kirim ke backend (sama seperti AddBuku)
-      onClose();                  // tutup form
-      setShowSuccessModal(true);  // nyalakan popup sukses
+      await onSubmit(formData);      // kirim data ke backend
+      onClose();                     // tutup form input
+      setShowSuccessPopup(true);     // tampilkan popup sukses
+
+      // popup otomatis hilang setelah 2 detik
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 2000);
     } catch (error) {
       console.error("Gagal kirim kuis:", error);
       onClose();
-      setShowFailedModal(true);   // nyalakan popup gagal
+      setShowFailedModal(true);
+      setTimeout(() => setShowFailedModal(false), 2000);
     }
   };
 
-  // PENTING: komponen hanya benaran hilang kalau
-  // form TERTUTUP dan TIDAK ada popup apa pun yang aktif.
-  if (!isOpen && !showSuccessModal && !showFailedModal) return null;
+  // komponen benar-benar hilang jika:
+  // form tertutup DAN popup sukses/gagal tidak aktif
+  if (!isOpen && !showSuccessPopup && !showFailedModal) return null;
 
   return (
     <>
-      {/* FORM hanya dirender saat isOpen = true */}
+      {/* FORM TAMBAH KUIS */}
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-          <div className="bg-white rounded-xl p-4 w-full max-w-sm shadow-lg">
-            <h2 className="text-base font-semibold text-center mb-3">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-96 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4 text-center">
               Tambah Kuis & Game
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-2">
+            <form onSubmit={handleSubmit} className="space-y-3">
               {/* Judul */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="text-sm font-medium">
                   Judul Kuis & Game
                 </label>
                 <input
                   type="text"
                   name="title"
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
-                  placeholder="Masukkan judul"
+                  className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400 placeholder-[#B0AA9C]"
+                  placeholder="Masukkan judul Kuis & Game"
                 />
               </div>
 
               {/* Deskripsi */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="text-sm font-medium">
                   Deskripsi (15 Kata)
                 </label>
                 <textarea
                   name="description"
-                  rows="2"
+                  rows={2}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
-                  placeholder="Deskripsi singkat"
+                  className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400 placeholder-[#B0AA9C]"
+                  placeholder="Deskripsi singkat tentang kuis & game"
                 />
               </div>
 
               {/* Platform */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Platform
+                <label className="text-sm font-medium">
+                  Platform (Kahoot atau Wayground)
                 </label>
                 <select
                   name="platform"
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
+                  defaultValue=""
+                  className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
                 >
-                  <option value="">Pilih Platform</option>
+                  <option
+                    className="text-[#B0AA9C]"
+                    value=""
+                    disabled
+                    hidden
+                  >
+                    Pilih Platform
+                  </option>
                   <option value="kahoot">Kahoot</option>
                   <option value="wayground">Wayground</option>
                 </select>
@@ -101,92 +114,105 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
 
               {/* Link */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Link Kuis
-                </label>
+                <label className="text-sm font-medium">Link Kuis</label>
                 <input
                   type="url"
                   name="link"
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
-                  placeholder="Masukkan link"
+                  className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] placeholder-[#B0AA9C] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
+                  placeholder="Masukkan Link Kahoot atau Wayground"
                 />
               </div>
 
               {/* Mata Pelajaran */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Mata Pelajaran
+                <label className="text-sm font-medium">
+                  Kategori Mata Pelajaran
                 </label>
                 <select
                   name="subjectCategory"
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
+                  defaultValue=""
+                  className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
                 >
-                  <option value="">Pilih Mata Pelajaran</option>
+                  <option
+                    className="text-[#B0AA9C]"
+                    value=""
+                    disabled
+                    hidden
+                  >
+                    Pilih Mapel
+                  </option>
+                  <option value="bahasa-inggris">Bahasa Inggris</option>
                   <option value="matematika">Matematika</option>
-                  <option value="bahasa-indonesia">Bahasa Indonesia</option>
                   <option value="ipa">IPA</option>
                   <option value="ips">IPS</option>
-                  <option value="bahasa-inggris">Bahasa Inggris</option>
                 </select>
               </div>
 
               {/* Kelas */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Kelas
+                <label className="text-sm font-medium">
+                  Kategori Kelas
                 </label>
                 <select
                   name="classCategory"
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700 focus:ring-2 focus:ring-amber-300 focus:border-amber-300 outline-none"
+                  defaultValue=""
+                  className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
                 >
-                  <option value="">Pilih Kelas</option>
-                  <option value="kelas-1">Kelas 1</option>
-                  <option value="kelas-2">Kelas 2</option>
-                  <option value="kelas-3">Kelas 3</option>
-                  <option value="kelas-4">Kelas 4</option>
-                  <option value="kelas-5">Kelas 5</option>
-                  <option value="kelas-6">Kelas 6</option>
+                  <option
+                    className="text-[#B0AA9C]"
+                    value=""
+                    disabled
+                    hidden
+                  >
+                    Pilih Kelas
+                  </option>
+                  <option value="kelas-1">1 SD</option>
+                  <option value="kelas-2">2 SD</option>
+                  <option value="kelas-3">3 SD</option>
+                  <option value="kelas-4">4 SD</option>
+                  <option value="kelas-5">5 SD</option>
+                  <option value="kelas-6">6 SD</option>
                 </select>
               </div>
 
               {/* Upload Gambar */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Gambar Pendukung
+                <label className="text-sm font-medium">
+                  Upload Gambar Pendukung
                 </label>
-                <div className="relative">
+                <label className="flex items-center gap-2 w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] text-[#B0AA9C] rounded-xl px-3 py-2 cursor-pointer">
+                  <img
+                    src="src/assets/upload.png"
+                    className="w-5"
+                    alt="upload"
+                  />
+                  <span className="text-sm">
+                    {formData.file ? formData.file.name : "Unggah File"}
+                  </span>
                   <input
                     type="file"
                     name="file"
-                    id="file-upload"
-                    onChange={handleChange}
                     className="hidden"
+                    onChange={handleChange}
                   />
-                  <label
-                    htmlFor="file-upload"
-                    className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-1.5 cursor-pointer text-gray-600 text-sm hover:bg-gray-50"
-                  >
-                    <Upload className="w-4 h-4 text-gray-500" />
-                    {formData.file ? formData.file.name : "Unggah File"}
-                  </label>
-                </div>
+                </label>
               </div>
 
               {/* Tombol Aksi */}
-              <div className="flex justify-end gap-2 mt-3">
+              <div className="flex justify-end gap-3 mt-6">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="bg-gray-100 text-gray-700 text-sm px-3 py-1.5 rounded-md hover:bg-gray-200"
+                  className="font-bold px-4 py-2 w-36 rounded-xl border border-gray-300 hover:bg-gray-100 text-[#FFA01A]"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="bg-amber-400 text-white text-sm px-3 py-1.5 rounded-md hover:bg-amber-500 transition-all"
+                  className="font-bold px-4 py-2 w-36 bg-orange-500 text-white rounded-xl hover:bg-orange-600"
                 >
                   Simpan
                 </button>
@@ -196,11 +222,24 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
         </div>
       )}
 
-      {/* Popup sukses / gagal */}
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-      />
+      {/* POPUP SUKSES – bentuk sama seperti gambar di AddBuku */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[60]">
+          <div className="bg-white rounded-3xl shadow-2xl px-10 py-8 text-center max-w-sm w-full">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-[#22c55e] flex items-center justify-center">
+              <Check size={30} className="text-white" />
+            </div>
+            <p className="font-semibold text-lg text-gray-900">
+              Rekomendasi Kuis berhasil dibuat
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              Mohon Menunggu Verifikasi Admin
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Popup gagal tetap pakai komponen existing */}
       <FailedModal
         isOpen={showFailedModal}
         onClose={() => setShowFailedModal(false)}

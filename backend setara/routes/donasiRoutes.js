@@ -4,7 +4,10 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import createDonasi, { getDonasi } from "../controllers/donasiController.js";
+import createDonasi, {
+  getDonasi,
+  getApprovedDonasi,
+} from "../controllers/donasiController.js";
 
 const router = express.Router();
 
@@ -27,8 +30,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// GET /api/donasi -> ambil semua donasi
+// GET /api/donasi -> ambil semua donasi (admin)
 router.get("/", getDonasi);
+
+// GET /api/donasi/approved -> hanya donasi yang sudah disetujui admin
+router.get("/approved", getApprovedDonasi);
 
 // POST /api/donasi -> tambah donasi baru
 router.post("/", upload.single("banner"), createDonasi);

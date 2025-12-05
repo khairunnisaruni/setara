@@ -1,8 +1,10 @@
-// src/sections/edukasi/DaftarKuis.jsx
-import React, { useState } from "react";
+// src/sections/edukasi_interaktif/DaftarKuis.jsx
+import React, { useState, useEffect } from "react";
 import CardDaftarKuis from "./CardDaftarKuis";
+import AddQuizModal from "../../components/admin/modals/Quiz/AddQuiz";
 
-const DATA_KUIS = [
+// Fallback data kalau fetch gagal / belum ada data
+const DATA_KUIS_DEFAULT = [
   {
     id: 1,
     gambar: "src/assets/bxs_school.png",
@@ -13,26 +15,138 @@ const DATA_KUIS = [
     platform: "Kahoot",
     gambarplatform: "src/assets/kahoot.png",
   },
-  // kalau nanti ada kuis lain, tambah objek baru di sini
 ];
+
+// Mapping ID kelas dari DB -> label tampilan
+const mapKelasLabel = (kategoriKelasId) => {
+  switch (kategoriKelasId) {
+    case 1:
+      return "1 SD";
+    case 2:
+      return "2 SD";
+    case 3:
+      return "3 SD";
+    case 4:
+      return "4 SD";
+    case 5:
+      return "5 SD";
+    case 6:
+      return "6 SD";
+    default:
+      return "1 SD";
+  }
+};
+
+// Mapping enum platform di DB -> label tampilan
+const mapPlatformLabel = (platformEnum) => {
+  // di DB: enum('wayground','kahoot')
+  if (platformEnum === "kahoot") return "Kahoot";
+  if (platformEnum === "wayground") return "Wayground";
+  return "Kahoot";
+};
+
+const getPlatformImage = (platformEnum) => {
+  if (platformEnum === "kahoot") return "src/assets/kahoot.png";
+  if (platformEnum === "wayground") return "src/assets/wayground.png";
+  return "src/assets/kahoot.png";
+};
 
 const DaftarKuis = () => {
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // filter berdasarkan kata kunci
-  const filteredKuis = DATA_KUIS.filter((kuis) => {
-    if (!searchTerm.trim()) return true; // kalau search kosong, tampilkan semua
+  const [kelasFilter, setKelasFilter] = useState("Semua Kelas");
+  const [mapelFilter, setMapelFilter] = useState("Semua Mata Pelajaran");
+  const [platformFilter, setPlatformFilter] = useState("Semua Platform");
 
-    const term = searchTerm.toLowerCase();
+  // data kuis dari backend
+  const [quizzes, setQuizzes] = useState([]);
 
-    return (
+  // === FUNGSI SUBMIT KE BACKEND (dipanggil dari AddQuizModal) ===
+  const handleSubmitQuiz = async (formData) => {
+    const body = new FormData();
+    body.append("title", formData.title);
+    body.append("description", formData.description);
+    body.append("platform", formData.platform);
+    body.append("link", formData.link);
+    body.append("subjectCategory", formData.subjectCategory);
+    body.append("classCategory", formData.classCategory);
+    if (formData.file) {
+      body.append("file", formData.file);
+    }
+
+    const res = await fetch("http://localhost:5000/api/kuis", {
+      method: "POST",
+      body,
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.message || "Gagal menambah kuis");
+    }
+  };
+
+  // Ambil kuis approved dari backend saat pertama kali load
+  useEffect(() => {
+    const fetchApprovedQuizzes = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/kuis/approved");
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Gagal mengambil kuis approved");
+        }
+
+        // Mapping baris DB -> struktur yang dipakai CardDaftarKuis
+        const mapped = data.map((row) => ({
+          id: row.id,
+          gambar: "src/assets/bxs_school.png",
+          kelas: mapKelasLabel(row.kategori_kelas_id),
+          // TODO: map kategori_id -> nama mapel kalau sudah ada tabel kategori
+          mapel: "Bahasa Inggris",
+          judul: row.title,
+          deskripsi: row.description || "",
+          platform: mapPlatformLabel(row.platform),
+          gambarplatform: getPlatformImage(row.platform),
+        }));
+
+        setQuizzes(mapped);
+      } catch (error) {
+        console.error("Gagal fetch kuis approved:", error);
+        // fallback ke data default kalau error
+        setQuizzes(DATA_KUIS_DEFAULT);
+      }
+    };
+
+    fetchApprovedQuizzes();
+  }, []);
+
+  // Kalau fetch berhasil, pakai quizzes; kalau belum, pakai default
+  const sourceKuis =
+    quizzes && quizzes.length > 0 ? quizzes : DATA_KUIS_DEFAULT;
+
+  // Filter berdasarkan kata kunci + dropdown
+  const filteredKuis = sourceKuis.filter((kuis) => {
+    const term = searchTerm.trim().toLowerCase();
+
+    const matchSearch =
+      !term ||
       kuis.judul.toLowerCase().includes(term) ||
       kuis.mapel.toLowerCase().includes(term) ||
       kuis.kelas.toLowerCase().includes(term) ||
       kuis.deskripsi.toLowerCase().includes(term) ||
-      kuis.platform.toLowerCase().includes(term)
-    );
+      kuis.platform.toLowerCase().includes(term);
+
+    const matchKelas =
+      kelasFilter === "Semua Kelas" || kuis.kelas === kelasFilter;
+
+    const matchMapel =
+      mapelFilter === "Semua Mata Pelajaran" || kuis.mapel === mapelFilter;
+
+    const matchPlatform =
+      platformFilter === "Semua Platform" || kuis.platform === platformFilter;
+
+    return matchSearch && matchKelas && matchMapel && matchPlatform;
   });
 
   return (
@@ -58,50 +172,48 @@ const DaftarKuis = () => {
         </div>
 
         {/* Dropdown Kelas */}
-        <select className="bg-white w-full md:w-40 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
-          <option
-            className="text-[#B0AA9C]"
-            value=""
-            disabled
-            selected
-            hidden
-          >
+        <select
+          className="bg-white w-full md:w-40 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500"
+          value={kelasFilter}
+          onChange={(e) => setKelasFilter(e.target.value)}
+        >
+          <option value="Semua Kelas" className="text-[#B0AA9C]">
             Semua Kelas
           </option>
-          <option>Kelas 1</option>
-          <option>Kelas 2</option>
-          <option>Kelas 3</option>
+          <option value="1 SD">1 SD</option>
+          <option value="2 SD">2 SD</option>
+          <option value="3 SD">3 SD</option>
+          <option value="4 SD">4 SD</option>
+          <option value="5 SD">5 SD</option>
+          <option value="6 SD">6 SD</option>
         </select>
 
         {/* Dropdown Mapel */}
-        <select className="bg-white w-full md:w-48 py-2 px-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
-          <option
-            className="text-[#B0AA9C]"
-            value=""
-            disabled
-            selected
-            hidden
-          >
+        <select
+          className="bg-white w-full md:w-48 py-2 px-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500"
+          value={mapelFilter}
+          onChange={(e) => setMapelFilter(e.target.value)}
+        >
+          <option value="Semua Mata Pelajaran" className="text-[#B0AA9C]">
             Semua Mata Pelajaran
           </option>
-          <option>Matematika</option>
-          <option>IPA</option>
-          <option>IPS</option>
+          <option value="Bahasa Inggris">Bahasa Inggris</option>
+          <option value="Matematika">Matematika</option>
+          <option value="IPA">IPA</option>
+          <option value="IPS">IPS</option>
         </select>
 
         {/* Dropdown Platform */}
-        <select className="bg-white w-full md:w-44 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500">
-          <option
-            className="text-[#B0AA9C]"
-            value=""
-            disabled
-            selected
-            hidden
-          >
+        <select
+          className="bg-white w-full md:w-44 py-2 px-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500"
+          value={platformFilter}
+          onChange={(e) => setPlatformFilter(e.target.value)}
+        >
+          <option value="Semua Platform" className="text-[#B0AA9C]">
             Semua Platform
           </option>
-          <option>Kahoot</option>
-          <option>Wayground</option>
+          <option value="Kahoot">Kahoot</option>
+          <option value="Wayground">Wayground</option>
         </select>
 
         {/* Tombol Tambah Kuis */}
@@ -117,7 +229,7 @@ const DaftarKuis = () => {
       <div className="grid md:grid-cols-4 gap-6 mt-10">
         {filteredKuis.length === 0 ? (
           <div className="col-span-4 text-center text-gray-500">
-            Kuis tidak ditemukan untuk kata kunci tersebut.
+            Kuis tidak ditemukan untuk kata kunci / filter tersebut.
           </div>
         ) : (
           filteredKuis.map((kuis) => (
@@ -134,150 +246,12 @@ const DaftarKuis = () => {
         )}
       </div>
 
-      {/* Pop Up Form */}
-      {showForm && (
-        <form method="POST" action="http://localhost:5000/api/kuis">
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl shadow-xl p-6 w-96 max-h-[90vh] overflow-y-auto animate-[fadeIn_.2s_ease]">
-              <h2 className="text-xl font-bold mb-4 text-center">
-                Tambah Kuis & Game
-              </h2>
-
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium">
-                    Judul Kuis & Game
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400 placeholder-[#B0AA9C]"
-                    placeholder="Masukkan judul Kuis & Game"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">
-                    Deskripsi (15 Kata)
-                  </label>
-                  <textarea
-                    name="description"
-                    className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400 placeholder-[#B0AA9C]"
-                    placeholder="Deskripsi singkat tentang kuis & game"
-                  ></textarea>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">
-                    Platform (Kahoot atau Wayground)
-                  </label>
-                  <select
-                    name="platform"
-                    className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
-                  >
-                    <option
-                      className="text-[#B0AA9C]"
-                      value=""
-                      disabled
-                      selected
-                      hidden
-                    >
-                      Pilih Platform
-                    </option>
-                    <option value="kahoot">Kahoot</option>
-                    <option value="wayground">Wayground</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">Link Kuis</label>
-                  <input
-                    type="url"
-                    name="link"
-                    className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] placeholder-[#B0AA9C] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400"
-                    placeholder="Masukkan Link Kahoot atau Wayground"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">
-                    Kategori Mata Pelajaran
-                  </label>
-                  <select className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400">
-                    <option
-                      className="text-[#B0AA9C]"
-                      value=""
-                      disabled
-                      selected
-                      hidden
-                    >
-                      Pilih Mapel
-                    </option>
-                    <option>Bahasa Inggris</option>
-                    <option>Matematika</option>
-                    <option>IPA</option>
-                    <option>IPS</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">
-                    Kategori Kelas
-                  </label>
-                  <select className="w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] rounded-xl px-3 py-2 focus:ring-2 focus:ring-orange-400">
-                    <option
-                      className="text-[#B0AA9C]"
-                      value=""
-                      disabled
-                      selected
-                      hidden
-                    >
-                      Pilih Kelas
-                    </option>
-                    <option>1 SD</option>
-                    <option>2 SD</option>
-                    <option>3 SD</option>
-                    <option>4 SD</option>
-                    <option>5 SD</option>
-                    <option>6 SD</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">
-                    Upload Gambar Pendukung
-                  </label>
-                  <label className="flex items-center gap-2 w-full mt-1 border border-[#E0DCD3] bg-[#F8F4EA] text-[#B0AA9C] rounded-xl px-3 py-2 cursor-pointer">
-                    <img
-                      src="src/assets/upload.png"
-                      className="w-5"
-                      alt="upload"
-                    />
-                    <span className="text-sm">Unggah File</span>
-                    <input type="file" className="hidden" />
-                  </label>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  className="font-bold px-4 py-2 w-36 rounded-xl border border-gray-300 hover:bg-gray-100 text-[#FFA01A]"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  className="font-bold px-4 py-2 w-36 bg-orange-500 text-white rounded-xl hover:bg-orange-600"
-                >
-                  Simpan
-                </button>
-              </div>
-            </div>
-          </div>
-        </form>
-      )}
+      {/* Modal Tambah Kuis – desain dari AddQuiz.jsx */}
+      <AddQuizModal
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        onSubmit={handleSubmitQuiz}
+      />
     </div>
   );
 };

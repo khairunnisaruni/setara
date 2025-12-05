@@ -1,8 +1,8 @@
 // src/sections/referensi_aksi/ProgramListSection.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProgramCard from "../../components/referensi_aksi/ProgramCard";
 
-// Data program VOLUNTEER / beasiswa / pengabdian
+// Data dummy fallback
 const PROGRAM_LIST = [
   {
     id: 1,
@@ -17,46 +17,26 @@ const PROGRAM_LIST = [
     link: "https://contoh-volunteer.com",
     image: "./src/assets/Volunteer_mengajar_satu_desa.png",
   },
-  {
-    id: 2,
-    kategori: "Volunteer",
-    status: "Akan Datang",
-    judul: "Program Kampus Mengajar",
-    penyelenggara: "Kemendikbud",
-    deskripsi:
-      "Kesempatan bagi mahasiswa untuk mengajar anak-anak di daerah 3T.",
-    periode: "April – Juni 2025",
-    deadline: "28 Maret 2025",
-    link: "https://contoh-kampus-mengajar.com",
-    image: "./src/assets/Kampus_mengajar.png",
-  },
-  {
-    id: 3,
-    kategori: "Beasiswa",
-    status: "Sedang Dibuka",
-    judul: "Beasiswa Pendidikan Bright Futures 2025",
-    penyelenggara: "Yayasan Indonesia Cerdas",
-    deskripsi:
-      "Beasiswa untuk mahasiswa aktif dengan minat kontribusi di bidang pendidikan masyarakat.",
-    periode: "Januari – Desember 2025",
-    deadline: "29 Desember 2024",
-    link: "https://contoh-beasiswa.com",
-    image: "./src/assets/beasiswa_pendidikan_bright_future.png",
-  },
-  {
-    id: 4,
-    kategori: "Pengabdian Masyarakat",
-    status: "Sedang Dibuka",
-    judul: "Relawan Pengajar Desa 2025",
-    penyelenggara: "Yayasan Cahaya Literasi Indonesia",
-    deskripsi:
-      "Mengajar anak-anak di daerah 3T dengan metode pembelajaran yang menyenangkan.",
-    periode: "April – Juli 2025",
-    deadline: "18 Maret 2025",
-    link: "https://contoh-pengabdian.com",
-    image: "./src/assets/relawan_pengajar_desa.png",
-  },
+  // ...dst (biarkan seperti sekarang)
 ];
+
+const mapKategori = (jenis_program) => {
+  // sesuaikan dengan nilai di kolom jenis_program tabel programs
+  if (jenis_program === "Volunteer") return "Volunteer";
+  if (jenis_program === "Beasiswa") return "Beasiswa";
+  if (jenis_program === "Pengabdian Masyarakat") return "Pengabdian Masyarakat";
+  return jenis_program || "Volunteer";
+};
+
+const mapStatusProgram = (status_program) => {
+  // misal di DB: 'akan datang', 'sedang dibuka', 'selesai'
+  if (!status_program) return "Akan Datang";
+  const lower = status_program.toLowerCase();
+  if (lower === "akan datang") return "Akan Datang";
+  if (lower === "sedang dibuka") return "Sedang Dibuka";
+  if (lower === "selesai") return "Selesai";
+  return status_program;
+};
 
 export default function ProgramListSection({
   searchText = "",
@@ -65,7 +45,48 @@ export default function ProgramListSection({
 }) {
   const [selectedProgram, setSelectedProgram] = useState(null);
 
-  const filteredPrograms = PROGRAM_LIST.filter((p) => {
+  // data program approved dari backend
+  const [programs, setPrograms] = useState([]);
+
+  // ambil program yang sudah di-approve admin
+  useEffect(() => {
+    const fetchApprovedPrograms = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/programs/approved");
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Gagal mengambil program approved");
+        }
+
+        const mapped = data.map((row) => ({
+          id: row.id,
+          kategori: mapKategori(row.jenis_program),
+          status: mapStatusProgram(row.status_program),
+          judul: row.judul_program,
+          penyelenggara: row.penyelenggara,
+          deskripsi: row.deskripsi_program || "",
+          periode: row.periode_tanggal || "",
+          deadline: row.deadline_pendaftaran || "",
+          link: row.tautan_sumber_resmi || "#",
+          image: row.poster_banner || "./src/assets/Volunteer_mengajar_satu_desa.png",
+        }));
+
+        setPrograms(mapped);
+      } catch (err) {
+        console.error("Gagal fetch program approved:", err);
+        // kalau error, biarkan kosong -> fallback ke PROGRAM_LIST
+      }
+    };
+
+    fetchApprovedPrograms();
+  }, []);
+
+  // gunakan data backend jika ada, kalau tidak pakai dummy
+  const sourcePrograms =
+    programs && programs.length > 0 ? programs : PROGRAM_LIST;
+
+  const filteredPrograms = sourcePrograms.filter((p) => {
     const matchKategori = kategori === "Semua" || p.kategori === kategori;
     const matchStatus = status === "Semua" || p.status === status;
 
@@ -75,7 +96,7 @@ export default function ProgramListSection({
       p.judul.toLowerCase().includes(q) ||
       p.penyelenggara.toLowerCase().includes(q) ||
       p.kategori.toLowerCase().includes(q) ||
-      p.deskripsi.toLowerCase().includes(q); // filter teks di beberapa field [web:340]
+      p.deskripsi.toLowerCase().includes(q);
 
     return matchKategori && matchStatus && matchSearch;
   });
@@ -96,7 +117,6 @@ export default function ProgramListSection({
         ))
       )}
 
-      {/* Modal detail sederhana, pakai data dari ProgramCard yang dipilih */}
       {selectedProgram && (
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
           <div className="bg-white rounded-2xl w-[700px] max-h-[90vh] overflow-y-auto relative p-6">

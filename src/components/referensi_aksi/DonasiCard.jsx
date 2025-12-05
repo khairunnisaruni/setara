@@ -20,7 +20,7 @@ const DonasiCard = ({ data }) => {
         className="h-[220px] w-full object-cover"
       />
 
-      <div className="flex-1 flex flex-col justify-between p-5">
+      <div className="flex-1 flex flex-col justify-dtween p-5">
         <div>
           <div className="flex justify-between items-center mb-3">
             <div></div>
