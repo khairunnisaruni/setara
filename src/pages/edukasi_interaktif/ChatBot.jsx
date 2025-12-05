@@ -5,6 +5,7 @@ import MainChatbot from '../../sections/edukasi_interaktif/MainChatbotSection'
 
 const ChatBot = () => {
   return (
+
     <div className="bg-[#FAF8F4] min-h-screen pb-20 pt-24">
         <NavbarVolunteer />
         <HeaderChatBot />
@@ -12,5 +13,6 @@ const ChatBot = () => {
     </div>
   )
 }
+
 
 export default ChatBot

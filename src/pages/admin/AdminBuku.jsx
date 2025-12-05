@@ -1,34 +1,81 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "../../sections/admin/AdminLayout";
 import TabButton from "../../components/admin/TabButton";
 import ToolbarSection from "../../sections/admin/ToolbarSection";
-import BookTableSection from "../../sections/admin/BookTableSection";
+import BookTableSection from "../../sections/admin/BookTableSection"; 
 import Pagination from "../../components/admin/Pagination";
+
+// Import Modal
 import AddBookModal from "../../components/admin/modals/Buku/AddBuku"; 
-import Success from "../../components/admin/modals/Success";
-import Failed from "../../components/admin/modals/Failed";
+import SuccessModal from "../../components/admin/modals/Success";
+import FailedModal from "../../components/admin/modals/Failed";
 
 const Buku = () => {
   const [activeTab, setActiveTab] = useState("daftar");
   const [search, setSearch] = useState("");
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false); 
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // State Modal & Refresh
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFailedModal, setShowFailedModal] = useState(false);
+  
+  // Refresh Trigger untuk memberitahu TableSection agar reload data
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // ✅ handle submit dari modal
-   const handleAddSubmit = async (formData) => {
+  // Fetch Pending Count
+  useEffect(() => {
+    fetch('http://localhost:5000/admin/buku') 
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const count = data.filter(b => b.status === 'pending').length;
+          setPendingCount(count);
+        }
+      })
+      .catch(err => console.error("Gagal hitung pending:", err));
+  }, [activeTab, refreshTrigger]); 
+
+  // ✅ FUNGSI SUBMIT YANG SUDAH DIPERBAIKI
+  const handleAddSubmit = async (formData) => {
     try {
-      console.log("Data buku baru:", formData);
+      console.log("📦 Mengirim Data Buku...", formData);
 
-      // Simulasi proses API
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const dataToSend = new FormData();
+      dataToSend.append("title", formData.title);
+      dataToSend.append("author", formData.author);
+      dataToSend.append("description", formData.description);
+      dataToSend.append("link", formData.link);
+      
+      // 🔥 PERBAIKAN: Gunakan 'kategori_id' (bukan category)
+      if(formData.kategori_id) {
+          dataToSend.append("kategori_id", formData.kategori_id);
+      } else {
+          alert("Pilih kategori dulu!");
+          return;
+      }
+      
+      // 🔥 PERBAIKAN: Gunakan 'gambar' (bukan cover/file)
+      if (formData.gambar) {
+        dataToSend.append("gambar", formData.gambar); 
+      }
 
-      // Jika berhasil
-      setShowSuccessModal(true);
-      setIsAddModalOpen(false);
+      const response = await fetch('http://localhost:5000/admin/buku', {
+        method: 'POST',
+        body: dataToSend, 
+      });
+
+      if (!response.ok) throw new Error("Gagal upload buku");
+
+      // Jika Sukses:
+      setRefreshTrigger(prev => prev + 1); // Refresh Tabel
+      setIsAddModalOpen(false); // Tutup Modal Form
+      setShowSuccessModal(true); // Tampilkan Modal Sukses
+
     } catch (error) {
-      // Jika gagal
-      setShowFailedModal(true);
+      console.error(error);
+      setIsAddModalOpen(false); // Tutup Modal Form
+      setShowFailedModal(true); // Tampilkan Modal Gagal
     }
   };
 
@@ -42,7 +89,7 @@ const Buku = () => {
 
         {/* Tabs */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 w-full">
-          <div className="flex flex-wrap border-b border-gray-100 px-4 py-2">
+          <div className="flex flex-wrap border-b border-gray-100 gap-x-5 px-4 py-2">
             <TabButton
               active={activeTab === "daftar"}
               onClick={() => setActiveTab("daftar")}
@@ -52,43 +99,51 @@ const Buku = () => {
             <TabButton
               active={activeTab === "verifikasi"}
               onClick={() => setActiveTab("verifikasi")}
-              badge="5"
+              badge={pendingCount > 0 ? pendingCount : null}
             >
               Verifikasi Rekomendasi Buku
             </TabButton>
           </div>
         </div>
 
-        {/* Toolbar */}
         <ToolbarSection
           search={search}
           setSearch={setSearch}
           activeTab={activeTab}
-          onAddClick={() => setIsAddModalOpen(true)} // ✅ buka modal
+          onAddClick={() => setIsAddModalOpen(true)} 
         />
 
-        {/* Table */}
-        <BookTableSection activeTab={activeTab} search={search} />
+        {/* Kirim refreshTrigger ke TableSection */}
+        <BookTableSection 
+            activeTab={activeTab} 
+            search={search} 
+            key={refreshTrigger} // Trik React: Ganti key agar komponen re-render/fetch ulang
+        />
 
-        {/* Pagination */}
         <Pagination />
 
-        {/* ✅ Modal Tambah Buku */}
-        <AddBookModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
+        {/* Modal Tambah */}
+        <AddBookModal 
+          isOpen={isAddModalOpen} 
+          onClose={() => setIsAddModalOpen(false)} 
           onSubmit={handleAddSubmit}
         />
 
-        {/* ✅ Modal Sukses */}
+        {/* Modal Notifikasi */}
         {showSuccessModal && (
-          <Success onClose={() => setShowSuccessModal(false)} />
+          <SuccessModal 
+            isOpen={showSuccessModal} 
+            onClose={() => setShowSuccessModal(false)} 
+          />
         )}
 
-        {/* ✅ Modal Gagal */}
         {showFailedModal && (
-          <Failed onClose={() => setShowFailedModal(false)} />
+          <FailedModal 
+            isOpen={showFailedModal} 
+            onClose={() => setShowFailedModal(false)} 
+          />
         )}
+
       </div>
     </AdminLayout>
   );

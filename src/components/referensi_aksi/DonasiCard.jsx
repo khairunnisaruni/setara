@@ -126,4 +126,3 @@ const DonasiCard = ({ data }) => {
 };
 
 export default DonasiCard;
-

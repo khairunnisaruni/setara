@@ -1,39 +1,49 @@
 import { useState, useEffect } from "react";
 
-const EditDonasiModal = ({ isOpen, onClose, onSubmit }) => {
+const EditDonasiModal = ({ isOpen, onClose, onSubmit, initialData }) => {
+  // 1. STATE HARUS SAMA DENGAN DATABASE (Bahasa Indonesia)
   const [formData, setFormData] = useState({
     title: "",
-    category: "",
-    recipient: "",
+    kategori: "",            // Dulu: category (GANTI INI PENTING!)
+    penerima_manfaat: "",    // Dulu: recipient
     description: "",
-    impact: "",
+    dampak: "",              // Dulu: impact
     link: "",
-    responsible: "",
-    contact: "",
-    banner: null,
+    penanggung_jawab: "",    // Dulu: responsible
+    contact_person: "",      // Dulu: contact
+    poster: null,
   });
 
-  // Saat modal dibuka, isi dengan data dummy
+  // 2. ISI DATA SAAT EDIT (Gunakan nama database)
   useEffect(() => {
     if (isOpen) {
-      const dummyData = {
-        title: "Donasi Buku Bacaan untuk Anak SD di Daerah Terpencil",
-        category: "Pendidikan",
-        recipient: "Siswa SD Tapanuli, Komunitas belajar anak-anak usia 7–12 tahun",
-        description:
-          "Program donasi untuk membantu penyediaan buku bacaan anak-anak di daerah terpencil agar meningkatkan minat baca dan pengetahuan mereka.",
-        impact:
-          "Buku akan digunakan oleh sekolah dasar dan komunitas lokal, membantu meningkatkan literasi anak-anak.",
-        link: "https://donasi-sekolahpeduli.id",
-        responsible: "Komunitas Sekolah Peduli",
-        contact: "0812-3456-7890 (Rina)",
-        banner: null,
-      };
-      setFormData(dummyData);
+      if (initialData) {
+        setFormData({
+          title: initialData.title || "",
+          kategori: initialData.kategori || "", // Pastikan ini 'kategori'
+          penerima_manfaat: initialData.penerima_manfaat || "",
+          description: initialData.description || "",
+          dampak: initialData.dampak || "",
+          link: initialData.link || "",
+          penanggung_jawab: initialData.penanggung_jawab || "",
+          contact_person: initialData.contact_person || "",
+        });
+      } else {
+        // Reset Form untuk Tambah Baru
+        setFormData({
+          title: "",
+          kategori: "",
+          penerima_manfaat: "",
+          description: "",
+          dampak: "",
+          link: "",
+          penanggung_jawab: "",
+          contact_person: "",
+        });
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, initialData]);
 
-  // Handle perubahan input teks & file
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData({
@@ -42,11 +52,9 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit }) => {
     });
   };
 
-  // Submit form
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("📦 Data donasi yang diperbarui:", formData);
-    if (onSubmit) onSubmit(formData);
+    onSubmit(formData);
   };
 
   if (!isOpen) return null;
@@ -60,13 +68,14 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit }) => {
     "Pengabdian Masyarakat & Workshop",
     "Kegiatan Ekstra Kulikuler & Kreativitas",
     "Kampanye & Edukasi Masyarakat",
+    "Bantuan Bencana Alam",
   ];
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
       <div className="bg-white rounded-xl p-4 w-full max-w-lg shadow-lg overflow-y-auto max-h-[90vh]">
         <h2 className="text-base font-semibold mb-3 text-gray-800 text-center">
-          Edit Program Donasi
+          {initialData ? "Edit Program Donasi" : "Tambah Program Donasi"}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-2 text-left">
@@ -81,7 +90,8 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit }) => {
               value={formData.title}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="Contoh: Donasi Buku Bacaan untuk Anak SD di Daerah Terpencil"
+              placeholder="Contoh: Donasi Buku Bacaan..."
+              required
             />
           </div>
 
@@ -91,10 +101,11 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit }) => {
               Kategori Donasi
             </label>
             <select
-              name="category"
-              value={formData.category}
+              name="kategori" // WAJIB SAMA DENGAN STATE
+              value={formData.kategori}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700"
+              required
             >
               <option value="">Pilih kategori donasi...</option>
               {categoryOptions.map((cat) => (
@@ -112,11 +123,12 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit }) => {
             </label>
             <input
               type="text"
-              name="recipient"
-              value={formData.recipient}
+              name="penerima_manfaat" // WAJIB SAMA DENGAN STATE
+              value={formData.penerima_manfaat}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="Contoh: Siswa SD Tapanuli, Komunitas belajar anak-anak usia 7–12 tahun"
+              placeholder="Contoh: Siswa SD Tapanuli..."
+              required
             />
           </div>
 
@@ -131,7 +143,8 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit }) => {
               value={formData.description}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="Tuliskan deskripsi tentang tujuan donasi, penerima manfaat, dan bentuk bantuan yang dibutuhkan..."
+              placeholder="Tuliskan deskripsi..."
+              required
             />
           </div>
 
@@ -155,16 +168,18 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit }) => {
               Dampak Donasi
             </label>
             <textarea
-              name="impact"
+              name="dampak" // WAJIB SAMA DENGAN STATE
               rows="2"
-              value={formData.impact}
+              value={formData.dampak}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="Bagaimana bantuan akan digunakan dan dampaknya bagi penerima manfaat"
+              placeholder="Bagaimana dampak donasi ini..."
+              required
             />
           </div>
 
-          {/* Tautan ke sumber resmi donasi */}
+          {/* Tautan */}
+
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Tautan ke sumber resmi donasi
@@ -176,21 +191,24 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit }) => {
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
               placeholder="https://..."
+              required
             />
           </div>
 
-          {/* Penanggung Jawab Donasi */}
+          {/* Penanggung Jawab */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Penanggung Jawab Donasi
             </label>
             <input
               type="text"
-              name="responsible"
-              value={formData.responsible}
+              name="penanggung_jawab" // WAJIB SAMA DENGAN STATE
+              value={formData.penanggung_jawab}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="Masukkan nama penanggung jawab donasi"
+              placeholder="Masukkan nama penanggung jawab"
+              required
+
             />
           </div>
 
@@ -201,11 +219,13 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit }) => {
             </label>
             <input
               type="text"
-              name="contact"
-              value={formData.contact}
+              name="contact_person" // WAJIB SAMA DENGAN STATE
+              value={formData.contact_person}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="Masukkan kontak atau nomor telepon penanggung jawab donasi"
+              placeholder="No HP / Kontak"
+              required
+
             />
           </div>
 
@@ -222,7 +242,8 @@ const EditDonasiModal = ({ isOpen, onClose, onSubmit }) => {
               type="submit"
               className="bg-amber-400 text-white text-sm px-4 py-1.5 rounded-md font-medium hover:bg-amber-500"
             >
-              Perbarui
+              {initialData ? "Perbarui" : "Simpan"}
+
             </button>
           </div>
         </form>

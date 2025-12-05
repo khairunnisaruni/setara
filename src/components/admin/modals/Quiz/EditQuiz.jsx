@@ -7,24 +7,37 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
     description: "",
     platform: "",
     link: "",
-    subjectCategory: "",
-    classCategory: "",
+    kategori_id: "",       
+    kategori_kelas_id: "",  
     file: null,
   });
 
-  useEffect(() => {
-    if (isOpen) {
-      const dummyData = {
-        title: "Kuis Pecahan Seru",
-        description:
-          "Kuis matematika interaktif tentang pecahan yang menyenangkan.",
-        platform: "Kahoot",
-        link: "https://create.kahoot.it/discover",
-        subjectCategory: "Matematika",
-        classCategory: "4 SD",
-      };
+  const [listKategori, setListKategori] = useState([]);
+  const [listKelas, setListKelas] = useState([]);
 
-      setFormData(initialData || dummyData);
+  useEffect(() => {
+    fetch('http://localhost:5000/admin/categories')
+      .then(res => res.json())
+      .then(data => setListKategori(data))
+      .catch(err => console.error(err));
+
+    fetch('http://localhost:5000/admin/class-categories')
+      .then(res => res.json())
+      .then(data => setListKelas(data))
+      .catch(err => console.error(err));
+  }, []);
+
+  useEffect(() => {
+    if (isOpen && initialData) {
+      setFormData({
+        title: initialData.title || "",
+        description: initialData.description || "",
+        platform: initialData.platform || "",
+        link: initialData.link || "",
+        kategori_id: initialData.kategori_id || "", 
+        kategori_kelas_id: initialData.kategori_kelas_id || "",
+        file: null, 
+      });
     }
   }, [isOpen, initialData]);
 
@@ -93,10 +106,12 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700 placeholder-gray-400"
             >
               <option value="">Pilih Platform</option>
-              <option value="Kahoot">Kahoot</option>
-              <option value="Wayground">Wayground</option>
-              <option value="Quizizz">Quizizz</option>
-              <option value="Google Form">Google Form</option>
+              {/* Pastikan value huruf kecil sesuai ENUM database kamu */}
+              <option value="kahoot">Kahoot</option>
+              <option value="wayground">Wayground</option>
+              {/* Jika database sudah diubah ENUM-nya, baru boleh tambah ini: */}
+              <option value="quizizz">Quizizz</option> 
+              <option value="google form">Google Form</option>
             </select>
           </div>
 
@@ -115,44 +130,46 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
             />
           </div>
 
-          {/* Kategori Mata Pelajaran */}
+          {/* Kategori Mata Pelajaran (DINAMIS) */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Kategori Mata Pelajaran
             </label>
             <select
-              name="subjectCategory"
-              value={formData.subjectCategory}
+              name="kategori_id" // <--- Ganti nama atribut
+              value={formData.kategori_id}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400 text-gray-700"
             >
               <option value="">Pilih Mata Pelajaran</option>
-              <option value="Matematika">Matematika</option>
-              <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-              <option value="IPA">IPA</option>
-              <option value="IPS">IPS</option>
-              <option value="PPKN">PPKN</option>
+              {/* Looping data dari database */}
+              {listKategori.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.nama}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* Kategori Kelas */}
+          {/* Kategori Kelas (DINAMIS) */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Kategori Kelas
             </label>
             <select
-              name="classCategory"
-              value={formData.classCategory}
+              name="kategori_kelas_id" // <--- Ganti nama atribut
+              value={formData.kategori_kelas_id}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400 text-gray-700"
             >
               <option value="">Pilih Kelas</option>
-              <option value="1 SD">1 SD</option>
-              <option value="2 SD">2 SD</option>
-              <option value="3 SD">3 SD</option>
-              <option value="4 SD">4 SD</option>
-              <option value="5 SD">5 SD</option>
-              <option value="6 SD">6 SD</option>
+               {/* Looping data dari database */}
+               {listKelas.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.nama}
+                </option>
+              ))}
+
             </select>
           </div>
 
@@ -204,3 +221,4 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
 };
 
 export default EditQuizModal;
+

@@ -1,3 +1,4 @@
+
 // src/components/modal_profile/EditPasswordModal.jsx
 import React, { useState } from "react";
 import { MdVisibilityOff, MdVisibility } from "react-icons/md";
@@ -5,11 +6,9 @@ import Toast from "../Toast";
 
 const EditPasswordModal = ({ open, onClose, password }) => {
   if (!open) return null;
-
   const [showOld, setShowOld] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -87,7 +86,6 @@ const EditPasswordModal = ({ open, onClose, password }) => {
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-[#FBF8F4] rounded-2xl p-8 w-[90%] max-w-sm shadow-lg">
         <h2 className="text-lg font-bold text-center mb-6">Edit Password</h2>
-
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           {/* Password Lama */}
           <div>

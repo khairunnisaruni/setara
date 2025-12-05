@@ -1,22 +1,29 @@
-import { useState } from "react";
-import FailedModal from "../../modals/Failed";
-import SuccessModal from "../../modals/Success";
+
+import { useState, useEffect } from "react";
 
 const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState({
+  // State awal kosong
+  const initialFormState = {
     title: "",
-    category: "",
-    recipient: "",
+    kategori: "",
+    penerima_manfaat: "",
     description: "",
-    impact: "",
+    dampak: "",
     link: "",
-    responsible: "",
-    contact: "",
-    banner: null,
-  });
+    penanggung_jawab: "",
+    contact_person: "",
+    poster: null,
+  };
 
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showFailedModal, setShowFailedModal] = useState(false);
+  const [formData, setFormData] = useState(initialFormState);
+
+  // Reset form setiap kali modal dibuka
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(initialFormState);
+    }
+  }, [isOpen]);
+
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -26,16 +33,11 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await onSubmit(formData);
-      onClose();
-      setShowSuccessModal(true);
-    } catch (error) {
-      onClose();
-      setShowFailedModal(true);
-    }
+    // Kirim data ke Parent (DonasiTableSection)
+    onSubmit(formData);
+
   };
 
   if (!isOpen) return null;
@@ -49,186 +51,163 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
     "Pengabdian Masyarakat & Workshop",
     "Kegiatan Ekstra Kulikuler & Kreativitas",
     "Kampanye & Edukasi Masyarakat",
+    "Bantuan Bencana Alam",
   ];
 
   return (
-    <>
-      <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-        <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-lg overflow-y-auto max-h-[90vh]">
-          <h2 className="text-base font-semibold text-center mb-4">
-            Tambahkan Program Donasi
-          </h2>
+    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-lg overflow-y-auto max-h-[90vh]">
+        <h2 className="text-base font-semibold text-center mb-4">
+          Tambahkan Program Donasi
+        </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-3">
-            {/* Judul Donasi */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Judul Donasi
-              </label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                placeholder="Contoh: Donasi Buku Bacaan untuk Anak SD di Daerah Terpencil"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Judul Donasi */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Judul Donasi</label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Contoh: Donasi Buku Bacaan..."
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              required
+            />
+          </div>
 
-            {/* Kategori Donasi */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Kategori Donasi
-              </label>
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700"
-              >
-                <option value="">Pilih kategori donasi...</option>
-                {categoryOptions.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Kategori Donasi */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Kategori Donasi</label>
+            <select
+              name="kategori"
+              value={formData.kategori}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700"
+              required
+            >
+              <option value="">Pilih kategori donasi...</option>
+              {categoryOptions.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
 
-            {/* Penerima Manfaat */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Penerima Manfaat
-              </label>
-              <input
-                type="text"
-                name="recipient"
-                value={formData.recipient}
-                onChange={handleChange}
-                placeholder="Contoh: Siswa SD Tapanuli, Komunitas belajar anak-anak usia 7–12 tahun"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              />
-            </div>
+          {/* Penerima Manfaat */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Penerima Manfaat</label>
+            <input
+              type="text"
+              name="penerima_manfaat"
+              value={formData.penerima_manfaat}
+              onChange={handleChange}
+              placeholder="Contoh: Siswa SD Tapanuli..."
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              required
+            />
+          </div>
 
-            {/* Deskripsi Donasi */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Deskripsi Donasi
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows="3"
-                placeholder="Tuliskan deskripsi tentang tujuan donasi, penerima manfaat, dan bentuk bantuan yang dibutuhkan..."
-                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              />
-            </div>
+          {/* Deskripsi */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Deskripsi Donasi</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows="3"
+              placeholder="Tuliskan deskripsi..."
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              required
+            />
+          </div>
 
-            {/* Poster / Banner Donasi */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Poster / Banner Donasi
-              </label>
-              <input
-                type="file"
-                name="banner"
-                accept="image/*"
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              />
-            </div>
+          {/* Poster */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Poster / Banner Donasi</label>
+            <input
+              type="file"
+              name="poster"
+              accept="image/*"
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+            />
+          </div>
 
-            {/* Dampak Donasi */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Dampak Donasi
-              </label>
-              <textarea
-                name="impact"
-                value={formData.impact}
-                onChange={handleChange}
-                rows="2"
-                placeholder="Bagaimana bantuan akan digunakan dan dampaknya bagi penerima manfaat"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              />
-            </div>
+          {/* Dampak */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Dampak Donasi</label>
+            <textarea
+              name="dampak"
+              value={formData.dampak}
+              onChange={handleChange}
+              rows="2"
+              placeholder="Dampak bagi penerima manfaat..."
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              required
+            />
+          </div>
 
-            {/* Tautan ke sumber resmi donasi */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Tautan ke sumber resmi donasi
-              </label>
-              <input
-                type="url"
-                name="link"
-                value={formData.link}
-                onChange={handleChange}
-                placeholder="https://..."
-                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              />
-            </div>
+          {/* Link */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Tautan ke sumber resmi</label>
+            <input
+              type="url"
+              name="link"
+              value={formData.link}
+              onChange={handleChange}
+              placeholder="https://..."
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              required
+            />
+          </div>
 
-            {/* Penanggung Jawab Donasi */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Penanggung Jawab Donasi
-              </label>
-              <input
-                type="text"
-                name="responsible"
-                value={formData.responsible}
-                onChange={handleChange}
-                placeholder="Masukkan nama penanggung jawab donasi"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              />
-            </div>
+          {/* Penanggung Jawab */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Penanggung Jawab Donasi</label>
+            <input
+              type="text"
+              name="penanggung_jawab"
+              value={formData.penanggung_jawab}
+              onChange={handleChange}
+              placeholder="Nama penanggung jawab"
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              required
+            />
+          </div>
 
-            {/* Contact Person */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Contact Person
-              </label>
-              <input
-                type="text"
-                name="contact"
-                value={formData.contact}
-                onChange={handleChange}
-                placeholder="Masukkan kontak atau nomor telepon penanggung jawab donasi"
-                className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              />
-            </div>
+          {/* Contact Person */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Contact Person</label>
+            <input
+              type="text"
+              name="contact_person"
+              value={formData.contact_person}
+              onChange={handleChange}
+              placeholder="No HP / Kontak"
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              required
+            />
+          </div>
 
-            {/* Tombol Aksi */}
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-amber-500 text-sm px-4 py-1.5 rounded-md font-medium border border-gray-200"
-              >
-                Batal
-              </button>
-              <button
-                type="submit"
-                className="bg-amber-400 text-white text-sm px-4 py-1.5 rounded-md font-medium hover:bg-amber-500"
-              >
-                Simpan
-              </button>
-            </div>
-          </form>
-        </div>
+          {/* Tombol Aksi */}
+          <div className="flex justify-end gap-2 mt-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-100 text-gray-700 text-sm px-3 py-1.5 rounded-md"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className="bg-amber-400 text-white text-sm px-3 py-1.5 rounded-md hover:bg-amber-500 font-bold"
+            >
+              Tambahkan
+            </button>
+          </div>
+        </form>
       </div>
-
-      {/* Modal Sukses & Gagal */}
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-      />
-      <FailedModal
-        isOpen={showFailedModal}
-        onClose={() => setShowFailedModal(false)}
-      />
-    </>
+    </div>
   );
 };
 

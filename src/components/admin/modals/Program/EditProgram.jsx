@@ -1,121 +1,96 @@
 import { useState, useEffect } from "react";
 
-const EditProgramModal = ({ isOpen, onClose, onSubmit }) => {
+const EditProgramModal = ({ isOpen, onClose, onSubmit, initialData }) => {
+  // State Sesuai Database Baru
   const [formData, setFormData] = useState({
-    title: "",
-    organizer: "",
-    programType: "",
-    location: "",
-    description: "",
-    period: "",
-    deadline: "",
-    status: "",
-    link: "",
-    banner: null,
+    judul_program: "",
+    penyelenggara: "",
+    jenis_program: "",
+    lokasi_program: "",
+    deskripsi_program: "",
+    periode_tanggal: "",
+    deadline_pendaftaran: "",
+    status_program: "akan datang",
+    tautan_sumber_resmi: "",
+    poster_banner: null,
   });
 
-  // Saat modal dibuka, isi dengan data dummy
+  // Helper Tanggal
+  const formatDateForInput = (isoDate) => {
+    if (!isoDate) return "";
+    return new Date(isoDate).toISOString().split("T")[0];
+  };
+
   useEffect(() => {
     if (isOpen) {
-      const dummyData = {
-        title: "Program Kampus Mengajar Angkatan 7",
-        organizer:
-          "Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi",
-        programType: "Volunteer",
-        location: "Seluruh Indonesia",
-        description:
-          "Program pengabdian masyarakat yang memberikan kesempatan mahasiswa untuk membantu proses pembelajaran di sekolah dasar.",
-        period: "Januari - Juni 2025",
-        deadline: "2024-12-31",
-        status: "Akan Datang",
-        link: "https://kampusmerdeka.kemdikbud.go.id",
-        banner: null,
-      };
-      setFormData(dummyData);
+      if (initialData) {
+        setFormData({
+          judul_program: initialData.judul_program || "",
+          penyelenggara: initialData.penyelenggara || "",
+          jenis_program: initialData.jenis_program || "",
+          lokasi_program: initialData.lokasi_program || "",
+          deskripsi_program: initialData.deskripsi_program || "",
+          periode_tanggal: initialData.periode_tanggal || "",
+          deadline_pendaftaran: formatDateForInput(initialData.deadline_pendaftaran) || "",
+          status_program: initialData.status_program || "akan datang",
+          tautan_sumber_resmi: initialData.tautan_sumber_resmi || "",
+          poster_banner: null, 
+        });
+      } else {
+        setFormData({
+          judul_program: "", penyelenggara: "", jenis_program: "", lokasi_program: "",
+          deskripsi_program: "", periode_tanggal: "", deadline_pendaftaran: "",
+          status_program: "akan datang", tautan_sumber_resmi: "", poster_banner: null,
+        });
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, initialData]);
 
-  // Handle perubahan input teks & file
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: files ? files[0] : value,
-    });
+    setFormData({ ...formData, [name]: files ? files[0] : value });
   };
 
-  // Handle klik tombol jenis program
-  const handleProgramTypeChange = (type) => {
-    setFormData({ ...formData, programType: type });
+  // Handle Tombol Jenis Program
+  const handleTypeSelect = (type) => {
+    setFormData({ ...formData, jenis_program: type });
   };
 
-  // Submit form
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("📦 Data program yang diperbarui:", formData);
-    if (onSubmit) onSubmit(formData);
+    onSubmit(formData);
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-      <div className="bg-white rounded-xl p-4 w-full max-w-lg shadow-lg overflow-y-auto max-h-[90vh]">
-        <h2 className="text-base font-semibold mb-3 text-gray-800 text-center">
-          Edit Program
+      <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-lg overflow-y-auto max-h-[90vh]">
+        <h2 className="text-base font-semibold text-center mb-4">
+          {initialData ? "Edit Program" : "Tambahkan Program Baru"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-2 text-left">
-          {/* Judul Program */}
+        <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Judul */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Judul Program
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="Contoh: Program Kampus Mengajar Angkatan 7"
-            />
+            <label className="block text-xs font-medium text-gray-700 mb-1">Judul Program</label>
+            <input type="text" name="judul_program" value={formData.judul_program} onChange={handleChange} className="w-full p-2 border rounded-md text-sm" required />
           </div>
 
           {/* Penyelenggara */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Penyelenggara
-            </label>
-            <input
-              type="text"
-              name="organizer"
-              value={formData.organizer}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="Contoh: Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi"
-            />
+            <label className="block text-xs font-medium text-gray-700 mb-1">Penyelenggara</label>
+            <input type="text" name="penyelenggara" value={formData.penyelenggara} onChange={handleChange} className="w-full p-2 border rounded-md text-sm" required />
           </div>
 
-          {/* Jenis Program (pakai tombol seperti EditMateri) */}
+          {/* Jenis Program */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Jenis Program
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-2">Jenis Program</label>
             <div className="flex flex-wrap gap-2">
-              {[
-                "Volunteer",
-                "Pengabdian Masyarakat",
-                "Beasiswa",
-              ].map((type) => (
+              {['Volunteer', 'Pengabdian Masyarakat', 'Beasiswa'].map((type) => (
                 <button
-                  key={type}
-                  type="button"
-                  onClick={() => handleProgramTypeChange(type)}
-                  className={`px-3 py-1.5 rounded-md text-sm border transition font-medium ${
-                    formData.programType === type
-                      ? "bg-amber-400 text-white border-amber-400"
-                      : "text-gray-600 border-gray-300 hover:bg-amber-50"
-                  }`}
+                  key={type} type="button" onClick={() => handleTypeSelect(type)}
+                  className={`text-xs px-3 py-1.5 rounded-md border font-medium ${formData.jenis_program === type ? "bg-amber-400 text-white border-amber-400" : "border-gray-300 text-gray-700"}`}
                 >
                   {type}
                 </button>
@@ -123,126 +98,55 @@ const EditProgramModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
           </div>
 
-          {/* Lokasi Program */}
+          {/* Lokasi */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Lokasi Program
-            </label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="Beri tahu dimana lokasi volunteer/pengabdian masyarakat"
-            />
+            <label className="block text-xs font-medium text-gray-700 mb-1">Lokasi Program</label>
+            <input type="text" name="lokasi_program" value={formData.lokasi_program} onChange={handleChange} className="w-full p-2 border rounded-md text-sm" />
           </div>
 
-          {/* Deskripsi Program */}
+          {/* Deskripsi */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Deskripsi Program
-            </label>
-            <textarea
-              name="description"
-              rows="3"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="Jelaskan deskripsi program ini"
-            />
+            <label className="block text-xs font-medium text-gray-700 mb-1">Deskripsi</label>
+            <textarea name="deskripsi_program" value={formData.deskripsi_program} onChange={handleChange} rows="3" className="w-full p-2 border rounded-md text-sm" />
           </div>
 
           {/* Periode */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Periode / Tanggal
-            </label>
-            <input
-              type="text"
-              name="period"
-              value={formData.period}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="Contoh: Januari - Juni 2025"
-            />
+            <label className="block text-xs font-medium text-gray-700 mb-1">Periode Tanggal</label>
+            <input type="text" name="periode_tanggal" value={formData.periode_tanggal} onChange={handleChange} className="w-full p-2 border rounded-md text-sm" placeholder="Contoh: Januari - Juni 2025" />
           </div>
 
           {/* Deadline */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Deadline Pendaftaran
-            </label>
-            <input
-              type="date"
-              name="deadline"
-              value={formData.deadline}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm"
-            />
+            <label className="block text-xs font-medium text-gray-700 mb-1">Deadline Pendaftaran</label>
+            <input type="date" name="deadline_pendaftaran" value={formData.deadline_pendaftaran} onChange={handleChange} className="w-full p-2 border rounded-md text-sm" />
           </div>
 
           {/* Status */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Status Program
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-700"
-            >
-              <option value="Akan Datang">Akan Datang</option>
-              <option value="Sedang Berjalan">Sedang Berjalan</option>
-              <option value="Selesai">Selesai</option>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Status Program</label>
+            <select name="status_program" value={formData.status_program} onChange={handleChange} className="w-full p-2 border rounded-md text-sm">
+                <option value="akan datang">Akan Datang</option>
+                <option value="sedang dibuka">Sedang Dibuka</option>
+                <option value="selesai">Selesai</option>
             </select>
           </div>
 
-          {/* Tautan Resmi */}
+          {/* Link */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Tautan ke sumber resmi program
-            </label>
-            <input
-              type="url"
-              name="link"
-              value={formData.link}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400"
-              placeholder="https://..."
-            />
+            <label className="block text-xs font-medium text-gray-700 mb-1">Tautan Resmi</label>
+            <input type="url" name="tautan_sumber_resmi" value={formData.tautan_sumber_resmi} onChange={handleChange} className="w-full p-2 border rounded-md text-sm" />
           </div>
 
-          {/* Poster / Banner */}
+          {/* Poster */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Poster / Banner
-            </label>
-            <input
-              type="file"
-              name="banner"
-              accept="image/*"
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm"
-            />
+            <label className="block text-xs font-medium text-gray-700 mb-1">Poster / Banner</label>
+            <input type="file" name="poster_banner" accept="image/*" onChange={handleChange} className="w-full p-2 border rounded-md text-sm" />
           </div>
 
-          {/* Tombol Aksi */}
-          <div className="flex justify-end gap-2 mt-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-amber-500 text-sm px-4 py-1.5 rounded-md font-medium border border-gray-200 hover:bg-amber-50"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              className="bg-amber-400 text-white text-sm px-4 py-1.5 rounded-md font-medium hover:bg-amber-500"
-            >
-              Perbarui
-            </button>
+          <div className="flex justify-end gap-2 mt-4">
+            <button type="button" onClick={onClose} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm">Batal</button>
+            <button type="submit" className="bg-amber-400 text-white px-4 py-2 rounded-md text-sm font-bold">Simpan</button>
           </div>
         </form>
       </div>
