@@ -1,14 +1,16 @@
-// src/components/ruang_volunteer/TabelProgram.jsx
-import React, { useState } from "react";
-import { HiFilter, HiLink, HiEye } from "react-icons/hi";
+// src/components/riwayat_postingan/TabelProgram.jsx
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import { HiLink, HiEye } from "react-icons/hi";
 import StatusBadge from "./StatusBadge";
 import JenisProgramBadge from "./JenisProgramBadge";
 import StatusProgramBadge from "./StatusProgramBadge";
 
 const TabelProgram = () => {
+  const [programs, setPrograms] = useState([]);
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [filterStatus, setFilterStatus] = useState("Semua");
-  const [searchText, setSearchText] = useState(""); // search
+  const [searchText, setSearchText] = useState("");
 
   const truncateWords = (text, limit = 15) => {
     if (!text) return "";
@@ -17,89 +19,118 @@ const TabelProgram = () => {
     return words.slice(0, limit).join(" ") + "...";
   };
 
-  const data = [
-    {
-      no: 1,
-      judul: "Valounteer mengajar satu desa",
-      penyelenggara: "Komunitas Aksi Muda Indonesia",
-      jenis: "Volunteer",
-      lokasi: "SDN 09 Tapanuli Selatan",
-      deskripsi:
-        "“Volunteer Mengajar Satu Desa” merupakan inisiatif nyata dari Komunitas Aksi Muda Indonesia untuk memperluas akses pendidikan dasar di wilayah pedesaan. Program ini mengajak mahasiswa dan pemuda untuk terjun langsung ke desa-desa terpencil, memberikan pendampingan belajar bagi anak-anak SD yang belum memperoleh fasilitas dan metode pembelajaran yang memadai.",
-      periode: "Mei - Juni 2025",
-      deadline: "25 April 2025",
-      statusprogram: "Akan Datang",
-      tautan: "www.bukunasional.com",
-      tanggal: "16-09-2005",
-      status: "Disetujui",
-      gambar: "./src/assets/inggris.png",
-    },
-    {
-      no: 2,
-      judul: "Valounteer mengajar satu desa",
-      penyelenggara: "Komunitas Aksi Muda Indonesia",
-      jenis: "Pengabdian Masyarakat",
-      lokasi: "SDN 09 Tapanuli Selatan",
-      deskripsi:
-        "“Volunteer Mengajar Satu Desa” merupakan inisiatif nyata dari Komunitas Aksi Muda Indonesia untuk memperluas akses pendidikan dasar di wilayah pedesaan. Program ini mengajak mahasiswa dan pemuda untuk terjun langsung ke desa-desa terpencil, memberikan pendampingan belajar bagi anak-anak SD yang belum memperoleh fasilitas dan metode pembelajaran yang memadai.",
-      periode: "Mei - Juni 2025",
-      deadline: "25 April 2025",
-      statusprogram: "Sedang Dibuka",
-      tautan: "www.bukunasional.com",
-      tanggal: "16-09-2005",
-      status: "Menunggu",
-      gambar: "./src/assets/inggris.png",
-    },
-    {
-      no: 3,
-      judul: "Valounteer mengajar satu desa",
-      penyelenggara: "Komunitas Aksi Muda Indonesia",
-      jenis: "Beasiswa",
-      lokasi: "SDN 09 Tapanuli Selatan",
-      deskripsi:
-        "“Volunteer Mengajar Satu Desa” merupakan inisiatif nyata dari Komunitas Aksi Muda Indonesia untuk memperluas akses pendidikan dasar di wilayah pedesaan. Program ini mengajak mahasiswa dan pemuda untuk terjun langsung ke desa-desa terpencil, memberikan pendampingan belajar bagi anak-anak SD yang belum memperoleh fasilitas dan metode pembelajaran yang memadai.",
-      periode: "Mei - Juni 2025",
-      deadline: "25 April 2025",
-      statusprogram: "Selesai",
-      tautan: "www.bukunasional.com",
-      tanggal: "16-09-2005",
-      status: "Ditolak",
-      gambar: "./src/assets/inggris.png",
-    },
-  ];
+  // mapping status verifikasi (kolom 'status') ke label Indonesia
+  const mapStatusLabel = (status) => {
+    switch (status) {
+      case "approved":
+        return "Disetujui";
+      case "pending":
+        return "Menunggu";
+      case "rejected":
+        return "Ditolak";
+      default:
+        return "Menunggu";
+    }
+  };
+
+  // mapping jenis_program ke label
+  const mapJenisLabel = (jenis) => {
+    if (!jenis) return "-";
+    const lower = jenis.toLowerCase();
+    if (lower === "volunteer") return "Volunteer";
+    if (lower === "pengabdian") return "Pengabdian Masyarakat";
+    if (lower === "beasiswa") return "Beasiswa";
+    return jenis;
+  };
+
+  // mapping status_program ke label
+  const mapStatusProgramLabel = (statusProgram) => {
+    if (!statusProgram) return "-";
+    const lower = statusProgram.toLowerCase();
+    if (lower.includes("akan")) return "Akan Datang";
+    if (lower.includes("sedang")) return "Sedang Dibuka";
+    if (lower.includes("selesai")) return "Selesai";
+    return statusProgram;
+  };
+
+  // === AMBIL DATA RIWAYAT PROGRAM USER ===
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const token = localStorage.getItem("token"); // sesuaikan dengan key yang kamu pakai
+
+        const res = await axios.get("http://localhost:5000/api/programs/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+
+        const mapped = res.data.map((item, index) => {
+          const rawPoster = item.poster_banner || "";
+          const posterUrl = rawPoster
+            ? `http://localhost:5000${rawPoster}`
+            : null;
+
+          return {
+            no: index + 1,
+            id: item.id,
+            judul: item.judul_program,
+            penyelenggara: item.penyelenggara,
+            jenis: mapJenisLabel(item.jenis_program),
+            lokasi: item.lokasi_program || "-",
+            deskripsi: item.deskripsi_program,
+            periode: item.periode_tanggal || "-",
+            deadline: item.deadline_pendaftaran
+              ? new Date(item.deadline_pendaftaran).toLocaleDateString("id-ID")
+              : "-",
+            statusprogram: mapStatusProgramLabel(item.status_program),
+            tautan: item.tautan_sumber_resmi,
+            tanggal: new Date(item.created_at).toLocaleDateString("id-ID"),
+            statusDb: item.status,
+            statusLabel: mapStatusLabel(item.status),
+            gambar: posterUrl,
+          };
+        });
+
+        setPrograms(mapped);
+      } catch (err) {
+        console.error("Gagal mengambil riwayat program:", err);
+        setPrograms([]);
+      }
+    };
+
+    fetchHistory();
+  }, []);
 
   // FILTER STATUS + SEARCH
-  const filteredData = data.filter((item) => {
-    // Filter status (Disetujui / Menunggu / Ditolak / Semua)
-    const matchStatus =
-      filterStatus === "Semua" || item.status === filterStatus;
-
+  const filteredData = useMemo(() => {
     const text = searchText.toLowerCase();
 
-    // Kalau kolom search kosong, cukup pakai filter status saja
-    if (!text.trim()) {
-      return matchStatus;
-    }
+    return programs.filter((item) => {
+      const matchStatus =
+        filterStatus === "Semua" || item.statusLabel === filterStatus;
 
-    // Search di beberapa kolom sekaligus (case-insensitive)
-    const matchSearch =
-      item.judul.toLowerCase().includes(text) ||
-      item.penyelenggara.toLowerCase().includes(text) ||
-      item.jenis.toLowerCase().includes(text) ||
-      item.lokasi.toLowerCase().includes(text) ||
-      item.periode.toLowerCase().includes(text) ||
-      item.deadline.toLowerCase().includes(text) ||
-      item.statusprogram.toLowerCase().includes(text) ||
-      item.status.toLowerCase().includes(text);
+      if (!text.trim()) return matchStatus;
 
-    return matchStatus && matchSearch;
-  });
+      const matchSearch =
+        item.judul.toLowerCase().includes(text) ||
+        (item.penyelenggara || "").toLowerCase().includes(text) ||
+        (item.jenis || "").toLowerCase().includes(text) ||
+        (item.lokasi || "").toLowerCase().includes(text) ||
+        (item.periode || "").toLowerCase().includes(text) ||
+        (item.deadline || "").toLowerCase().includes(text) ||
+        (item.statusprogram || "").toLowerCase().includes(text) ||
+        (item.statusLabel || "").toLowerCase().includes(text);
+
+      return matchStatus && matchSearch;
+    });
+  }, [programs, filterStatus, searchText]);
 
   return (
     <>
       {/* Search + Filter */}
       <div className="flex justify-between items-center mb-4 gap-4">
-        {/* Live Search */}
         <input
           type="search"
           placeholder="Cari Program..."
@@ -108,7 +139,6 @@ const TabelProgram = () => {
           className="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#FF9500] placeholder-[#6B7280]"
         />
 
-        {/* Dropdown Filter */}
         <select
           className="border border-gray-300 rounded-xl px-3 py-2 text-sm"
           value={filterStatus}
@@ -155,8 +185,8 @@ const TabelProgram = () => {
           </thead>
 
           <tbody>
-            {filteredData.map((item, index) => (
-              <tr key={index} className="border-t border-gray-200">
+            {filteredData.map((item) => (
+              <tr key={item.id} className="border-t border-gray-200">
                 <td className="px-4 py-2">{item.no}</td>
                 <td className="px-4 py-2">{item.judul}</td>
                 <td className="px-4 py-2">{item.penyelenggara}</td>
@@ -173,22 +203,25 @@ const TabelProgram = () => {
                   <StatusProgramBadge status={item.statusprogram} />
                 </td>
                 <td className="px-4 py-2 text-center">
-                  <a
-                    href={item.tautan}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#FF9500] hover:text-[#e68a00]"
-                  >
-                    <HiLink className="w-5 h-5 inline" />
-                  </a>
+                  {item.tautan && (
+                    <a
+                      href={
+                        item.tautan.startsWith("http")
+                          ? item.tautan
+                          : `https://${item.tautan}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#FF9500] hover:text-[#e68a00]"
+                    >
+                      <HiLink className="w-5 h-5 inline" />
+                    </a>
+                  )}
                 </td>
-
                 <td className="px-4 py-2">
-                  <StatusBadge status={item.status} />
+                  <StatusBadge status={item.statusLabel} />
                 </td>
-
                 <td className="px-4 py-2">{item.tanggal}</td>
-
                 <td className="px-4 py-2 text-center">
                   <button
                     onClick={() => setSelectedProgram(item)}
@@ -200,7 +233,6 @@ const TabelProgram = () => {
               </tr>
             ))}
 
-            {/* Jika search/filter tidak ada hasil */}
             {filteredData.length === 0 && (
               <tr>
                 <td colSpan={13} className="text-center py-4 text-gray-500">
@@ -223,13 +255,15 @@ const TabelProgram = () => {
               ×
             </button>
 
-            <div className="w-full h-48 ">
-              <img
-                src={selectedProgram.gambar}
-                alt=""
-                className="object-cover h-full w-full rounded-xl"
-              />
-            </div>
+            {selectedProgram.gambar && (
+              <div className="w-full h-48 ">
+                <img
+                  src={selectedProgram.gambar}
+                  alt=""
+                  className="object-cover h-full w-full rounded-xl"
+                />
+              </div>
+            )}
 
             <div className="p-6 space-y-4 text-sm text-black">
               <div className="flex justify-between">
@@ -238,9 +272,7 @@ const TabelProgram = () => {
                   <p className="text-[#B0AA9C]">{selectedProgram.judul}</p>
                 </div>
                 <div>
-                  <StatusProgramBadge
-                    status={selectedProgram.statusprogram}
-                  />
+                  <StatusProgramBadge status={selectedProgram.statusprogram} />
                 </div>
               </div>
 
@@ -279,15 +311,28 @@ const TabelProgram = () => {
               </div>
 
               <div>
-                <p className="font-semibold">Link</p>
-                <a
-                  href={selectedProgram.tautan}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#FF9500] underline"
-                >
-                  {selectedProgram.tautan}
-                </a>
+                <p className="font-semibold">Tautan Resmi</p>
+                {selectedProgram.tautan ? (
+                  <a
+                    href={
+                      selectedProgram.tautan.startsWith("http")
+                        ? selectedProgram.tautan
+                        : `https://${selectedProgram.tautan}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#FF9500] underline break-all"
+                  >
+                    {selectedProgram.tautan}
+                  </a>
+                ) : (
+                  <p className="text-[#B0AA9C]">-</p>
+                )}
+              </div>
+
+              <div>
+                <p className="font-semibold">Status Verifikasi</p>
+                <StatusBadge status={selectedProgram.statusLabel} />
               </div>
             </div>
           </div>

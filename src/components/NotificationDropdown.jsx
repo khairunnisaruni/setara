@@ -22,7 +22,7 @@ export default function NotificationDropdown() {
         const res = await fetch("http://localhost:5000/api/notifications", {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`, // penting supaya protect lolos
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -32,7 +32,12 @@ export default function NotificationDropdown() {
           throw new Error(data.message || "Gagal mengambil notifikasi");
         }
 
-        setNotifications(data);
+        // pastikan notifikasi terbaru di paling atas
+        const sorted = [...data].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        setNotifications(sorted);
       } catch (err) {
         console.error("Gagal ambil notifikasi:", err);
       } finally {

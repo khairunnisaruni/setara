@@ -4,9 +4,11 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import createDonasi, {
+import {
+  createDonasi,
   getDonasi,
   getApprovedDonasi,
+  getMyDonasi,
 } from "../controllers/donasiController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -30,8 +32,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+// Semua donasi (misalnya untuk admin)
 router.get("/", getDonasi);
+
+// Hanya donasi approved (halaman publik)
 router.get("/approved", getApprovedDonasi);
+
+// Riwayat donasi milik user login (Profile -> Donasi)
+router.get("/me", protect, getMyDonasi);
+
+// Tambah donasi baru
 router.post("/", protect, upload.single("banner"), createDonasi);
 
 export default router;

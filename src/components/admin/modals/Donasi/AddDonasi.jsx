@@ -29,16 +29,30 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await onSubmit(formData);
-      onClose();
-      setShowSuccessModal(true);
+      await onSubmit(formData);   // kirim ke backend (props dari parent)
+      onClose();                  // tutup form input donasi
+      setShowSuccessModal(true);  // tampilkan popup sukses
+
+      // auto-hide popup sukses (opsional)
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 2000);
     } catch (error) {
+      console.error("Gagal menambah donasi:", error);
       onClose();
       setShowFailedModal(true);
+
+      // auto-hide popup gagal (opsional)
+      setTimeout(() => {
+        setShowFailedModal(false);
+      }, 2000);
     }
   };
 
-  if (!isOpen) return null;
+  // Komponen baru benar‑benar hilang hanya jika:
+  // - form donasi tertutup DAN
+  // - tidak ada popup sukses/gagal yang tampil
+  if (!isOpen && !showSuccessModal && !showFailedModal) return null;
 
   const categoryOptions = [
     "Kebutuhan Dasar Siswa",
@@ -233,4 +247,3 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 export default AddDonasiModal;
-

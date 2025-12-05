@@ -1,69 +1,126 @@
-import React, { useState } from "react";
-import { HiFilter, HiLink, HiEye } from "react-icons/hi";
+// src/components/riwayat_postingan/TabelKuisGame.jsx
+import React, { useEffect, useState } from "react";
+import { HiLink, HiEye } from "react-icons/hi";
 import StatusBadge from "./StatusBadge";
 
 const TabelKuisGame = () => {
   const [selectedKuis, setSelectedKuis] = useState(null);
   const [filterStatus, setFilterStatus] = useState("Semua");
-  const [searchText, setSearchText] = useState(""); // search
+  const [searchText, setSearchText] = useState("");
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const data = [
-    {
-      no: 1,
-      judul: "Learning Past Tenses",
-      kelas: "SD 5",
-      mapel: "Bahasa Inggris",
-      platform: "Wayground",
-      deskripsi: "Materi Past tense untuk kelas 5 sd",
-      tautan: "https://kahoot.com/blog/2021/01/28/how-to-create-kahoot-tips-teachers/",
-      tanggal: "16-09-2005",
-      status: "Disetujui",
-      gambar: "./src/assets/inggris.png",
-    },
-    {
-      no: 2,
-      judul: "Belajar Mengeja, Menulis, dan Menghitung",
-      kelas: "SD 2",
-      mapel: "Pelajaran Dasar",
-      platform: "Kahoot!",
-      deskripsi: "Materi hitung untuk kelas 5 sd",
-      tautan: "https://create.kahoot.it/discover",
-      tanggal: "16-09-2005",
-      status: "Menunggu",
-      gambar: "./src/assets/inggris.png",
+  // ===== Helper =====
+  const mapPlatformLabel = (platform) => {
+    if (platform === "kahoot") return "Kahoot!";
+    if (platform === "wayground") return "Wayground";
+    return platform || "-";
+  };
 
-    },
-    {
-      no: 3,
-      judul: "Belajar Mengeja, Menulis, dan Menghitung",
-      kelas: "SD 2",
-      mapel: "Pelajaran Dasar",
-      platform: "Kahoot!",
-      deskripsi: "Materi hitung untuk kelas 5 sd",
-      tautan: "https://kahoot.com",
-      tanggal: "16-09-2005",
-      status: "Ditolak",
-      gambar: "./src/assets/inggris.png",
+  const mapStatusLabel = (status) => {
+    switch (status) {
+      case "approved":
+        return "Disetujui";
+      case "pending":
+        return "Menunggu";
+      case "rejected":
+        return "Ditolak";
+      default:
+        return status || "-";
+    }
+  };
 
-    },
-  ];
+  const formatTanggal = (timestamp) => {
+    if (!timestamp) return "-";
+    const d = new Date(timestamp);
+    if (Number.isNaN(d.getTime())) return "-";
+    // Format dd-mm-yyyy (lokal Indonesia)
+    return d.toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
-    //  FILTER STATUS + SEARCH
-    const filteredData = data.filter((item) => {
-      // Filter status
-      const matchStatus =
+  const mapKelas = (kelasNama) => {
+    // contoh di DB: "Kelas 5" -> "SD 5"
+    if (!kelasNama) return "-";
+    const parts = kelasNama.replace("Kelas", "").trim();
+    return `SD ${parts}`;
+  };
+
+  // ===== Fetch data dari backend =====
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setLoading(true);
+        setErrorMsg("");
+
+        const token =
+          localStorage.getItem("token") ||
+          localStorage.getItem("userToken") ||
+          localStorage.getItem("accessToken");
+
+        if (!token) {
+          setErrorMsg("Token tidak ditemukan. Silakan login ulang.");
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch("http://localhost:5000/api/history/kuis", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || "Gagal mengambil riwayat kuis");
+        }
+
+        const json = await res.json();
+
+        const mapped = json.map((row, index) => ({
+          no: index + 1,
+          id: row.id,
+          judul: row.title,
+          kelas: mapKelas(row.kelas_nama),
+          mapel: row.kategori_nama || "-",
+          platform: mapPlatformLabel(row.platform),
+          deskripsi: row.description || "-",
+          tautan: row.link || "#",
+          tanggal: formatTanggal(row.created_at),
+          status: mapStatusLabel(row.status),
+          gambar: "src/assets/inggris.png",
+        }));
+
+        setData(mapped);
+      } catch (err) {
+        console.error("Gagal fetch riwayat kuis:", err);
+        setErrorMsg(err.message || "Terjadi kesalahan saat memuat data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
+
+  // ===== FILTER STATUS + SEARCH =====
+  const filteredData = data.filter((item) => {
+    const matchStatus =
       filterStatus === "Semua" || item.status === filterStatus;
 
-      // Filter search (case-insensitive)
-      const text = searchText.toLowerCase();
-      const matchSearch =
+    const text = searchText.toLowerCase();
+    const matchSearch =
       item.judul.toLowerCase().includes(text) ||
       item.mapel.toLowerCase().includes(text) ||
       item.platform?.toLowerCase().includes(text) ||
       item.kelas.toLowerCase().includes(text);
 
-      return matchStatus && matchSearch;
-    });
+    return matchStatus && matchSearch;
+  });
 
   return (
     <>
@@ -91,6 +148,14 @@ const TabelKuisGame = () => {
         </select>
       </div>
 
+      {/* Info loading / error */}
+      {loading && (
+        <p className="text-sm text-gray-500 mb-2">Memuat data kuis...</p>
+      )}
+      {!loading && errorMsg && (
+        <p className="text-sm text-red-500 mb-2">{errorMsg}</p>
+      )}
+
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm border border-gray-200 rounded-xl">
@@ -99,10 +164,14 @@ const TabelKuisGame = () => {
               <th className="px-4 py-2 text-left w-[60px]">No</th>
               <th className="px-4 py-2 text-left min-w-[180px]">Judul</th>
               <th className="px-4 py-2 text-left min-w-28">Kelas</th>
-              <th className="px-4 py-2 text-left min-w-[150px]">Mata Pelajaran</th>
+              <th className="px-4 py-2 text-left min-w-[150px]">
+                Mata Pelajaran
+              </th>
               <th className="px-4 py-2 text-left">Platform</th>
               <th className="px-4 py-2 text-left min-w-[200px]">Deskripsi</th>
-              <th className="px-4 py-2 text-left min-w-[150px]">Tanggal Submit</th>
+              <th className="px-4 py-2 text-left min-w-[150px]">
+                Tanggal Submit
+              </th>
               <th className="px-4 py-2 text-center">Tautan</th>
               <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-center">Detail</th>
@@ -110,43 +179,44 @@ const TabelKuisGame = () => {
           </thead>
 
           <tbody>
-            {filteredData.map((item, index) => (
-              <tr key={index} className="border-t border-gray-200">
-                <td className="px-4 py-2">{item.no}</td>
-                <td className="px-4 py-2">{item.judul}</td>
-                <td className="px-4 py-2">{item.kelas}</td>
-                <td className="px-4 py-2">{item.mapel}</td>
-                <td className="px-4 py-2">{item.platform}</td>
-                <td className="px-4 py-2">{item.deskripsi}</td>
-                <td className="px-4 py-2">{item.tanggal}</td>
-                <td className="px-4 py-2 text-center">
-                  <a
-                    href={item.tautan}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#FF9500] hover:text-[#e68a00]"
-                  >
-                    <HiLink className="w-5 h-5 inline" />
-                  </a>
-                </td>
+            {!loading &&
+              filteredData.map((item, index) => (
+                <tr key={index} className="border-t border-gray-200">
+                  <td className="px-4 py-2">{item.no}</td>
+                  <td className="px-4 py-2">{item.judul}</td>
+                  <td className="px-4 py-2">{item.kelas}</td>
+                  <td className="px-4 py-2">{item.mapel}</td>
+                  <td className="px-4 py-2">{item.platform}</td>
+                  <td className="px-4 py-2">{item.deskripsi}</td>
+                  <td className="px-4 py-2">{item.tanggal}</td>
+                  <td className="px-4 py-2 text-center">
+                    <a
+                      href={item.tautan}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#FF9500] hover:text-[#e68a00]"
+                    >
+                      <HiLink className="w-5 h-5 inline" />
+                    </a>
+                  </td>
 
-                <td className="px-4 py-2">
-                  <StatusBadge status={item.status} />
-                </td>
+                  <td className="px-4 py-2">
+                    <StatusBadge status={item.status} />
+                  </td>
 
-                <td className="px-4 py-2 text-center">
-                  <button
-                    onClick={() => setSelectedKuis(item)}
-                    className="text-[#FF9500] hover:text-[#e68a00] cursor-pointer"
-                  >
-                    <HiEye className="w-5 h-5 inline" />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  <td className="px-4 py-2 text-center">
+                    <button
+                      onClick={() => setSelectedKuis(item)}
+                      className="text-[#FF9500] hover:text-[#e68a00] cursor-pointer"
+                    >
+                      <HiEye className="w-5 h-5 inline" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
 
             {/* Jika search/filter tidak ada hasil */}
-            {filteredData.length === 0 && (
+            {!loading && filteredData.length === 0 && (
               <tr>
                 <td colSpan="10" className="text-center py-4 text-gray-500">
                   Tidak ada data yang cocok.

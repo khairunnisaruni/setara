@@ -330,7 +330,7 @@ const MainMMSection = () => {
 
       {/* POPUP SUKSES */}
       {/* entity bisa kamu ganti jadi "Materi Multimedia" kalau mau lebih spesifik */}
-      <SuccessPopup show={showNotif} entity="Rekomendasi Buku" />
+      <SuccessPopup show={showNotif} entity="Materi Multimedia" />
     </div>
   );
 };

@@ -38,6 +38,8 @@ const mapClassToKelasId = (classCategory) => {
   }
 };
 
+// =============== PUBLIC LIST (UNTUK HALAMAN LAIN) ===============
+
 // GET /api/kuis
 export const getAllQuizzes = (req, res) => {
   const sql = "SELECT * FROM kuis ORDER BY created_at DESC";
@@ -81,6 +83,54 @@ export const getApprovedQuizzes = (req, res) => {
     res.json(results);
   });
 };
+
+// =============== RIWAYAT KUIS USER (PROFILE) ===============
+
+// GET /api/kuis/me
+// Mengambil semua kuis yang pernah dibuat user yang sedang login
+// Optional query param: ?status=approved | pending | rejected | all
+export const getMyQuizzes = (req, res) => {
+  const userId = req.user.id; // di-set oleh middleware protect
+  const { status } = req.query;
+
+  let sql = `
+    SELECT
+      id,
+      title,
+      description,
+      platform,
+      link,
+      gambar,
+      kategori_id,
+      kategori_kelas_id,
+      created_at,
+      status
+    FROM kuis
+    WHERE added_by = ?
+  `;
+  const params = [userId];
+
+  // kalau ada filter status (dan bukan "all"/"semua"), tambahkan ke WHERE
+  if (status && status !== "all" && status !== "semua") {
+    sql += " AND status = ?";
+    params.push(status); // pastikan nilai status sama dengan di kolom kuis.status
+  }
+
+  sql += " ORDER BY created_at DESC";
+
+  db.query(sql, params, (err, results) => {
+    if (err) {
+      console.error("Error mengambil riwayat kuis:", err);
+      return res
+        .status(500)
+        .json({ message: "Gagal mengambil riwayat kuis" });
+    }
+
+    return res.json(results);
+  });
+};
+
+// =============== CREATE KUIS ===============
 
 // POST /api/kuis
 export const createQuiz = (req, res) => {

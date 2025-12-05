@@ -1,11 +1,14 @@
-import React, { useState } from "react";
-import { HiFilter, HiLink, HiEye } from "react-icons/hi";
+// src/components/riwayat_postingan/TabelMateriMultimedia.jsx
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import { HiEye } from "react-icons/hi";
 import StatusBadge from "./StatusBadge";
 
 const TabelMateriMultimedia = () => {
+  const [materials, setMaterials] = useState([]);
   const [selectedMateri, setSelectedMateri] = useState(null);
   const [filterStatus, setFilterStatus] = useState("Semua");
-  const [searchText, setSearchText] = useState(""); // search
+  const [searchText, setSearchText] = useState("");
 
   const truncateWords = (text, limit = 15) => {
     if (!text) return "";
@@ -14,63 +17,113 @@ const TabelMateriMultimedia = () => {
     return words.slice(0, limit).join(" ") + "...";
   };
 
-  const data = [
-    {
-      no: 1,
-      judul: "Aritmatika Dasar",
-      jenisfile: "PDF",
-      kategori: "SD 1-3",
-      jeniskategori: "Matematika",
-      deskripsi: "Materi ini berisikan Aritmatika Dasar",
-      tanggal: "16-09-2005",
-      status: "Disetujui",
-      file: "lalala.pdf",
-    },
-    {
-      no: 2,
-      judul: "Inggris Dasar",
-      jenisfile: "PDF",
-      kategori: "SD 1-3",
-      jeniskategori: "Matematika",
-      deskripsi: "Materi ini berisikan Inggris Dasar",
-      tanggal: "16-09-2005",
-      status: "Menunggu",
-      file: "lalala.pdf",
-    },
-    {
-      no: 3,
-      judul: "IPS Dasar",
-      jenisfile: "PDF",
-      kategori: "SD 1-3",
-      jeniskategori: "Matematika",
-      deskripsi: "Materi ini berisikan IPS Dasar",
-      tanggal: "16-09-2005",
-      status: "Ditolak",
-      file: "lalala.pdf",
-    },
-  ];
+  // mapping status DB -> label Indonesia
+  const mapStatusLabel = (status) => {
+    switch (status) {
+      case "approved":
+        return "Disetujui";
+      case "pending":
+        return "Menunggu";
+      case "rejected":
+        return "Ditolak";
+      default:
+        return "Menunggu";
+    }
+  };
 
-    //  FILTER STATUS + SEARCH
-    const filteredData = data.filter((item) => {
-        // Filter status
-        const matchStatus =
-        filterStatus === "Semua" || item.status === filterStatus;
+  // mapping kategori_kelas_id -> label kategori pelajar
+  const mapKelas = (id) => {
+    switch (id) {
+      case 1:
+        return "SD 1-3";
+      case 2:
+        return "SD 4-6";
+      case 3:
+        return "SMP";
+      case 4:
+        return "SMA";
+      default:
+        return "-";
+    }
+  };
 
-        // Filter search (case-insensitive)
-        const text = searchText.toLowerCase();
-        const matchSearch =
+  // mapping kategori_id -> label jenis kategori
+  const mapKategori = (id) => {
+    switch (id) {
+      case 1:
+        return "Materi Utama";
+      case 2:
+        return "Materi Pendukung";
+      default:
+        return "-";
+    }
+  };
+
+  // === AMBIL DATA RIWAYAT MATERI USER ===
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const token = localStorage.getItem("token"); // sesuaikan key-nya dengan login-mu
+
+        const res = await axios.get("http://localhost:5000/api/materials/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+
+        const mapped = res.data.map((item, index) => {
+          const rawPath = item.file_path || "";
+          const fileName = rawPath.split("/").pop() || "-";
+          const fileUrl = rawPath ? `http://localhost:5000${rawPath}` : null;
+
+          return {
+            no: index + 1,
+            id: item.id,
+            judul: item.title,
+            jenisfile: (item.file_type || "").toUpperCase(),
+            kategori: mapKelas(item.kategori_kelas_id),   // Kategori Pelajar
+            jeniskategori: mapKategori(item.kategori_id), // Jenis Kategori
+            deskripsi: item.description,
+            tanggal: new Date(item.created_at).toLocaleDateString("id-ID"),
+            statusDb: item.status,
+            statusLabel: mapStatusLabel(item.status),
+            fileUrl,
+            fileName,
+          };
+        });
+
+        setMaterials(mapped);
+      } catch (err) {
+        console.error("Gagal mengambil riwayat materi:", err);
+        setMaterials([]);
+      }
+    };
+
+    fetchHistory();
+  }, []);
+
+  // === FILTER STATUS + SEARCH ===
+  const filteredData = useMemo(() => {
+    const text = searchText.toLowerCase();
+
+    return materials.filter((item) => {
+      const matchStatus =
+        filterStatus === "Semua" || item.statusLabel === filterStatus;
+
+      const matchSearch =
         item.judul.toLowerCase().includes(text) ||
-        item.kategori.toLowerCase().includes(text) ||
-        item.jeniskategori.toLowerCase().includes(text);
+        (item.kategori || "").toLowerCase().includes(text) ||
+        (item.jeniskategori || "").toLowerCase().includes(text);
 
-        return matchStatus && matchSearch;
+      return matchStatus && matchSearch;
     });
+  }, [materials, filterStatus, searchText]);
 
   return (
     <>
       {/* Search + Filter */}
       <div className="flex justify-between items-center mb-4 gap-4">
-        {/* Live Search */}
         <input
           type="search"
           placeholder="Cari Materi..."
@@ -79,7 +132,6 @@ const TabelMateriMultimedia = () => {
           className="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#FF9500] placeholder-[#6B7280]"
         />
 
-        {/* Dropdown Filter */}
         <select
           className="border border-gray-300 rounded-xl px-3 py-2 text-sm"
           value={filterStatus}
@@ -98,32 +150,40 @@ const TabelMateriMultimedia = () => {
           <thead className="bg-[#F8F4EA] text-gray-700">
             <tr>
               <th className="px-4 py-2 text-left w-[60px]">No</th>
-              <th className="px-4 py-2 text-left min-w-[180px]">Judul Materi</th>
+              <th className="px-4 py-2 text-left min-w-[180px]">
+                Judul Materi
+              </th>
               <th className="px-4 py-2 text-left min-w-[100px]">Jenis File</th>
-              <th className="px-4 py-2 text-left min-w-[150px]">Kategori Pelajar</th>
-              <th className="px-4 py-2 text-left min-w-[150px]">Jenis Kategori</th>
+              <th className="px-4 py-2 text-left min-w-[150px]">
+                Kategori Pelajar
+              </th>
+              <th className="px-4 py-2 text-left min-w-[150px]">
+                Jenis Kategori
+              </th>
               <th className="px-4 py-2 text-left min-w-[200px]">Deskripsi</th>
-              <th className="px-4 py-2 text-left min-w-[150px]">Tanggal Submit</th>
+              <th className="px-4 py-2 text-left min-w-[150px]">
+                Tanggal Submit
+              </th>
               <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-center">Detail</th>
             </tr>
           </thead>
 
           <tbody>
-            {filteredData.map((item, index) => (
-              <tr key={index} className="border-t border-gray-200">
+            {filteredData.map((item) => (
+              <tr key={item.id} className="border-t border-gray-200">
                 <td className="px-4 py-2">{item.no}</td>
                 <td className="px-4 py-2">{item.judul}</td>
                 <td className="px-4 py-2">{item.jenisfile}</td>
                 <td className="px-4 py-2">{item.kategori}</td>
                 <td className="px-4 py-2">{item.jeniskategori}</td>
-                <td className="px-4 py-2">{truncateWords (item.deskripsi, 15)}</td>
-                <td className="px-4 py-2">{item.tanggal}</td>
-
                 <td className="px-4 py-2">
-                  <StatusBadge status={item.status} />
+                  {truncateWords(item.deskripsi, 15)}
                 </td>
-
+                <td className="px-4 py-2">{item.tanggal}</td>
+                <td className="px-4 py-2">
+                  <StatusBadge status={item.statusLabel} />
+                </td>
                 <td className="px-4 py-2 text-center">
                   <button
                     onClick={() => setSelectedMateri(item)}
@@ -135,10 +195,9 @@ const TabelMateriMultimedia = () => {
               </tr>
             ))}
 
-            {/* Jika search/filter tidak ada hasil */}
             {filteredData.length === 0 && (
               <tr>
-                <td colSpan="10" className="text-center py-4 text-gray-500">
+                <td colSpan="9" className="text-center py-4 text-gray-500">
                   Tidak ada data yang cocok.
                 </td>
               </tr>
@@ -190,16 +249,24 @@ const TabelMateriMultimedia = () => {
 
               <div>
                 <p className="font-semibold">File</p>
-                <a
-                    href={selectedMateri.file}
+                {selectedMateri.fileUrl ? (
+                  <a
+                    href={selectedMateri.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#FF9500] underline cursor-pointer"
-                >
-                    {selectedMateri.file}
-                </a>
+                    className="text-[#FF9500] underline cursor-pointer break-all"
+                  >
+                    {selectedMateri.fileName}
+                  </a>
+                ) : (
+                  <p className="text-[#B0AA9C]">-</p>
+                )}
               </div>
 
+              <div>
+                <p className="font-semibold">Status</p>
+                <StatusBadge status={selectedMateri.statusLabel} />
+              </div>
             </div>
           </div>
         </div>

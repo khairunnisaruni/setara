@@ -13,11 +13,11 @@ export const getUserNotifications = async (req, res) => {
   try {
     const userId = req.user?.id || null;
 
-    // PROGRAM
+    // PROGRAM (approved + rejected)
     let programSql = `
-      SELECT id, judul_program, approved_at, created_at, added_by
+      SELECT id, judul_program, status, approved_at, created_at, added_by
       FROM programs
-      WHERE status = 'approved'
+      WHERE status IN ('approved','rejected')
     `;
     const programParams = [];
     if (userId) {
@@ -26,18 +26,25 @@ export const getUserNotifications = async (req, res) => {
     }
     programSql += " ORDER BY approved_at DESC, created_at DESC";
     const programRows = await query(programSql, programParams);
-    const programNotifs = programRows.map((p) => ({
-      type: "PROGRAM_APPROVED",
-      title: "Program telah diverifikasi Admin.",
-      message: `Program "${p.judul_program}" sudah terpublikasi dan siap diikuti.`,
-      createdAt: p.approved_at || p.created_at,
-    }));
+    const programNotifs = programRows.map((p) => {
+      const isApproved = p.status === "approved";
+      return {
+        type: isApproved ? "PROGRAM_APPROVED" : "PROGRAM_REJECTED",
+        title: isApproved
+          ? "Program telah diverifikasi Admin."
+          : "Program kamu belum dapat dipublikasikan.",
+        message: isApproved
+          ? `Program "${p.judul_program}" sudah terpublikasi dan siap diikuti.`
+          : `Program "${p.judul_program}" ditolak Admin. Periksa kembali data dan ajukan ulang.`,
+        createdAt: p.approved_at || p.created_at,
+      };
+    });
 
-    // MATERI
+    // MATERI (approved + rejected)
     let materiSql = `
-      SELECT id, title, approved_at, created_at, uploaded_by
+      SELECT id, title, status, approved_at, created_at, uploaded_by
       FROM materi_multimedia
-      WHERE status = 'approved'
+      WHERE status IN ('approved','rejected')
     `;
     const materiParams = [];
     if (userId) {
@@ -46,18 +53,25 @@ export const getUserNotifications = async (req, res) => {
     }
     materiSql += " ORDER BY approved_at DESC, created_at DESC";
     const materiRows = await query(materiSql, materiParams);
-    const materiNotifs = materiRows.map((m) => ({
-      type: "MATERI_APPROVED",
-      title: "Materi Multimedia kamu telah diverifikasi Admin.",
-      message: `Materi "${m.title}" sudah terpublikasi dan dapat diakses.`,
-      createdAt: m.approved_at || m.created_at,
-    }));
+    const materiNotifs = materiRows.map((m) => {
+      const isApproved = m.status === "approved";
+      return {
+        type: isApproved ? "MATERI_APPROVED" : "MATERI_REJECTED",
+        title: isApproved
+          ? "Materi Multimedia kamu telah diverifikasi Admin."
+          : "Materi Multimedia kamu belum dapat dipublikasikan.",
+        message: isApproved
+          ? `Materi "${m.title}" sudah terpublikasi dan dapat diakses.`
+          : `Materi "${m.title}" ditolak Admin. Periksa kembali materi dan ajukan ulang.`,
+        createdAt: m.approved_at || m.created_at,
+      };
+    });
 
-    // CERITA
+    // CERITA (approved + rejected)
     let ceritaSql = `
-      SELECT id, title, approved_at, created_at, user_id
+      SELECT id, title, status, approved_at, created_at, user_id
       FROM cerita
-      WHERE status = 'approved'
+      WHERE status IN ('approved','rejected')
     `;
     const ceritaParams = [];
     if (userId) {
@@ -66,18 +80,25 @@ export const getUserNotifications = async (req, res) => {
     }
     ceritaSql += " ORDER BY approved_at DESC, created_at DESC";
     const ceritaRows = await query(ceritaSql, ceritaParams);
-    const ceritaNotifs = ceritaRows.map((c) => ({
-      type: "CERITA_APPROVED",
-      title: "Cerita kamu telah diverifikasi Admin.",
-      message: `Cerita "${c.title}" sudah dipublikasikan.`,
-      createdAt: c.approved_at || c.created_at,
-    }));
+    const ceritaNotifs = ceritaRows.map((c) => {
+      const isApproved = c.status === "approved";
+      return {
+        type: isApproved ? "CERITA_APPROVED" : "CERITA_REJECTED",
+        title: isApproved
+          ? "Cerita kamu telah diverifikasi Admin."
+          : "Cerita kamu belum dapat dipublikasikan.",
+        message: isApproved
+          ? `Cerita "${c.title}" sudah dipublikasikan.`
+          : `Cerita "${c.title}" ditolak Admin. Periksa kembali isi cerita dan ajukan ulang.`,
+        createdAt: c.approved_at || c.created_at,
+      };
+    });
 
-    // DONASI
+    // DONASI (approved + rejected)
     let donasiSql = `
-      SELECT id, title, approved_at, created_at, added_by
+      SELECT id, title, status, approved_at, created_at, added_by
       FROM donasi
-      WHERE status = 'approved'
+      WHERE status IN ('approved','rejected')
     `;
     const donasiParams = [];
     if (userId) {
@@ -86,18 +107,25 @@ export const getUserNotifications = async (req, res) => {
     }
     donasiSql += " ORDER BY approved_at DESC, created_at DESC";
     const donasiRows = await query(donasiSql, donasiParams);
-    const donasiNotifs = donasiRows.map((d) => ({
-      type: "DONASI_APPROVED",
-      title: "Donasi kamu telah diverifikasi Admin.",
-      message: `Donasi "${d.title}" sudah terpublikasi.`,
-      createdAt: d.approved_at || d.created_at,
-    }));
+    const donasiNotifs = donasiRows.map((d) => {
+      const isApproved = d.status === "approved";
+      return {
+        type: isApproved ? "DONASI_APPROVED" : "DONASI_REJECTED",
+        title: isApproved
+          ? "Donasi kamu telah diverifikasi Admin."
+          : "Donasi kamu belum dapat dipublikasikan.",
+        message: isApproved
+          ? `Donasi "${d.title}" sudah terpublikasi.`
+          : `Donasi "${d.title}" ditolak Admin. Periksa kembali data dan ajukan ulang.`,
+        createdAt: d.approved_at || d.created_at,
+      };
+    });
 
-    // KUIS
+    // KUIS (approved + rejected)
     let kuisSql = `
-      SELECT id, title, approved_at, created_at, added_by
+      SELECT id, title, status, approved_at, created_at, added_by
       FROM kuis
-      WHERE status = 'approved'
+      WHERE status IN ('approved','rejected')
     `;
     const kuisParams = [];
     if (userId) {
@@ -106,18 +134,25 @@ export const getUserNotifications = async (req, res) => {
     }
     kuisSql += " ORDER BY approved_at DESC, created_at DESC";
     const kuisRows = await query(kuisSql, kuisParams);
-    const kuisNotifs = kuisRows.map((k) => ({
-      type: "KUIS_APPROVED",
-      title: "Kuis kamu telah diverifikasi Admin.",
-      message: `Kuis "${k.title}" sudah bisa diakses peserta.`,
-      createdAt: k.approved_at || k.created_at,
-    }));
+    const kuisNotifs = kuisRows.map((k) => {
+      const isApproved = k.status === "approved";
+      return {
+        type: isApproved ? "KUIS_APPROVED" : "KUIS_REJECTED",
+        title: isApproved
+          ? "Kuis kamu telah diverifikasi Admin."
+          : "Kuis kamu belum dapat dipublikasikan.",
+        message: isApproved
+          ? `Kuis "${k.title}" sudah bisa diakses peserta.`
+          : `Kuis "${k.title}" ditolak Admin. Periksa kembali soal/ketentuan dan ajukan ulang.`,
+        createdAt: k.approved_at || k.created_at,
+      };
+    });
 
-    // BUKU
+    // BUKU (approved + rejected)
     let bukuSql = `
-      SELECT id, title, approved_at, created_at, added_by
+      SELECT id, title, status, approved_at, created_at, added_by
       FROM rekomendasi_buku
-      WHERE status = 'approved'
+      WHERE status IN ('approved','rejected')
     `;
     const bukuParams = [];
     if (userId) {
@@ -126,16 +161,23 @@ export const getUserNotifications = async (req, res) => {
     }
     bukuSql += " ORDER BY approved_at DESC, created_at DESC";
     const bukuRows = await query(bukuSql, bukuParams);
-    const bukuNotifs = bukuRows.map((b) => ({
-      type: "BUKU_APPROVED",
-      title: "Rekomendasi buku kamu telah diverifikasi Admin.",
-      message: `Buku "${b.title}" sudah tayang di Pojok Buku.`,
-      createdAt: b.approved_at || b.created_at,
-    }));
+    const bukuNotifs = bukuRows.map((b) => {
+      const isApproved = b.status === "approved";
+      return {
+        type: isApproved ? "BUKU_APPROVED" : "BUKU_REJECTED",
+        title: isApproved
+          ? "Rekomendasi buku kamu telah diverifikasi Admin."
+          : "Rekomendasi buku kamu belum dapat dipublikasikan.",
+        message: isApproved
+          ? `Buku "${b.title}" sudah tayang di Pojok Buku.`
+          : `Buku "${b.title}" ditolak Admin. Periksa kembali data buku dan ajukan ulang.`,
+        createdAt: b.approved_at || b.created_at,
+      };
+    });
 
-    // AGENDA BESOK
+    // AGENDA BESOK (tetap, tidak pakai status)
     let agendaSql = `
-      SELECT id, title, description, date, waktu, user_id
+      SELECT id, title, description, date, waktu, user_id, created_at
       FROM agenda
       WHERE date = DATE(DATE_ADD(CURDATE(), INTERVAL 1 DAY))
     `;
@@ -149,9 +191,10 @@ export const getUserNotifications = async (req, res) => {
       type: "AGENDA_REMINDER",
       title: "Agenda Pelatihan Volunteer kamu telah tiba!",
       message: `Besok ada agenda: ${a.title} (${a.date} ${a.waktu}).`,
-      createdAt: a.date,
+      createdAt: a.created_at || a.date,
     }));
 
+    // GABUNG & URUTKAN TERBARU DI ATAS
     const all = [
       ...programNotifs,
       ...materiNotifs,

@@ -56,11 +56,6 @@ const mapFileTypeFromMime = (mimetype) => {
 // ===== CREATE MATERI (UPLOAD) =====
 export const createMateri = async (req, res) => {
   try {
-    console.log("==== REQUEST MATERI ====");
-    console.log("HEADERS content-type:", req.headers["content-type"]);
-    console.log("BODY:", req.body);
-    console.log("FILE (req.file):", req.file);
-
     const {
       title,
       description,
@@ -86,8 +81,8 @@ export const createMateri = async (req, res) => {
 
     const kategoriKelasId = mapClassCategoryToId(classCategory);
     const kategoriId = mapMaterialCategoryToId(materialCategory);
-    const uploadedBy = req.user.id; // user yang upload materi
 
+    const uploadedBy = req.user.id; // user login
     const filePath = `/uploads/materi/${uploadedFile.filename}`;
 
     const sql = `
@@ -107,9 +102,6 @@ export const createMateri = async (req, res) => {
       uploadedBy,
     ];
 
-    console.log("SQL:", sql);
-    console.log("PARAMS:", params);
-
     db.query(sql, params, (err, result) => {
       if (err) {
         console.error("MYSQL ERROR insert materi_multimedia:", err);
@@ -118,8 +110,6 @@ export const createMateri = async (req, res) => {
           error: err.code || err.message,
         });
       }
-
-      console.log("INSERT OK, ID:", result.insertId);
 
       return res.status(201).json({
         message: "Materi berhasil ditambahkan",
@@ -154,9 +144,52 @@ export const getApprovedMateri = (req, res) => {
   db.query(sql, (err, rows) => {
     if (err) {
       console.error("MYSQL ERROR getApprovedMateri:", err);
-      return res
-        .status(500)
-        .json({ message: "Gagal mengambil materi", error: err.code || err.message });
+      return res.status(500).json({
+        message: "Gagal mengambil materi",
+        error: err.code || err.message,
+      });
+    }
+
+    return res.json(rows);
+  });
+};
+
+// ===== RIWAYAT MATERI USER (PROFILE) =====
+export const getMyMateri = (req, res) => {
+  const userId = req.user.id;
+  const { status } = req.query;
+
+  let sql = `
+    SELECT
+      id,
+      title,
+      description,
+      file_path,
+      file_type,
+      kategori_kelas_id,
+      kategori_id,
+      status,
+      created_at,
+      approved_at
+    FROM materi_multimedia
+    WHERE uploaded_by = ?
+  `;
+  const params = [userId];
+
+  if (status && status !== "all" && status !== "semua") {
+    sql += " AND status = ?";
+    params.push(status);
+  }
+
+  sql += " ORDER BY created_at DESC";
+
+  db.query(sql, params, (err, rows) => {
+    if (err) {
+      console.error("MYSQL ERROR getMyMateri:", err);
+      return res.status(500).json({
+        message: "Gagal mengambil riwayat materi multimedia",
+        error: err.code || err.message,
+      });
     }
 
     return res.json(rows);
@@ -168,7 +201,7 @@ export const downloadMateri = (req, res) => {
   const { id } = req.params;
 
   const sql = `
-    SELECT file_path, title, status
+    SELECT file_path, title, file_type, status
     FROM materi_multimedia
     WHERE id = ? AND status = 'approved'
   `;
@@ -203,7 +236,19 @@ export const downloadMateri = (req, res) => {
         .json({ message: "File tidak ditemukan di server" });
     }
 
-    const downloadName = materi.title || path.basename(absolutePath);
+    const extFromPath = path.extname(absolutePath);
+    const extFromType =
+      !extFromPath && materi.file_type
+        ? `.${materi.file_type.toLowerCase()}`
+        : "";
+    const ext = extFromPath || extFromType || "";
+
+    const baseName =
+      (materi.title || path.basename(absolutePath, ext))
+        .replace(/[\\\/:*?"<>|]/g, "_")
+        .trim() || "materi";
+
+    const downloadName = baseName + ext;
 
     res.download(absolutePath, downloadName, (downloadErr) => {
       if (downloadErr) {

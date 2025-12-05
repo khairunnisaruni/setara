@@ -2,7 +2,7 @@
 import db from "../config/db.js";
 
 // CREATE: simpan donasi baru
-const createDonasi = (req, res) => {
+export const createDonasi = (req, res) => {
   const {
     title,
     category,
@@ -16,6 +16,7 @@ const createDonasi = (req, res) => {
 
   const posterFile = req.file ? req.file.filename : null;
   const added_by = req.user.id; // user yang menambah donasi
+  const status = "pending";     // default, menunggu approve admin
 
   const sql = `
     INSERT INTO donasi
@@ -28,8 +29,9 @@ const createDonasi = (req, res) => {
        link,
        penanggung_jawab,
        contact_person,
-       added_by)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       added_by,
+       status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
@@ -43,6 +45,7 @@ const createDonasi = (req, res) => {
     responsible,
     contact,
     added_by,
+    status,
   ];
 
   db.query(sql, values, (err, result) => {
@@ -58,8 +61,8 @@ const createDonasi = (req, res) => {
   });
 };
 
-// READ: ambil semua donasi
-const getDonasi = (req, res) => {
+// READ: ambil semua donasi (misalnya untuk admin)
+export const getDonasi = (req, res) => {
   const sql = `
     SELECT id, title, kategori, penerima_manfaat, description,
            poster, dampak, link, penanggung_jawab, contact_person,
@@ -79,8 +82,8 @@ const getDonasi = (req, res) => {
   });
 };
 
-// READ: hanya donasi yang sudah approved
-const getApprovedDonasi = (req, res) => {
+// READ: hanya donasi yang sudah approved (halaman publik)
+export const getApprovedDonasi = (req, res) => {
   const sql = `
     SELECT id, title, kategori, penerima_manfaat, description,
            poster, dampak, link, penanggung_jawab, contact_person,
@@ -101,5 +104,38 @@ const getApprovedDonasi = (req, res) => {
   });
 };
 
-export { createDonasi, getDonasi, getApprovedDonasi };
-export default createDonasi;
+// READ: riwayat donasi milik user login (Profile -> Donasi)
+/**
+ * GET /api/donasi/me
+ * Optional: ?status=approved | pending | rejected | all
+ */
+export const getMyDonasi = (req, res) => {
+  const userId = req.user.id;
+  const { status } = req.query;
+
+  let sql = `
+    SELECT id, title, kategori, penerima_manfaat, description,
+           poster, dampak, link, penanggung_jawab, contact_person,
+           status, created_at, approved_at
+    FROM donasi
+    WHERE added_by = ?
+  `;
+  const params = [userId];
+
+  if (status && status !== "all" && status !== "semua") {
+    sql += " AND status = ?";
+    params.push(status);
+  }
+
+  sql += " ORDER BY created_at DESC";
+
+  db.query(sql, params, (err, rows) => {
+    if (err) {
+      console.error("Gagal ambil riwayat donasi:", err);
+      return res
+        .status(500)
+        .json({ message: "Gagal mengambil riwayat donasi" });
+    }
+    return res.json(rows);
+  });
+};

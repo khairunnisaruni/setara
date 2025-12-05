@@ -4,7 +4,7 @@ const SuccessModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">H
       <div className="bg-white rounded-xl p-5 flex items-center gap-3 shadow-md">
         <CheckCircle size={40} className="text-green-500" />
         <div>

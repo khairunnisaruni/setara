@@ -7,6 +7,13 @@ export default function InteractiveCalendar({
 }) {
   const today = new Date();
 
+  // helper: jadikan key "YYYY-MM-DD"
+  const formatKey = (year, monthIndex, day) => {
+    const mm = String(monthIndex + 1).padStart(2, "0"); // monthIndex: 0-11
+    const dd = String(day).padStart(2, "0");
+    return `${year}-${mm}-${dd}`;
+  };
+
   // state month & year
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
@@ -14,9 +21,9 @@ export default function InteractiveCalendar({
   // picker
   const [showPicker, setShowPicker] = useState(false);
 
-  // selected date
+  // selected date (YYYY-MM-DD)
   const [selectedDate, setSelectedDate] = useState(
-    `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`
+    formatKey(today.getFullYear(), today.getMonth(), today.getDate())
   );
 
   const monthNames = [
@@ -47,30 +54,30 @@ export default function InteractiveCalendar({
   const handlePrev = () => {
     if (currentMonth === 0) {
       setCurrentMonth(11);
-      setCurrentYear(currentYear - 1);
+      setCurrentYear((prev) => prev - 1);
     } else {
-      setCurrentMonth(currentMonth - 1);
+      setCurrentMonth((prev) => prev - 1);
     }
   };
 
   const handleNext = () => {
     if (currentMonth === 11) {
       setCurrentMonth(0);
-      setCurrentYear(currentYear + 1);
+      setCurrentYear((prev) => prev + 1);
     } else {
-      setCurrentMonth(currentMonth + 1);
+      setCurrentMonth((prev) => prev + 1);
     }
   };
 
   const isAgendaDay = (day) => {
-    const formatted = `${day}-${currentMonth + 1}-${currentYear}`;
+    const formatted = formatKey(currentYear, currentMonth, day);
     return agendaDates.includes(formatted);
   };
 
   const selectDate = (day) => {
-    const formatted = `${day}-${currentMonth + 1}-${currentYear}`;
+    const formatted = formatKey(currentYear, currentMonth, day);
     setSelectedDate(formatted);
-    if (onSelectDate) onSelectDate(formatted);
+    if (onSelectDate) onSelectDate(formatted); // selalu "YYYY-MM-DD"
   };
 
   return (
@@ -102,7 +109,7 @@ export default function InteractiveCalendar({
         </button>
       </div>
 
-      {/* Muncul  */}
+      {/* Picker bulan/tahun */}
       {showPicker && (
         <div className="absolute mt-2 bg-white shadow-xl rounded-xl p-4 z-50 border">
           {/* PILIH BULAN */}
@@ -162,7 +169,7 @@ export default function InteractiveCalendar({
         {dates.map((day, index) => {
           if (day === null) return <div key={index}></div>;
 
-          const formatted = `${day}-${currentMonth + 1}-${currentYear}`;
+          const formatted = formatKey(currentYear, currentMonth, day);
           const isSelected = formatted === selectedDate;
           const isToday =
             day === today.getDate() &&

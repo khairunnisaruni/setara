@@ -1,9 +1,9 @@
 // src/sections/volunteer/ruang_volunteer/MainAGSection.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { HiPlus } from "react-icons/hi";
 import InteractiveCalendar from "../../../components/ruang_volunteer/InteractiveCalendar";
 import ModalAgenda from "../../../components/ruang_volunteer/ModalAgenda";
-import SuccessPopup from "../../../components/ruang_volunteer/notification/SuccessPopup";
+import SuccessAgenda from "../../../components/ruang_volunteer/notification/SuccessAgenda";
 import UniversalPopup from "../../../components/ruang_volunteer/notification/UniversalPopup";
 import CardAgenda from "../../../components/ruang_volunteer/CardAgenda";
 import ModalRincianAgenda from "../../../components/ruang_volunteer/ModalRincianAgenda";
@@ -14,40 +14,15 @@ export default function MainAGSection() {
   // KALENDER
   // ========================================
   const today = new Date();
-  const dd = String(today.getDate()).padStart(2, "0");
-  const mm = String(today.getMonth() + 1).padStart(2, "0");
-  const yyyy = today.getFullYear();
-  const todayKey = `${dd}-${mm}-${yyyy}`;
+  const todayKey = today.toISOString().slice(0, 10); // "YYYY-MM-DD"
 
   const [selectedDate, setSelectedDate] = useState(todayKey);
 
   // ========================================
   // DATA AGENDA (STATE)
   // ========================================
-  const [agendas, setAgendas] = useState([
-    {
-      id: 1,
-      title: "Pelatihan Volunteer",
-      deskripsi: "Perlu mencatat menggunakan buku dan pulpen",
-      keyDate: "30-10-2025",
-      date: "Sabtu, 30 Oktober 2025",
-      time: "08:00 - 12:00 WIB",
-      lokasi: "Zoom Meeting",
-      method: "Zoom Meeting",
-    },
-    {
-      id: 2,
-      title: "Pelatihan Mengajar",
-      deskripsi: "Kelas persiapan materi",
-      keyDate: "30-10-2025",
-      date: "Sabtu, 30 Oktober 2025",
-      time: "13:00 - 14:00 WIB",
-      lokasi: "Zoom Meeting",
-      method: "Zoom Meeting",
-    },
-  ]);
-
-  const agendaDates = agendas.map((a) => a.keyDate);
+  const [agendas, setAgendas] = useState([]);
+  const agendaDates = agendas.map((a) => a.keyDate); // YYYY-MM-DD
   const filteredAgenda = agendas.filter((a) => a.keyDate === selectedDate);
 
   // ========================================
@@ -66,24 +41,20 @@ export default function MainAGSection() {
 
   const handleSubmitAgenda = async () => {
     try {
-      // Validasi sederhana
       if (!formData.judul || !formData.tanggal || !formData.waktu) {
         alert("Judul, tanggal, dan waktu wajib diisi.");
         return;
       }
 
-      // data yang dikirim ke backend (tabel agenda)
       const payload = {
         title: formData.judul,
         description: formData.deskripsi,
-        date: formData.tanggal, // format: YYYY-MM-DD
-        waktu: formData.waktu, // contoh: "09:00"
-        // optional: kalau backend kamu pakai 'time', kirim juga:
+        date: formData.tanggal, // YYYY-MM-DD
+        waktu: formData.waktu,
         time: formData.waktu,
         location: formData.lokasi,
       };
 
-      // 🔹 ambil token dari localStorage (ganti 'token' kalau key-nya beda)
       const token = localStorage.getItem("token");
       if (!token) {
         alert("Tidak ada token. Kamu mungkin belum login, silakan login ulang.");
@@ -94,7 +65,7 @@ export default function MainAGSection() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // kirim JWT ke backend
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
@@ -105,16 +76,19 @@ export default function MainAGSection() {
         throw new Error(data.message || "Gagal menyimpan agenda");
       }
 
-      // kalau backend sukses, baru tambahkan ke state lokal
+      // Tambahkan ke state lokal
+      const inserted = data.agenda || {};
+      const dateKey = inserted.date || formData.tanggal;
+
       const newAgenda = {
-        id: Date.now(),
-        title: formData.judul,
-        deskripsi: formData.deskripsi,
-        lokasi: formData.lokasi,
-        time: formData.waktu,
-        date: convertDateIndo(formData.tanggal),
-        keyDate: convertKey(formData.tanggal),
-        method: formData.lokasi,
+        id: inserted.id || Date.now(),
+        title: inserted.title || formData.judul,
+        deskripsi: inserted.description || formData.deskripsi,
+        lokasi: inserted.location || formData.lokasi,
+        time: inserted.waktu || formData.waktu,
+        date: convertDateIndo(dateKey),
+        keyDate: dateKey, // YYYY-MM-DD
+        method: inserted.location || formData.lokasi,
       };
 
       setAgendas((prev) => [...prev, newAgenda]);
@@ -122,7 +96,6 @@ export default function MainAGSection() {
       setOpenModal(false);
       setShowNotifAdd(true);
 
-      // Reset
       setFormData({
         judul: "",
         deskripsi: "",
@@ -146,11 +119,13 @@ export default function MainAGSection() {
 
   const handleOpenDetail = (agenda) => {
     setSelectedAgenda({
+      id: agenda.id,
       judul: agenda.title,
       deskripsi: agenda.deskripsi,
       tanggal: agenda.date,
       waktu: agenda.time,
       lokasi: agenda.method,
+      keyDate: agenda.keyDate,
     });
     setOpenDetail(true);
   };
@@ -178,13 +153,13 @@ export default function MainAGSection() {
       Desember: "12",
     }[monthName];
 
-    return `${year}-${monthIndex}-${day}`;
+    return `${year}-${monthIndex}-${day.padStart(2, "0")}`;
   };
 
   const handleSubmitEdit = () => {
     setAgendas((prev) =>
       prev.map((a) =>
-        a.title === selectedAgenda.judul && a.time === selectedAgenda.waktu
+        a.id === selectedAgenda.id
           ? {
               ...a,
               title: formData.judul,
@@ -192,7 +167,7 @@ export default function MainAGSection() {
               lokasi: formData.lokasi,
               time: formData.waktu,
               date: convertDateIndo(formData.tanggal),
-              keyDate: convertKey(formData.tanggal),
+              keyDate: formData.tanggal,
             }
           : a
       )
@@ -209,12 +184,7 @@ export default function MainAGSection() {
   const [showDeleteNotif, setShowDeleteNotif] = useState(false);
 
   const handleDeleteAgenda = () => {
-    setAgendas((prev) =>
-      prev.filter(
-        (a) =>
-          !(a.title === selectedAgenda.judul && a.time === selectedAgenda.waktu)
-      )
-    );
+    setAgendas((prev) => prev.filter((a) => a.id !== selectedAgenda.id));
 
     setOpenEdit(false);
     setOpenDetail(false);
@@ -226,11 +196,6 @@ export default function MainAGSection() {
   // ========================================
   // FUNGSI DATE
   // ========================================
-  const convertKey = (dateInput) => {
-    const [y, m, d] = dateInput.split("-");
-    return `${d}-${m}-${y}`;
-  };
-
   const convertDateIndo = (dateInput) => {
     const [y, m, d] = dateInput.split("-");
     const monthNames = [
@@ -247,8 +212,41 @@ export default function MainAGSection() {
       "November",
       "Desember",
     ];
-    return `${d} ${monthNames[parseInt(m) - 1]} ${y}`;
+    return `${d.padStart(2, "0")} ${monthNames[parseInt(m) - 1]} ${y}`;
   };
+
+  // ========================================
+  // FETCH SEMUA AGENDA GLOBAL SAAT HALAMAN DIBUKA
+  // ========================================
+  useEffect(() => {
+    const fetchAgenda = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/agenda/all");
+        const data = await res.json().catch(() => []);
+        if (!res.ok) {
+          console.error("Gagal ambil agenda:", data);
+          throw new Error(data.message || "Gagal mengambil agenda");
+        }
+
+        const mapped = data.map((item) => ({
+          id: item.id,
+          title: item.title,
+          deskripsi: item.description,
+          lokasi: item.location,
+          time: item.waktu,
+          date: convertDateIndo(item.date), // label Indo
+          keyDate: item.date,               // YYYY-MM-DD
+          method: item.location,
+        }));
+
+        setAgendas(mapped);
+      } catch (err) {
+        console.error("Error fetch agenda:", err);
+      }
+    };
+
+    fetchAgenda();
+  }, []);
 
   // ========================================
   // UI
@@ -268,7 +266,7 @@ export default function MainAGSection() {
         {/* CALENDAR */}
         <InteractiveCalendar
           agendaDates={agendaDates}
-          onSelectDate={(date) => setSelectedDate(date)}
+          onSelectDate={(date) => setSelectedDate(date)} // "YYYY-MM-DD"
         />
 
         {/* RIGHT SIDE */}
@@ -276,16 +274,18 @@ export default function MainAGSection() {
           {/* ADD BUTTON */}
           <button
             onClick={() => setOpenModal(true)}
-            className="w-fit flex items-center gap-2 px-6 py-3 bg-[#FE9015] hover:bg-[#e57f0f] text-white font-semibold rounded-full shadow"
+            className="w-fit flex itemscenter gap-2 px-6 py-3 bg-[#FE9015] hover:bg-[#e57f0f] text-white font-semibold rounded-full shadow"
           >
             Tambahkan Agenda <HiPlus size={18} />
           </button>
 
           {/* POPUP ADD */}
-          <SuccessPopup show={showNotifAdd} entity="Agenda" />
+          <SuccessAgenda show={showNotifAdd} entity="Agenda" />
 
           {/* TITLE */}
-          <h2 className="text-2xl font-bold">Agenda {selectedDate}</h2>
+          <h2 className="text-2xl font-bold">
+            Agenda {convertDateIndo(selectedDate)}
+          </h2>
 
           {/* LIST */}
           <div className="flex flex-col gap-5">
