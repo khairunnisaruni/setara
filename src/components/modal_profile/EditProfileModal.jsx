@@ -103,6 +103,7 @@ const EditProfileModal = ({
       <div className="bg-white rounded-2xl shadow-xl p-6 w-96 max-h-[90vh] overflow-y-auto animate-[fadeIn_.2s_ease]">
         <h2 className="text-lg font-bold text-center mb-6">Edit Profil</h2>
 
+
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
             <label className="font-semibold text-sm">Nama Pengguna</label>

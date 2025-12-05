@@ -1,33 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "../../sections/admin/AdminLayout";
 import TabButton from "../../components/admin/TabButton";
 import ToolbarSection from "../../sections/admin/ToolbarSection";
 import CeritaTableSection from "../../sections/admin/CeritaTableSection";
 import Pagination from "../../components/admin/Pagination";
-import AddCeritaModal from "../../components/admin/modals/Cerita/AddCerita";
-import Success from "../../components/admin/modals/Success";
-import Failed from "../../components/admin/modals/Failed";
+
+// ✅ 1. Import Modal
+import AddCeritaModal from "../../components/admin/modals/Cerita/AddCerita"; // Sesuaikan path
+import SuccessModal from "../../components/admin/modals/Success";
+import FailedModal from "../../components/admin/modals/Failed";
 
 const Cerita = () => {
   const [activeTab, setActiveTab] = useState("daftar");
   const [search, setSearch] = useState("");
+  
+  // State Badge
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // ✅ 2. State untuk Modal & Refresh
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFailedModal, setShowFailedModal] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // ✅ Handle submit dari modal tambah cerita
+  // Fetch Badge
+  const fetchPendingCount = () => {
+    fetch('http://localhost:5000/admin/stories')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const count = data.filter(c => c.status === 'pending').length;
+          setPendingCount(count);
+        }
+      })
+      .catch(console.error);
+  };
+
+  useEffect(() => {
+    fetchPendingCount();
+  }, [activeTab, refreshTrigger]); // Update badge jika ada data baru
+
+  // ✅ 3. Fungsi Submit ke Backend
   const handleAddSubmit = async (formData) => {
     try {
-      console.log("Data cerita baru:", formData);
+      const response = await fetch('http://localhost:5000/admin/stories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-      // Simulasi request ke API
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      if (!response.ok) throw new Error("Gagal upload cerita");
 
-      // Jika berhasil
-      setShowSuccessModal(true);
-      setIsAddModalOpen(false);
+      // Jika Sukses
+      setRefreshTrigger(prev => prev + 1); // Refresh tabel
+      setIsAddModalOpen(false);            // Tutup form
+      setShowSuccessModal(true);           // Munculkan sukses
+
     } catch (error) {
-      // Jika gagal
+      console.error(error);
+      setIsAddModalOpen(false);
       setShowFailedModal(true);
     }
   };
@@ -35,15 +68,14 @@ const Cerita = () => {
   return (
     <AdminLayout>
       <div className="p-6">
-        {/* Header */}
-        <h2 className="text-2xl font-bold text-gray-800">Cerita Inspiratif</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Cerita Lapangan</h2>
         <p className="text-gray-600 mt-1 mb-4">
-          Kelola dan pantau seluruh data cerita inspiratif yang dikirim oleh pengguna
+          Kelola dan pantau seluruh data cerita lapangan.
         </p>
 
         {/* Tabs */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 w-full">
-          <div className="flex flex-wrap border-b border-gray-100 px-4 py-2">
+          <div className="flex flex-wrap border-b border-gray-100 gap-x-5 px-4 py-2">
             <TabButton
               active={activeTab === "daftar"}
               onClick={() => setActiveTab("daftar")}
@@ -53,7 +85,7 @@ const Cerita = () => {
             <TabButton
               active={activeTab === "verifikasi"}
               onClick={() => setActiveTab("verifikasi")}
-              badge="3"
+              badge={pendingCount > 0 ? pendingCount : null}
             >
               Verifikasi Cerita
             </TabButton>
@@ -65,31 +97,40 @@ const Cerita = () => {
           search={search}
           setSearch={setSearch}
           activeTab={activeTab}
-          onAddClick={() => setIsAddModalOpen(true)} // buka modal tambah
+          // ✅ 4. Pasang Trigger Buka Modal Disini
+          onAddClick={() => setIsAddModalOpen(true)}
         />
 
-        {/* Table Cerita */}
-        <CeritaTableSection activeTab={activeTab} search={search} />
+        {/* Table - Jangan lupa kirim refreshTrigger */}
+        <CeritaTableSection 
+            activeTab={activeTab} 
+            search={search} 
+            refreshTrigger={refreshTrigger} 
+        />
 
-        {/* Pagination */}
         <Pagination />
 
-        {/* Modal Tambah Cerita */}
+        {/* ✅ 5. Pasang Komponen Modal Disini */}
         <AddCeritaModal
           isOpen={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
           onSubmit={handleAddSubmit}
         />
 
-        {/* Modal Sukses */}
         {showSuccessModal && (
-          <Success onClose={() => setShowSuccessModal(false)} />
+          <SuccessModal 
+            isOpen={showSuccessModal} 
+            onClose={() => setShowSuccessModal(false)} 
+          />
         )}
 
-        {/* Modal Gagal */}
         {showFailedModal && (
-          <Failed onClose={() => setShowFailedModal(false)} />
+          <FailedModal 
+            isOpen={showFailedModal} 
+            onClose={() => setShowFailedModal(false)} 
+          />
         )}
+
       </div>
     </AdminLayout>
   );

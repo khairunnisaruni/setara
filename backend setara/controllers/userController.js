@@ -1,3 +1,4 @@
+
 // backend_setara/controllers/userController.js
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -5,6 +6,22 @@ import dotenv from "dotenv";
 import User from "../models/User.js";
 
 dotenv.config();
+
+
+
+export const getUsers = (req, res) => {
+    User.getAlls((err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+    });
+};
+
+export const deleteUser = (req, res) => {
+    User.deletes(req.params.id, (err, result) => {
+        if (err) return res.status(500).json(err);
+        return res.json({ message: "User berhasil dihapus", result });
+    });
+};
 
 // helper buat generate JWT
 const generateToken = (payload) => {

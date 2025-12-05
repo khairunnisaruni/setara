@@ -1,4 +1,4 @@
-// src/sections/edukasi_interaktif/DaftarKuis.jsx
+
 import React, { useState, useEffect } from "react";
 import CardDaftarKuis from "./CardDaftarKuis";
 import AddQuizModal from "../../components/admin/modals/Quiz/AddQuiz";

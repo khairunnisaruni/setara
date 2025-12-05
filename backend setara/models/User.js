@@ -1,7 +1,20 @@
+
 // backend_setara/models/User.js
 import db from "../config/db.js";
 
 const User = {
+
+  getAlls: (callback) => {
+    const sql = "SELECT * FROM users";
+    db.query(sql, callback);
+  },
+
+  deletes: (id, callback) => {
+    const sql = "DELETE FROM users WHERE id = ?";
+    db.query(sql, [id], callback);
+  },
+
+
   findByEmail: (email) => {
     console.log("🔍 Mencari email:", email);
     return new Promise((resolve, reject) => {

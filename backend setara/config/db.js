@@ -19,5 +19,6 @@ db.connect((err) => {
   }
 });
 
-// Pola pemakaian createConnection + query callback ini sesuai contoh di dokumentasi mysql2. [web:83][web:84]
+
 export default db;
+

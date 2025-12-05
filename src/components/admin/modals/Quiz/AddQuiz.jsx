@@ -1,4 +1,6 @@
+
 // src/components/admin/modals/Quiz/AddQuiz.jsx
+
 import { useState } from "react";
 import { Check } from "lucide-react";
 import FailedModal from "../../modals/Failed";
@@ -38,7 +40,6 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
         setShowSuccessPopup(false);
       }, 2000);
     } catch (error) {
-      console.error("Gagal kirim kuis:", error);
       onClose();
       setShowFailedModal(true);
       setTimeout(() => setShowFailedModal(false), 2000);
@@ -217,10 +218,27 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
                   Simpan
                 </button>
               </div>
-            </form>
-          </div>
+            </div>
+
+            {/* Tombol Aksi */}
+            <div className="flex justify-end gap-2 mt-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="bg-gray-100 text-gray-700 text-sm px-3 py-1.5 rounded-md hover:bg-gray-200"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                className="bg-amber-400 text-white text-sm px-3 py-1.5 rounded-md hover:bg-amber-500 transition-all"
+              >
+                Simpan
+              </button>
+            </div>
+          </form>
         </div>
-      )}
+      </div>
 
       {/* POPUP SUKSES – bentuk sama seperti gambar di AddBuku */}
       {showSuccessPopup && (

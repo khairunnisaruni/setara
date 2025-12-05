@@ -31,7 +31,7 @@ const DetailKuis = ({ isOpen, onClose, quiz }) => {
           <div className="text-left space-y-4">
             <div>
               <p className="font-semibold text-sm">Judul Kuis & Game</p>
-              <p className="text-gray-400 text-sm">{quiz?.judul || "—"}</p>
+              <p className="text-gray-400 text-sm">{quiz?.title || "—"}</p>
             </div>
 
             <div>
@@ -66,13 +66,13 @@ const DetailKuis = ({ isOpen, onClose, quiz }) => {
             <div>
               <p className="font-semibold text-sm">Kategori Mata Pelajaran</p>
               <p className="text-gray-400 text-sm">
-                {quiz?.kategoriMapel || "Matematika"}
+                {quiz?.nama_kategori || "Matematika"}
               </p>
             </div>
 
             <div>
               <p className="font-semibold text-sm">Kategori Kelas</p>
-              <p className="text-gray-400 text-sm">{quiz?.kelas || "4 SD"}</p>
+              <p className="text-gray-400 text-sm">{quiz?.nama_kelas || "4 SD"}</p>
             </div>
           </div>
 

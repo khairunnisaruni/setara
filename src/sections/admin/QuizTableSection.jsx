@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TableActions from "../../components/admin/TableActions";
 
 // Semua modal untuk Quiz
@@ -9,11 +9,13 @@ import RejectedModal from "../../components/admin/modals/Rejected";
 import EditQuizModal from "../../components/admin/modals/Quiz/EditQuiz";
 import KonfirmasiHapus from "../../components/admin/modals/KonfirmasiHapus";
 import SuccessDeleteModal from "../../components/admin/modals/SuccessDelete";
+import SuccessUpdateModal from "../../components/admin/modals/SuccessUpdate";
 
 const QuizTableSection = ({ activeTab, search }) => {
   // State global untuk semua modal
-  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [quizzes, setQuizzes] = useState([]);
 
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [showDetailQuiz, setShowDetailQuiz] = useState(false);
   const [showDetailVerifikasi, setShowDetailVerifikasi] = useState(false);
   const [showAccepted, setShowAccepted] = useState(false);
@@ -21,65 +23,51 @@ const QuizTableSection = ({ activeTab, search }) => {
   const [showEditQuizModal, setShowEditQuizModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
+  const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
 
-  // === Data Dummy Quiz ===
-  const daftarQuiz = [
-    {
-      id: 1,
-      title: "Grammar Challenge",
-      description: "Latihan dasar tata bahasa Inggris",
-      platform: "Kahoot",
-      link: "kahoot.com/grammar-101",
-      subjectCategory: "Bahasa Inggris",
-      classCategory: "Kelas 7",
-    },
-    {
-      id: 2,
-      title: "Hitung Cepat",
-      description: "Tes kecepatan perhitungan dasar matematika",
-      platform: "Quizizz",
-      link: "quizizz.com/math-fast",
-      subjectCategory: "Matematika",
-      classCategory: "Kelas 6",
-    },
-    {
-      id: 3,
-      title: "Mengenal Tubuh Manusia",
-      description: "Kuis tentang organ dan sistem tubuh manusia",
-      platform: "Google Form",
-      link: "forms.gle/sciencequiz",
-      subjectCategory: "IPA",
-      classCategory: "Kelas 8",
-    },
-    {
-      id: 4,
-      title: "Sejarah Indonesia",
-      description: "Pertanyaan seputar perjuangan kemerdekaan Indonesia",
-      platform: "Kahoot",
-      link: "kahoot.com/sejarah-indo",
-      subjectCategory: "IPS",
-      classCategory: "Kelas 9",
-    },
-    {
-      id: 5,
-      title: "Puisi dan Maknanya",
-      description: "Uji pemahaman terhadap karya sastra puisi",
-      platform: "Quizizz",
-      link: "quizizz.com/puisi",
-      subjectCategory: "Sastra",
-      classCategory: "Kelas 10",
-    },
-  ];
+  useEffect(() => {
+    fetch('http://localhost:5000/admin/quiz')
+      .then(response => response.json())
+      .then(data => {
+        console.log("Data Quiz:", data);
+        setQuizzes(data);
+      })
+      .catch(error => console.error("Error fetching quiz:", error));
+  }, []);
 
-  const verifikasiQuiz = daftarQuiz.map((q) => ({
-    ...q,
-    submitter: "user_tes",
-    date: "16-09-2005",
-  }));
+  const data = quizzes.filter(q => {
+    const matchSearch = q.title.toLowerCase().includes(search.toLowerCase());
 
-  const data = activeTab === "daftar" ? daftarQuiz : verifikasiQuiz;
+    if (activeTab === "daftar") {
+      return matchSearch && q.status === 'approved';
+    } else {
+      return matchSearch && q.status === 'pending';
+    }
+  });
 
-  // ==== Handlers untuk aksi tombol ====
+  // Logic Eksekusi Approve/Reject
+  const updateStatus = (newStatus) => {
+    if (!selectedQuiz) return;
+
+    fetch(`http://localhost:5000/admin/quiz/${selectedQuiz.id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    })
+      .then(res => res.json())
+      .then(() => {
+        // Refresh data tanpa reload page
+        // Pastikan kamu punya fungsi fetchQuizzes() di file ini
+        fetch('http://localhost:5000/admin/quiz')
+          .then(res => res.json())
+          .then(data => setQuizzes(data));
+
+        setShowAccepted(false);
+        setShowRejected(false);
+      })
+      .catch(console.error);
+  };
+
   const handleView = (quiz) => {
     setSelectedQuiz(quiz);
     if (activeTab === "daftar") setShowDetailQuiz(true);
@@ -106,9 +94,77 @@ const QuizTableSection = ({ activeTab, search }) => {
     setShowDeleteConfirm(true);
   };
 
+
+
+  const handleConfirmDelete = () => {
+    if (!selectedQuiz) return;
+
+    fetch(`http://localhost:5000/admin/quiz/${selectedQuiz.id}`, {
+      method: 'DELETE',
+    })
+      .then(res => res.json())
+      .then(() => {
+        // 1. Update tampilan (hapus dari state)
+        const sisaQuiz = quizzes.filter(q => q.id !== selectedQuiz.id);
+        setQuizzes(sisaQuiz);
+
+        // 2. Tutup modal konfirmasi & Buka modal sukses
+        setShowDeleteConfirm(false);
+        setShowDeleteSuccess(true);
+      })
+      .catch(err => console.error("Gagal menghapus:", err));
+  };
+
   const handleUpdateSubmit = (updatedData) => {
-    console.log("Quiz diupdate:", updatedData);
-    setShowEditQuizModal(false);
+    if (!selectedQuiz) return;
+
+    const payload = {
+      title: updatedData.title,
+      description: updatedData.description,
+      platform: updatedData.platform,
+      link: updatedData.link,
+      kategori_id: parseInt(updatedData.kategori_id),
+      kategori_kelas_id: parseInt(updatedData.kategori_kelas_id)
+    };
+
+    console.log("Sedang mengirim data ke Backend...", payload); // Cek ini nanti
+
+    // 3. Kirim ke Backend
+    fetch(`http://localhost:5000/admin/quiz/${selectedQuiz.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Sukses update:", data);
+
+
+        fetch('http://localhost:5000/admin/quiz')
+          .then(res => res.json())
+          .then(data => setQuizzes(data));
+
+        // 5. Tutup Modal
+        setShowEditQuizModal(false);
+
+        setShowUpdateSuccess(true);
+      })
+      .catch((err) => console.error("Gagal update:", err));
+  };
+
+  // Helper untuk format tanggal
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long", // Pakai 'short' kalau mau 'Nov', pakai 'long' kalau 'November'
+      year: "numeric",
+      // hour: "2-digit", // Hapus komen ini kalau mau tampilkan jam
+      // minute: "2-digit"
+    });
   };
 
   return (
@@ -145,49 +201,53 @@ const QuizTableSection = ({ activeTab, search }) => {
           </thead>
 
           <tbody>
-            {data
-              .filter((q) => q.title.toLowerCase().includes(search.toLowerCase()))
-              .map((quiz, i) => (
-                <tr
-                  key={quiz.id}
-                  className="border-b border-gray-200 hover:bg-amber-50 transition"
-                >
-                  <td className="py-3 px-3 text-center">{i + 1}</td>
-                  <td className="py-3 px-3">{quiz.title}</td>
-                  <td className="py-3 px-3">{quiz.description}</td>
-                  <td className="py-3 px-3">{quiz.platform}</td>
-                  <td className="py-3 px-3 break-all max-w-[180px]">
-                    <a
-                      href={`https://${quiz.link}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                    >
-                      {quiz.link}
-                    </a>
-                  </td>
-                  <td className="py-3 px-3">{quiz.subjectCategory}</td>
-                  <td className="py-3 px-3">{quiz.classCategory}</td>
+            {data.length === 0 ? (
+              <tr><td colSpan="8" className="text-center py-5">Tidak ada data quiz.</td></tr>
+            ) : (
+              data
+                .filter((q) => q.title.toLowerCase().includes(search.toLowerCase()))
+                .map((quiz, i) => (
+                  <tr
+                    key={quiz.id}
+                    className="border-b border-gray-200 hover:bg-amber-50 transition"
+                  >
+                    <td className="py-3 px-3 text-center">{i + 1}</td>
+                    <td className="py-3 px-3">{quiz.title}</td>
+                    <td className="py-3 px-3">{quiz.description}</td>
+                    <td className="py-3 px-3">{quiz.platform}</td>
+                    <td className="py-3 px-3 break-all max-w-[180px]">
+                      <a
+                        href={`https://${quiz.link}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                      >
+                        {quiz.link}
+                      </a>
+                    </td>
+                    <td className="py-3 px-3">{quiz.nama_kategori || '-'}</td>
+                    <td className="py-3 px-3">{quiz.nama_kelas || '-'}</td>
 
-                  {activeTab === "verifikasi" && (
-                    <>
-                      <td className="py-3 px-3">{quiz.submitter}</td>
-                      <td className="py-3 px-3">{quiz.date}</td>
-                    </>
-                  )}
+                    {activeTab === "verifikasi" && (
+                      <>
+                        <td className="py-3 px-3">{quiz.nama_pengupload || '-'}</td>
+                        <td className="py-3 px-3">{formatDate(quiz.created_at)}</td>
+                      </>
+                    )}
 
-                  <td className="py-3 px-3 text-center">
-                    <TableActions
-                      activeTab={activeTab}
-                      onView={() => handleView(quiz)}
-                      onApprove={() => handleApprove(quiz)}
-                      onReject={() => handleReject(quiz)}
-                      onEdit={() => handleEdit(quiz)}
-                      onDelete={() => handleDelete(quiz)}
-                    />
-                  </td>
-                </tr>
-              ))}
+                    <td className="py-3 px-3 text-center">
+                      <TableActions
+                        activeTab={activeTab}
+                        onView={() => handleView(quiz)}
+                        onApprove={() => handleApprove(quiz)}
+                        onReject={() => handleReject(quiz)}
+                        onEdit={() => handleEdit(quiz)}
+                        onDelete={() => handleDelete(quiz)}
+                      />
+                    </td>
+                  </tr>
+                ))
+            )}
           </tbody>
         </table>
       </div>
@@ -212,10 +272,13 @@ const QuizTableSection = ({ activeTab, search }) => {
       <AcceptedModal
         isOpen={showAccepted}
         onClose={() => setShowAccepted(false)}
+        onConfirm={() => updateStatus('approved')}
       />
+
       <RejectedModal
         isOpen={showRejected}
         onClose={() => setShowRejected(false)}
+        onConfirm={() => updateStatus('rejected')}
       />
 
       {/* Edit Quiz */}
@@ -231,16 +294,18 @@ const QuizTableSection = ({ activeTab, search }) => {
       <KonfirmasiHapus
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
-        onConfirm={() => {
-          setShowDeleteConfirm(false);
-          setShowDeleteSuccess(true);
-        }}
+        onConfirm={handleConfirmDelete}
       />
 
       {/* Success Delete */}
       <SuccessDeleteModal
         isOpen={showDeleteSuccess}
         onClose={() => setShowDeleteSuccess(false)}
+      />
+
+      <SuccessUpdateModal
+        isOpen={showUpdateSuccess}
+        onClose={() => setShowUpdateSuccess(false)}
       />
     </div>
   );
