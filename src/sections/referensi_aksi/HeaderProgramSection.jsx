@@ -1,8 +1,13 @@
 // src/sections/referensi_aksi/HeaderProgramSection.jsx
 import React, { useState } from "react";
 import axios from "axios";
+import SuccessPopup from "../../components/ruang_volunteer/notification/SuccessPopup";
 
 const HeaderProgramSection = () => {
+
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  
+
   const [isOpen, setIsOpen] = useState(false);
 
   const [form, setForm] = useState({
@@ -42,14 +47,33 @@ const HeaderProgramSection = () => {
         sourceLink: form.sourceLink,
       };
 
+      // 🔹 Ambil token dari localStorage
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn(
+          "Tidak ada token. Kamu mungkin belum login atau session sudah habis. Silakan login ulang."
+        );
+        return;
+      }
+
       const res = await axios.post(
         "http://localhost:5000/api/programs",
-        payload
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // 🔥 kirim JWT ke backend
+          },
+        }
       );
 
-      console.log("✅ Program tersimpan:", res.data);
+      console.log("Program tersimpan:", res.data);
+        setShowSuccessPopup(true);
 
-      alert("Program berhasil diajukan, menunggu verifikasi admin.");
+        setTimeout(() => {
+          setShowSuccessPopup(false);
+          setIsOpen(false);
+        }, 1500);
+
 
       // reset form
       setForm({
@@ -67,7 +91,6 @@ const HeaderProgramSection = () => {
       setIsOpen(false);
     } catch (error) {
       console.error("❌ Error saat simpan program:", error);
-      alert("Gagal menyimpan program, cek kembali data atau backend.");
     } finally {
       setLoading(false);
     }
@@ -266,6 +289,8 @@ const HeaderProgramSection = () => {
           </div>
         </div>
       )}
+
+      <SuccessPopup show={showSuccessPopup} entity="Program" />
     </>
   );
 

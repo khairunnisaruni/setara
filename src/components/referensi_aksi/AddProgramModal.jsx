@@ -1,6 +1,6 @@
 // src/components/referensi_aksi/AddProgramModal.jsx
 import React, { useState } from "react";
-import SuccessPopup from "./SuccessPopup"; // ⬅️ import popup
+import SuccessPopup from "../ruang_volunteer/notification/SuccessPopup";
 
 export default function AddProgramModal({ isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState({

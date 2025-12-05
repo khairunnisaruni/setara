@@ -5,17 +5,22 @@ import {
   createMateri,
   getApprovedMateri,
   downloadMateri,
+  getMyMateri,
 } from "../controllers/materiController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Upload materi
-router.post("/", uploadMateri.single("file"), createMateri);
+// upload materi baru
+router.post("/", protect, uploadMateri.single("file"), createMateri);
 
-// Ambil hanya materi yang sudah approved
+// materi approved (untuk publik)
 router.get("/approved", getApprovedMateri);
 
-// Download file materi by id
+// riwayat materi multimedia milik user login
+router.get("/me", protect, getMyMateri);
+
+// download file materi approved
 router.get("/:id/download", downloadMateri);
 
 export default router;

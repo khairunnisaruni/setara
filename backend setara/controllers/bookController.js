@@ -2,7 +2,7 @@
 import Book from "../models/Book.js";
 import db from "../config/db.js";
 
-// CREATE (sudah ada, biarkan persis seperti sekarang)
+// ======================= CREATE =======================
 export const createBook = (req, res) => {
   try {
     const { title, author, category, description, link } = req.body;
@@ -17,9 +17,14 @@ export const createBook = (req, res) => {
     if (category === "fiksi") kategori_id = 1;
     else if (category === "nonfiksi") kategori_id = 2;
 
-    const added_by = 1;
+    const added_by = req.user.id;
     const status = "pending";
-    const gambar = null;
+
+    // ambil path gambar dari multer jika ada
+    let gambar = null;
+    if (req.file) {
+      gambar = `/uploads/buku/${req.file.filename}`;
+    }
 
     Book.create(
       { title, author, description, link, kategori_id, added_by, status, gambar },
@@ -42,10 +47,7 @@ export const createBook = (req, res) => {
   }
 };
 
-/**
- * GET /api/books/approved
- * Ambil semua buku rekomendasi yang sudah disetujui admin (status = 'approved')
- */
+// =================== BUKU APPROVED (PUBLIK) ===================
 export const getApprovedBooks = (req, res) => {
   const sql = `
     SELECT
@@ -57,7 +59,8 @@ export const getApprovedBooks = (req, res) => {
       link,
       kategori_id,
       status,
-      approved_at
+      approved_at,
+      created_at
     FROM rekomendasi_buku
     WHERE status = 'approved'
     ORDER BY approved_at DESC, created_at DESC
@@ -69,6 +72,47 @@ export const getApprovedBooks = (req, res) => {
       return res
         .status(500)
         .json({ message: "Gagal mengambil buku approved" });
+    }
+
+    return res.json(rows);
+  });
+};
+
+// =========== RIWAYAT REKOMENDASI BUKU USER (PROFILE) ===========
+export const getMyBooks = (req, res) => {
+  const userId = req.user.id;
+  const { status } = req.query;
+
+  let sql = `
+    SELECT
+      id,
+      title,
+      author,
+      gambar,
+      description,
+      link,
+      kategori_id,
+      status,
+      created_at,
+      approved_at
+    FROM rekomendasi_buku
+    WHERE added_by = ?
+  `;
+  const params = [userId];
+
+  if (status && status !== "all" && status !== "semua") {
+    sql += " AND status = ?";
+    params.push(status);
+  }
+
+  sql += " ORDER BY created_at DESC";
+
+  db.query(sql, params, (err, rows) => {
+    if (err) {
+      console.error("Error mengambil riwayat rekomendasi buku:", err);
+      return res
+        .status(500)
+        .json({ message: "Gagal mengambil riwayat rekomendasi buku" });
     }
 
     return res.json(rows);

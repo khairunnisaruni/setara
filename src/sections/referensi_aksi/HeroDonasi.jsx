@@ -1,65 +1,12 @@
-
 // src/sections/referensi_aksi/HeroDonasi.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import AddDonasiModal from "../../components/referensi_aksi/AddDonasiModal";
-
-
-/* Popup sukses */
-const SuccessModal = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-2xl shadow-lg px-6 py-5 max-w-sm w-full text-center">
-        <h3 className="text-lg font-semibold text-green-700 mb-2">
-          Berhasil
-        </h3>
-        <p className="text-sm text-gray-600 mb-4">
-          Program donasi berhasil ditambahkan.
-        </p>
-        <button
-          onClick={onClose}
-          className="mt-2 inline-flex justify-center px-4 py-2 text-sm font-medium
-                     text-white bg-green-500 rounded-md hover:bg-green-600"
-        >
-          Tutup
-        </button>
-      </div>
-    </div>
-  );
-};
-
-
-/* Popup gagal */
-const FailedModal = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-2xl shadow-lg px-6 py-5 max-w-sm w-full text-center">
-        <h3 className="text-lg font-semibold text-red-600 mb-2">
-          Gagal
-        </h3>
-        <p className="text-sm text-gray-600 mb-4">
-          Terjadi kesalahan saat menyimpan donasi. Coba lagi nanti.
-        </p>
-        <button
-          onClick={onClose}
-          className="mt-2 inline-flex justify-center px-4 py-2 text-sm font-medium
-                     text-white bg-red-500 rounded-md hover:bg-red-600"
-        >
-          Tutup
-        </button>
-      </div>
-    </div>
-  );
-};
-
+import SuccessPopup from "../../components/ruang_volunteer/notification/SuccessPopup";
 
 const HeroDonasi = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showFailedModal, setShowFailedModal] = useState(false);
-
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   // dipanggil dari AddDonasiModal
   const handleSubmitDonasi = async (formData) => {
@@ -70,22 +17,37 @@ const HeroDonasi = () => {
       }
     });
 
-
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert(
+          "Tidak ada token. Kamu mungkin belum login atau sesi sudah habis. Silakan login ulang."
+        );
+        return;
+      }
+
       await axios.post("http://localhost:5000/api/donasi", data, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
+      // Tutup modal form
+      setIsModalOpen(false);
 
-      setIsModalOpen(false);
-      setShowSuccessModal(true);
+      // Tampilkan popup sukses
+      setShowSuccessPopup(true);
+
+      // Auto-hide setelah 2 detik
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 2000);
     } catch (error) {
-      console.error("Gagal kirim donasi:", error);
-      setIsModalOpen(false);
-      setShowFailedModal(true);
+      console.error("Gagal kirim donasi:", error?.response?.data || error);
+      alert("Gagal mengirim donasi. Coba lagi nanti.");
     }
   };
-
 
   return (
     <>
@@ -114,7 +76,6 @@ const HeroDonasi = () => {
           </svg>
         </div>
 
-
         <h1 className="text-3xl md:text-4xl font-bold text-[#317B74]">
           Bersama Wujudkan Akses Pendidikan yang Setara
         </h1>
@@ -122,7 +83,6 @@ const HeroDonasi = () => {
           Dukung sekolah-sekolah yang membutuhkan bantuan fasilitas, buku, dan
           sarana belajar.
         </p>
-
 
         <div className="flex justify-center gap-4">
           <button
@@ -134,8 +94,7 @@ const HeroDonasi = () => {
             className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg transition-all"
           >
             Lihat Daftar Donasi
-          </button>d
-
+          </button>
 
           <button
             onClick={() => setIsModalOpen(true)}
@@ -144,7 +103,6 @@ const HeroDonasi = () => {
             + Tambahkan Program Donasi
           </button>
         </div>
-
 
         {/* Modal Donasi */}
         {isModalOpen && (
@@ -156,19 +114,10 @@ const HeroDonasi = () => {
         )}
       </section>
 
-
-      {/* Popup sukses / gagal */}
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-      />
-      <FailedModal
-        isOpen={showFailedModal}
-        onClose={() => setShowFailedModal(false)}
-      />
+      {/* Popup sukses (re-use komponen SuccessPopup) */}
+      <SuccessPopup show={showSuccessPopup} entity="Program Donasi" />
     </>
   );
 };
-
 
 export default HeroDonasi;

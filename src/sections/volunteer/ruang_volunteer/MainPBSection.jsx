@@ -86,7 +86,7 @@ const MainPBSection = () => {
         title: row.title,
         category: mapKategoriLabel(row.kategori_id),
         desc: row.description || "",
-        cover: row.gambar || "", // sementara kosong -> No Cover
+        cover: row.gambar || "",
         penulis: row.author || "",
         link: row.link || "",
       }));
@@ -94,19 +94,15 @@ const MainPBSection = () => {
       setBooks(mapped);
     } catch (err) {
       console.error("Gagal fetch buku approved:", err);
-      // kalau error, biarkan books kosong -> fallback ke dummy
     }
   };
 
-  // panggil sekali saat halaman dibuka
   useEffect(() => {
     fetchApprovedBooks();
   }, []);
 
-  // gunakan data backend kalau ada, jika tidak pakai dummy
   const sourceBooks = books.length > 0 ? books : bukuList;
 
-  // filter daftar buku berdasarkan kata kunci
   const filteredBooks = sourceBooks.filter((b) => {
     if (!search.trim()) return true;
 
@@ -119,34 +115,47 @@ const MainPBSection = () => {
     );
   });
 
-  // fungsi submit: kirim ke backend
+  // submit: kirim data + file ke backend
   const handleSubmit = async () => {
     try {
-      const payload = {
-        title: formData.judul,
-        author: formData.penulis,
-        // mapping kategori form → category (fiksi / nonfiksi)
-        category: formData.kategori === "Literasi Dasar" ? "fiksi" : "nonfiksi",
-        description: formData.deskripsi,
-        link: formData.link,
-      };
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Kamu belum login. Silakan login dulu.");
+        return;
+      }
+
+      const fd = new FormData();
+      fd.append("title", formData.judul);
+      fd.append("author", formData.penulis);
+      fd.append(
+        "category",
+        formData.kategori === "Literasi Dasar" ? "fiksi" : "nonfiksi"
+      );
+      fd.append("description", formData.deskripsi);
+      fd.append("link", formData.link);
+
+      if (formData.sampul) {
+        fd.append("sampul", formData.sampul);
+      }
 
       const response = await fetch("http://localhost:5000/api/books", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          // jangan set Content-Type manual untuk FormData
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload),
+        body: fd,
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Gagal menyimpan buku");
+        throw new Error(data.message || "Gagal menyimpan buku");
       }
 
       setIsOpen(false);
       setShowNotif(true);
 
-      // reset form setelah sukses
       setFormData({
         judul: "",
         penulis: "",
@@ -156,7 +165,6 @@ const MainPBSection = () => {
         link: "",
       });
 
-      // refresh daftar buku approved (kalau sudah di-approve admin, nanti akan muncul)
       fetchApprovedBooks();
 
       setTimeout(() => {
@@ -164,11 +172,10 @@ const MainPBSection = () => {
       }, 2500);
     } catch (error) {
       console.error("Error saat menyimpan buku:", error);
-      alert("Gagal menyimpan buku, cek backend.");
+      alert(error.message || "Gagal menyimpan buku, cek backend.");
     }
   };
 
-  // ====== DESAIN DI BAWAH INI TIDAK DIUBAH ======
   return (
     <div className="flex flex-col items-center gap-y-7 py-20 px-12">
       <div className="text-6xl font-bold text-center flex flex-col items-center gap-y-4 p-[42px_128px] rounded-[20px] bg-[linear-gradient(85deg,rgba(255,157,1,0.85)_22.33%,rgba(49,123,116,0.85)_77.67%)]">
@@ -189,7 +196,6 @@ const MainPBSection = () => {
 
       {/* SEARCH + FILTER + ADD */}
       <div className="w-full max-w-6xl flex items-center justify-between">
-        {/* Search */}
         <input
           type="text"
           placeholder="Cari Buku..."
@@ -199,13 +205,11 @@ const MainPBSection = () => {
         />
 
         <div className="flex items-center gap-3">
-          {/* Filter */}
           <button className="flex items-center gap-2 px-5 py-3 bg-white rounded-xl shadow-sm hover:bg-gray-100 transition">
             <FiFilter size={18} />
             <span>Filter</span>
           </button>
 
-          {/* Add Button */}
           <button
             onClick={() => setIsOpen(true)}
             className="px-5 py-3 bg-[#FE9015] hover:bg-[#e57f0f] text-white rounded-xl flex items-center gap-2 shadow"

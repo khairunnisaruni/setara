@@ -40,7 +40,10 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
 
   };
 
-  if (!isOpen) return null;
+  // Komponen baru benar‑benar hilang hanya jika:
+  // - form donasi tertutup DAN
+  // - tidak ada popup sukses/gagal yang tampil
+  if (!isOpen && !showSuccessModal && !showFailedModal) return null;
 
   const categoryOptions = [
     "Kebutuhan Dasar Siswa",
@@ -212,4 +215,3 @@ const AddDonasiModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 export default AddDonasiModal;
-
