@@ -1,21 +1,54 @@
-import React from "react";
+// src/components/ruang_volunteer/notification/NotificationDropdown.jsx
+import React, { useEffect, useState } from "react";
 import { HiBell } from "react-icons/hi";
 
 export default function NotificationDropdown() {
-  const notifications = [
-    {
-      title: "Materi Multimedia kamu telah diverifikasi Admin.",
-      desc: "Materi kamu sudah terpublikasi dan dapat diakses.",
-    },
-    {
-      title: "Program telah diverifikasi Admin.",
-      desc: "Program kamu sudah terpublikasi dan siap diikuti peserta.",
-    },
-    {
-      title: "Agenda Pelatihan Volunteer kamu telah tiba!",
-      desc: "Ayo ikuti Agenda Pelatihan Volunteer kamu hari ini pada pukul 09:00–12:00 WIB • Zoom Meeting",
-    },
-  ];
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Ambil notifikasi dari backend saat navbar ditampilkan
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        setLoading(true);
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.warn("Tidak ada token, user belum login");
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch("http://localhost:5000/api/notifications", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Gagal mengambil notifikasi");
+        }
+
+        // pastikan notifikasi terbaru di paling atas
+        const sorted = [...data].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        setNotifications(sorted);
+      } catch (err) {
+        console.error("Gagal ambil notifikasi:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  const badgeCount = notifications.length;
 
   return (
     <div className="relative group">
@@ -26,9 +59,11 @@ export default function NotificationDropdown() {
         <span className="text-[15px] font-medium">Notifikasi</span>
 
         {/* BADGE */}
-        <span className="bg-red-500 text-white text-[10px] px-1.5 py-px rounded-full">
-          {notifications.length}
-        </span>
+        {badgeCount > 0 && (
+          <span className="bg-red-500 text-white text-[10px] px-1.5 py-px rounded-full">
+            {badgeCount}
+          </span>
+        )}
       </div>
 
       {/* DROPDOWN */}
@@ -54,17 +89,28 @@ export default function NotificationDropdown() {
         <h3 className="font-semibold text-gray-700 mb-2">Notifikasi</h3>
 
         <div className="max-h-64 overflow-y-auto space-y-3 pr-1">
-          {notifications.map((notif, i) => (
-            <div
-              key={i}
-              className="p-3 bg-[#F8F5F2] rounded-lg border border-gray-200 hover:bg-[#F1ECE8] transition"
-            >
-              <p className="font-semibold text-sm text-[#000000]">
-                {notif.title}
-              </p>
-              <p className="text-xs text-gray-600 mt-1">{notif.desc}</p>
-            </div>
-          ))}
+          {loading && (
+            <p className="text-xs text-gray-500">Memuat notifikasi...</p>
+          )}
+
+          {!loading && notifications.length === 0 && (
+            <p className="text-xs text-gray-500">
+              Belum ada notifikasi untukmu.
+            </p>
+          )}
+
+          {!loading &&
+            notifications.map((notif, i) => (
+              <div
+                key={i}
+                className="p-3 bg-[#F8F5F2] rounded-lg border border-gray-200 hover:bg-[#F1ECE8] transition"
+              >
+                <p className="font-semibold text-sm text-[#000000]">
+                  {notif.title}
+                </p>
+                <p className="text-xs text-gray-600 mt-1">{notif.message}</p>
+              </div>
+            ))}
         </div>
       </div>
     </div>

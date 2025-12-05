@@ -1,6 +1,15 @@
 // backend_setara/routes/bookRoutes.js
 import express from "express";
 import upload from "../middleware/upload.js";
+
+import {
+  createBook,
+  getApprovedBooks,
+  getMyBooks,
+} from "../controllers/bookController.js";
+import { protect } from "../middleware/authMiddleware.js";
+import uploadBuku from "../middleware/uploadBuku.js";
+
 import { createBook, getApprovedBooks } from "../controllers/bookController.js";
 import { 
     getBooks, 
@@ -11,14 +20,18 @@ import {
 } from "../controllers/bukuController.js";
 
 
+
 const router = express.Router();
 
-// Ambil buku yang sudah di-approve admin
-// GET /api/books/approved
+// buku approved (untuk publik)
 router.get("/approved", getApprovedBooks);
 
-// POST /api/books
-router.post("/", createBook);
+// riwayat rekomendasi buku milik user login
+router.get("/me", protect, getMyBooks);
+
+// buat rekomendasi buku baru (dengan upload sampul buku)
+// field file di form: "sampul"
+router.post("/", protect, uploadBuku.single("sampul"), createBook);
 
 router.get("/", getBooks);
 

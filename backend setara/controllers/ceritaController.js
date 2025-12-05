@@ -4,6 +4,7 @@ import Cerita from "../models/Cerita.js";
 import db from "../config/db.js";
 
 
+
 export const getStories = (req, res) => {
     Cerita.getAlls((err, data) => {
         if (err) return res.status(500).json({ error: "Gagal ambil data cerita" });
@@ -56,6 +57,7 @@ export const updateStoryStatus = (req, res) => {
     });
 };
 
+
 export const createCerita = (req, res) => {
   try {
     const { title, content } = req.body;
@@ -66,7 +68,7 @@ export const createCerita = (req, res) => {
         .json({ message: "Judul dan isi cerita wajib diisi." });
     }
 
-    const user_id = 1;
+    const user_id = req.user.id; // pemilik cerita
     const status = "pending";
     const approved_at = null;
 
@@ -92,9 +94,9 @@ export const createCerita = (req, res) => {
   }
 };
 
+// ======================= APPROVED (PUBLIK) =======================
 /**
  * GET /api/cerita/approved
- * Ambil semua cerita yang sudah disetujui admin (status = 'approved')
  */
 export const getApprovedCerita = (req, res) => {
   const sql = `
@@ -117,6 +119,48 @@ export const getApprovedCerita = (req, res) => {
       return res
         .status(500)
         .json({ message: "Gagal mengambil cerita approved" });
+    }
+
+    return res.json(rows);
+  });
+};
+
+// ======================= RIWAYAT CERITA USER =======================
+/**
+ * GET /api/cerita/me
+ * Optional: ?status=approved | pending | rejected | all
+ */
+export const getMyCerita = (req, res) => {
+  const userId = req.user.id;
+  const { status } = req.query;
+
+  let sql = `
+    SELECT
+      id,
+      user_id,
+      title,
+      content,
+      created_at,
+      status,
+      approved_at
+    FROM cerita
+    WHERE user_id = ?
+  `;
+  const params = [userId];
+
+  if (status && status !== "all" && status !== "semua") {
+    sql += " AND status = ?";
+    params.push(status);
+  }
+
+  sql += " ORDER BY created_at DESC";
+
+  db.query(sql, params, (err, rows) => {
+    if (err) {
+      console.error("Error mengambil riwayat cerita:", err);
+      return res
+        .status(500)
+        .json({ message: "Gagal mengambil riwayat cerita" });
     }
 
     return res.json(rows);

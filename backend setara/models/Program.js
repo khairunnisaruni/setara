@@ -65,7 +65,7 @@ const Program = {
   create: (data) => {
     return new Promise((resolve, reject) => {
       const sql = `
-        INSERT INTO programs
+        INSERT INTO programsa
           (
             judul_program,
             penyelenggara,

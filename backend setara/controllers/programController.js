@@ -3,7 +3,7 @@ import db from "../config/db.js";
 
 /**
  * GET /api/programs/approved
- * Ambil semua program yang sudah disetujui admin (status = 'approved')
+ * Program yang sudah di-approve admin (untuk halaman publik)
  */
 export const getApprovedPrograms = (req, res) => {
   const sql = `
@@ -42,7 +42,7 @@ export const getApprovedPrograms = (req, res) => {
 
 /**
  * GET /api/programs
- * Ambil semua program (misalnya untuk admin)
+ * Semua program (biasanya untuk admin)
  */
 export const getAllPrograms = (req, res) => {
   const sql = `
@@ -79,24 +79,73 @@ export const getAllPrograms = (req, res) => {
 };
 
 /**
+ * GET /api/programs/me
+ * Riwayat program milik user yang login (tab Profile -> Program)
+ * Optional query: ?status=approved|pending|rejected|all
+ */
+export const getMyPrograms = (req, res) => {
+  const userId = req.user.id;
+  const { status } = req.query;
+
+  let sql = `
+    SELECT
+      id,
+      judul_program,
+      penyelenggara,
+      jenis_program,
+      lokasi_program,
+      deskripsi_program,
+      periode_tanggal,
+      deadline_pendaftaran,
+      status_program,
+      tautan_sumber_resmi,
+      poster_banner,
+      added_by,
+      status,
+      approved_at,
+      created_at
+    FROM programs
+    WHERE added_by = ?
+  `;
+  const params = [userId];
+
+  if (status && status !== "all" && status !== "semua") {
+    sql += " AND status = ?";
+    params.push(status);
+  }
+
+  sql += " ORDER BY created_at DESC";
+
+  db.query(sql, params, (err, rows) => {
+    if (err) {
+      console.error("Error mengambil riwayat program:", err);
+      return res
+        .status(500)
+        .json({ message: "Gagal mengambil riwayat program" });
+    }
+
+    return res.json(rows);
+  });
+};
+
+/**
  * POST /api/programs
- * Tambah program baru (dari form di HeaderProgramSection)
+ * Tambah program baru oleh user (masuk status pending)
  */
 export const createProgram = (req, res) => {
   try {
     const {
-      title,          // judul program
-      organizer,      // penyelenggara
-      type,           // jenis program (Volunteer / Beasiswa / dll)
-      location,       // lokasi_program
-      description,    // deskripsi_program
-      period,         // periode_tanggal
-      deadline,       // deadline_pendaftaran
-      statusProgram,  // status_program (akan datang / sedang dibuka / selesai)
-      sourceLink,     // tautan_sumber_resmi
+      title,
+      organizer,
+      type,
+      location,
+      description,
+      period,
+      deadline,
+      statusProgram,
+      sourceLink,
     } = req.body;
 
-    // Validasi sederhana
     if (!title || !organizer || !type || !sourceLink) {
       return res.status(400).json({
         message:
@@ -104,9 +153,9 @@ export const createProgram = (req, res) => {
       });
     }
 
-    const poster_banner = null; // bisa diisi upload nanti
-    const added_by = 1;         // sementara hardcode
-    const status = "pending";   // butuh persetujuan admin
+    const poster_banner = null;
+    const added_by = req.user.id; // dari token user yang login
+    const status = "pending";
 
     const sql = `
       INSERT INTO programs (
@@ -133,7 +182,7 @@ export const createProgram = (req, res) => {
       description || null,
       period || null,
       deadline || null,
-      statusProgram || "akan datang",
+      statusProgram || "Akan Datang",
       sourceLink,
       poster_banner,
       added_by,
@@ -143,9 +192,7 @@ export const createProgram = (req, res) => {
     db.query(sql, params, (err, result) => {
       if (err) {
         console.error("Error insert program:", err);
-        return res
-          .status(500)
-          .json({ message: "Gagal menyimpan program" });
+        return res.status(500).json({ message: "Gagal menyimpan program" });
       }
 
       return res.status(201).json({

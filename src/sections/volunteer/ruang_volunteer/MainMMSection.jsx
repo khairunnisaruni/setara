@@ -183,6 +183,17 @@ const MainMMSection = () => {
         return;
       }
 
+      // 🔹 AMBIL TOKEN DARI LOCAL STORAGE
+      // GANTI 'token' JIKA DI LOGIN KAMU PAKAI NAMA KEY LAIN (mis: 'accessToken')
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert(
+          "Tidak ada token. Kamu mungkin belum login atau session sudah habis. Silakan login ulang."
+        );
+        return;
+      }
+
       const fd = new FormData();
       fd.append("title", materiData.title);
       fd.append("description", materiData.description || "");
@@ -193,7 +204,11 @@ const MainMMSection = () => {
 
       const response = await fetch("http://localhost:5000/api/materials", {
         method: "POST",
-        body: fd, // browser otomatis set multipart/form-data [web:114][web:121]
+        headers: {
+          // jangan set "Content-Type" manual kalau pakai FormData
+          Authorization: `Bearer ${token}`, // 🔹 KIRIM TOKEN KE BACKEND
+        },
+        body: fd,
       });
 
       const result = await response.json();
@@ -247,8 +262,8 @@ const MainMMSection = () => {
         </div>
 
         <div className="flex max-w-[55%] text-lg font-normal text-white text-center flex-col items-center font-sans">
-          Akses berbagai format materi pembelajaran yang siap digunakan
-          dalam kegiatan mengajar
+          Akses berbagai format materi pembelajaran yang siap digunakan dalam
+          kegiatan mengajar
         </div>
       </div>
 
@@ -314,7 +329,8 @@ const MainMMSection = () => {
       />
 
       {/* POPUP SUKSES */}
-      <SuccessPopup show={showNotif} entity="Rekomendasi Buku" />
+      {/* entity bisa kamu ganti jadi "Materi Multimedia" kalau mau lebih spesifik */}
+      <SuccessPopup show={showNotif} entity="Materi Multimedia" />
     </div>
   );
 };
