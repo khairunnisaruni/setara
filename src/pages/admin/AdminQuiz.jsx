@@ -24,7 +24,7 @@ const KuisGame = () => {
 
   // Fetch Pending Count
   useEffect(() => {
-    fetch('http://localhost:3000/admin/quiz')
+    fetch('http://localhost:5000/admin/quiz')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -38,7 +38,7 @@ const KuisGame = () => {
   // ✅ 3. Fungsi Submit ke Backend
   const handleAddSubmit = async (formData) => {
     try {
-      const response = await fetch('http://localhost:3000/admin/quiz', {
+      const response = await fetch('http://localhost:5000/admin/quiz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

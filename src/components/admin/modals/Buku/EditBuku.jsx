@@ -18,7 +18,7 @@ const EditBookModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   // 3. FETCH DATA KATEGORI (Agar dropdown dinamis)
   useEffect(() => {
     // Pastikan endpoint ini sesuai dengan backend kamu
-    fetch('http://localhost:3000/admin/categories') // atau /admin/kategori
+    fetch('http://localhost:5000/admin/categories') // atau /admin/kategori
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {

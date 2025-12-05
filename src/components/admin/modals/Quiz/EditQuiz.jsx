@@ -16,12 +16,12 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [listKelas, setListKelas] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/admin/categories')
+    fetch('http://localhost:5000/admin/categories')
       .then(res => res.json())
       .then(data => setListKategori(data))
       .catch(err => console.error(err));
 
-    fetch('http://localhost:3000/admin/class-categories')
+    fetch('http://localhost:5000/admin/class-categories')
       .then(res => res.json())
       .then(data => setListKelas(data))
       .catch(err => console.error(err));

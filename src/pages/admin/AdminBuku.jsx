@@ -25,7 +25,7 @@ const Buku = () => {
 
   // Fetch Pending Count
   useEffect(() => {
-    fetch('http://localhost:3000/admin/buku') 
+    fetch('http://localhost:5000/admin/buku') 
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -60,7 +60,7 @@ const Buku = () => {
         dataToSend.append("gambar", formData.gambar); 
       }
 
-      const response = await fetch('http://localhost:3000/admin/buku', {
+      const response = await fetch('http://localhost:5000/admin/buku', {
         method: 'POST',
         body: dataToSend, 
       });

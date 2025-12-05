@@ -20,7 +20,7 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
   // 2. Fetch Kategori
   useEffect(() => {
     if (isOpen) {
-        fetch('http://localhost:3000/admin/categories') 
+        fetch('http://localhost:5000/admin/categories') 
         .then(res => res.json())
         .then(data => {
             if (Array.isArray(data)) setKategoriList(data);

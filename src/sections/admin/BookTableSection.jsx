@@ -27,7 +27,7 @@ const BookTableSection = ({ activeTab, search }) => {
   // 1. FETCH & MAPPING DATA
   const fetchBooks = () => {
     // 🔥 PERHATIKAN: Endpoint di sini adalah 'buku'
-    fetch('http://localhost:3000/admin/buku')
+    fetch('http://localhost:5000/admin/buku')
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) {
@@ -88,7 +88,7 @@ const BookTableSection = ({ activeTab, search }) => {
     if (!selectedBook) return;
 
     // 🔥 FIX: Ubah endpoint dari 'books' ke 'buku' agar konsisten dengan fetch
-    const url = `http://localhost:3000/admin/buku/${selectedBook.id}`;
+    const url = `http://localhost:5000/admin/buku/${selectedBook.id}`;
     
     const dataToSend = new FormData();
     dataToSend.append("title", formData.title);
@@ -125,7 +125,7 @@ const BookTableSection = ({ activeTab, search }) => {
     if (!selectedBook) return;
 
     // 🔥 FIX: Ubah endpoint dari 'books' ke 'buku'
-    const url = `http://localhost:3000/admin/buku/${selectedBook.id}`;
+    const url = `http://localhost:5000/admin/buku/${selectedBook.id}`;
 
     fetch(url, { method: 'DELETE' })
       .then(res => {
@@ -152,7 +152,7 @@ const BookTableSection = ({ activeTab, search }) => {
     if (!selectedBook) return;
 
     // 🔥 FIX: Endpoint disamakan ke 'buku'
-    fetch(`http://localhost:3000/admin/buku/${selectedBook.id}/status`, {
+    fetch(`http://localhost:5000/admin/buku/${selectedBook.id}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus })

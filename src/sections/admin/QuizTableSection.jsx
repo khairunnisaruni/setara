@@ -26,7 +26,7 @@ const QuizTableSection = ({ activeTab, search }) => {
   const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:3000/admin/quiz')
+    fetch('http://localhost:5000/admin/quiz')
       .then(response => response.json())
       .then(data => {
         console.log("Data Quiz:", data);
@@ -49,7 +49,7 @@ const QuizTableSection = ({ activeTab, search }) => {
   const updateStatus = (newStatus) => {
     if (!selectedQuiz) return;
 
-    fetch(`http://localhost:3000/admin/quiz/${selectedQuiz.id}/status`, {
+    fetch(`http://localhost:5000/admin/quiz/${selectedQuiz.id}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus })
@@ -58,7 +58,7 @@ const QuizTableSection = ({ activeTab, search }) => {
       .then(() => {
         // Refresh data tanpa reload page
         // Pastikan kamu punya fungsi fetchQuizzes() di file ini
-        fetch('http://localhost:3000/admin/quiz')
+        fetch('http://localhost:5000/admin/quiz')
           .then(res => res.json())
           .then(data => setQuizzes(data));
 
@@ -99,7 +99,7 @@ const QuizTableSection = ({ activeTab, search }) => {
   const handleConfirmDelete = () => {
     if (!selectedQuiz) return;
 
-    fetch(`http://localhost:3000/admin/quiz/${selectedQuiz.id}`, {
+    fetch(`http://localhost:5000/admin/quiz/${selectedQuiz.id}`, {
       method: 'DELETE',
     })
       .then(res => res.json())
@@ -130,7 +130,7 @@ const QuizTableSection = ({ activeTab, search }) => {
     console.log("Sedang mengirim data ke Backend...", payload); // Cek ini nanti
 
     // 3. Kirim ke Backend
-    fetch(`http://localhost:3000/admin/quiz/${selectedQuiz.id}`, {
+    fetch(`http://localhost:5000/admin/quiz/${selectedQuiz.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ const QuizTableSection = ({ activeTab, search }) => {
         console.log("Sukses update:", data);
 
 
-        fetch('http://localhost:3000/admin/quiz')
+        fetch('http://localhost:5000/admin/quiz')
           .then(res => res.json())
           .then(data => setQuizzes(data));
 
