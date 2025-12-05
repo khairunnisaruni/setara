@@ -51,21 +51,27 @@ const DetailUser = ({ isOpen, onClose, user }) => {
 
           <div>
             <p className="text-gray-400 font-semibold">Profesi</p>
-            <p className="text-gray-800 font-medium">{user?.profession || "-"}</p>
+            <p className="text-gray-800 font-medium">{user?.profesi || "-"}</p>
           </div>
 
           <div>
             <p className="text-gray-400 font-semibold">Bio</p>
             <p className="text-gray-800 font-medium">
               {user?.bio ||
-                "Passionate about learning new things and gaining new experiences"}
+                "-"}
             </p>
           </div>
 
           <div>
             <p className="text-gray-400 font-semibold">Tanggal Akun dibuat</p>
             <p className="text-gray-800 font-medium">
-              {user?.createdAt || "16 September 2025"}
+               {user?.created_at
+                ? new Date(user.created_at).toLocaleDateString("id-ID", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })
+                : "-"}
             </p>
           </div>
         </div>

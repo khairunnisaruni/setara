@@ -1,11 +1,10 @@
 import SearchBar from "../../components/admin/SearchBar";
-import FilterButton from "../../components/admin/FilterButton";
+
 
 const ToolbarSection = ({ search, setSearch, activeTab, onAddClick }) => {
   return (
     <div className="flex flex-wrap gap-3 mb-4">
       <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} />
-      <FilterButton />
       {activeTab === "daftar" && (
         <button
           onClick={onAddClick} // ✅ langsung panggil

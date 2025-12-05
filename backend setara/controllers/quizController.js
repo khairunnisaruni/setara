@@ -100,8 +100,8 @@ export const createQuiz = (req, res) => {
       .json({ message: "Title, platform, dan link wajib diisi" });
   }
 
-  // Path file gambar (kalau ada upload)
-  const gambar = req.file ? `/uploads/kuis/${req.file.filename}` : null;
+    // Path file gambar (kalau ada upload)
+    const gambar = req.file ? `/uploads/kuis/${req.file.filename}` : null;
 
   // Mapping kategori string -> id int
   const kategori_id = mapSubjectToCategoryId(subjectCategory);

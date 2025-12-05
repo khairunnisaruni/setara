@@ -1,5 +1,6 @@
 // backend_setara/routes/bookRoutes.js
 import express from "express";
+import upload from "../middleware/upload.js";
 import { createBook, getApprovedBooks } from "../controllers/bookController.js";
 import { 
     getBooks, 

@@ -3,12 +3,17 @@ import Kuis from "../models/Kuis.js";
 
 export const getQuiz = (req, res) => {
     Kuis.getAll((err, data) => {
-        if (err) return res.status(500).json({ error: "Gagal ambil data kuis" });
+        if (err) {
+            // Jika Model mengembalikan error
+            return res.status(500).json({ error: "Gagal ambil data kuis dari database" });
+        }
+        
+        // Jika sukses, kirim data (yang sudah ada JOIN) ke React
         return res.json(data);
     });
 };
 
-export const createQuizs = (req, res) => {
+export const createQuiz = (req, res) => {
     const data = { ...req.body, added_by: 1 }; // Default Admin ID = 1
 
     Kuis.create(data, (err, result) => {

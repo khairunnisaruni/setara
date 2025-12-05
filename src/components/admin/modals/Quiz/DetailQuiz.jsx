@@ -13,7 +13,8 @@ const DetailKuis = ({ isOpen, onClose, quiz }) => {
           <img
             src={
               quiz?.gambar ||
-              "https://via.placeholder.com/400x200.png?text=Gambar+Kuis"
+              quiz?.file ||
+              "-"
             }
             alt="Gambar Kuis"
             className="w-full h-full object-cover"
@@ -37,7 +38,7 @@ const DetailKuis = ({ isOpen, onClose, quiz }) => {
             <div>
               <p className="font-semibold text-sm">Deskripsi</p>
               <p className="text-gray-400 text-sm">
-                {quiz?.deskripsi ||
+                {quiz?.description ||
                   "Kuis soal matematika tentang pecahan yang seru"}
               </p>
             </div>

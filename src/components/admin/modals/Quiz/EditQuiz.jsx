@@ -109,9 +109,7 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               {/* Pastikan value huruf kecil sesuai ENUM database kamu */}
               <option value="kahoot">Kahoot</option>
               <option value="wayground">Wayground</option>
-              {/* Jika database sudah diubah ENUM-nya, baru boleh tambah ini: */}
-              <option value="quizizz">Quizizz</option> 
-              <option value="google form">Google Form</option>
+             
             </select>
           </div>
 

@@ -1,5 +1,5 @@
 // components/user/UserToolbarSection.jsx
-import { Search, Filter } from "lucide-react";
+import { Search } from "lucide-react";
 
 const UserToolbarSection = ({ search, setSearch }) => {
   return (
@@ -18,9 +18,7 @@ const UserToolbarSection = ({ search, setSearch }) => {
         />
       </div>
 
-      <button className="flex items-center gap-2 bg-white hover:bg-gray-100 px-4 py-2 rounded-lg border">
-        <Filter size={16} /> Filter
-      </button>
+    
     </div>
   );
 };

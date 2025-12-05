@@ -15,36 +15,76 @@ const Kuis = {
             LEFT JOIN users ON kuis.added_by = users.id 
             ORDER BY kuis.created_at DESC
         `;
-        db.query(sql, callback);
+
+        db.query(sql, (err, results) => {
+            if (err) {
+                console.error("Database Error:", err);
+                return callback(err, null); 
+            }
+
+            callback(null, results); 
+        });
     },
 
     create: (data, callback) => {
-        const { title, description, platform, link, kategori_id, kategori_kelas_id, added_by } = data;
+        const { 
+            title, 
+            description, 
+            platform, 
+            link, 
+            kategori_id, 
+            kategori_kelas_id, 
+            added_by,
+            gambar // ← TAMBAHKAN INI
+        } = data;
 
-        // Kita set default status = 'approved' agar langsung muncul
         const sql = `
             INSERT INTO kuis 
-            (title, description, platform, link, kategori_id, kategori_kelas_id, added_by, status, approved_at, created_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'approved', NOW(), NOW())
+            (title, description, platform, link, gambar, 
+             kategori_id, kategori_kelas_id, added_by, status, approved_at, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'approved', NOW(), NOW())
         `;
 
-        const values = [title, description, platform, link, kategori_id, kategori_kelas_id, added_by];
+        const values = [
+            title, 
+            description, 
+            platform, 
+            link, 
+            gambar,                  // ← TAMBAHKAN INI
+            kategori_id, 
+            kategori_kelas_id, 
+            added_by
+        ];
+
         db.query(sql, values, callback);
     },
 
     update: (id, data, callback) => {
-        const { title, description, platform, link, kategori_id, kategori_kelas_id } = data;
+        const { title, description, platform, link, kategori_id, kategori_kelas_id, gambar } = data;
 
-        const sql = `UPDATE kuis SET 
-                     title = ?, 
-                     description = ?, 
-                     platform = ?, 
-                     link = ?, 
-                     kategori_id = ?, 
-                     kategori_kelas_id = ? 
-                     WHERE id = ?`;
+        const sql = `
+            UPDATE kuis SET 
+                title = ?, 
+                description = ?, 
+                platform = ?, 
+                link = ?, 
+                kategori_id = ?, 
+                kategori_kelas_id = ?,
+                gambar = ?                 -- ← TAMBAHKAN INI
+            WHERE id = ?
+        `;
 
-        const values = [title, description, platform, link, kategori_id, kategori_kelas_id, id];
+        const values = [
+            title, 
+            description, 
+            platform, 
+            link, 
+            kategori_id, 
+            kategori_kelas_id,
+            gambar,                     // ← TAMBAHKAN INI
+            id
+        ];
+
         db.query(sql, values, callback);
     },
 

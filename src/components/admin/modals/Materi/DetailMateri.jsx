@@ -27,21 +27,21 @@ const DetailMateri = ({ isOpen, onClose, materi }) => {
             <div>
               <p className="font-semibold text-sm">Jenis File</p>
               <p className="text-gray-400 text-sm">
-                {materi?.fileType || "-"}
+                {materi?.file_type || "-"}
               </p>
             </div>
 
             <div>
               <p className="font-semibold text-sm">Kategori Pelajar</p>
               <p className="text-gray-400 text-sm">
-                {materi?.classCategory || "-"}
+                {materi?.kategori_kelas_id || "-"}
               </p>
             </div>
 
             <div>
               <p className="font-semibold text-sm">Jenis Kategori</p>
               <p className="text-gray-400 text-sm">
-                {materi?.materialCategory || "-"}
+                {materi?.kategori_id || "-"}
               </p>
             </div>
 

@@ -67,7 +67,7 @@ const handleReject = () => {
               <div>
                 <p className="font-semibold text-sm">Deskripsi</p>
                 <p className="text-gray-400 text-sm">
-                  {book?.deskripsi ||
+                  {book?.description ||
                     "Untuk pembelajaran Kelas 1 SD dalam menguji kembali pengetahuan dasar mereka."}
                 </p>
               </div>
