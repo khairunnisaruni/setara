@@ -1,7 +1,7 @@
 // routes/bukuRoutes.js
 import express from "express";
 import { 
-    getBooks, 
+    getBook, 
     createBook, 
     updateBook, 
     deleteBook, 
@@ -12,7 +12,7 @@ import upload from "../middleware/upload.js";
 const router = express.Router();
 
 // GET semua buku
-router.get("/", getBooks);
+router.get("/", getBook);
 
 // POST tambah buku (pakai upload.single 'gambar')
 router.post("/", upload.single('gambar'), createBook);

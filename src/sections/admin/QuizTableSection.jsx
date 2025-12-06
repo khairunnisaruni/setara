@@ -115,40 +115,42 @@ const QuizTableSection = ({ activeTab, search }) => {
       .catch(err => console.error("Gagal menghapus:", err));
   };
 
-  const handleUpdateSubmit = (updatedData) => {
+  // src/sections/admin/QuizTableSection.jsx
+
+  const handleUpdateSubmit = (formDataDariModal) => {
     if (!selectedQuiz) return;
 
-    const payload = {
-      title: updatedData.title,
-      description: updatedData.description,
-      platform: updatedData.platform,
-      link: updatedData.link,
-      kategori_id: parseInt(updatedData.kategori_id),
-      kategori_kelas_id: parseInt(updatedData.kategori_kelas_id)
-    };
+    // ❌ HAPUS BAGIAN INI (Ini biang keroknya):
+    /*
+    const formData = new FormData();
+    formData.append('title', updatedData.title);
+    ...
+    if (updatedData.file && updatedData.file instanceof File) ...
+    */
 
-    console.log("Sedang mengirim data ke Backend...", payload); // Cek ini nanti
+    console.log("Sedang mengirim data update ke Backend...");
 
     // 3. Kirim ke Backend
     fetch(`http://localhost:5000/admin/quiz/${selectedQuiz.id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
+      // ✅ CUKUP PAKAI DATA LANGSUNG DARI MODAL
+      // Browser otomatis mengatur boundary karena ini adalah FormData
+      body: formDataDariModal,
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Gagal update kuis");
+        return res.json();
+      })
       .then((data) => {
         console.log("Sukses update:", data);
 
-
+        // Refresh data
         fetch('http://localhost:5000/admin/quiz')
           .then(res => res.json())
           .then(data => setQuizzes(data));
 
-        // 5. Tutup Modal
+        // Tutup Modal
         setShowEditQuizModal(false);
-
         setShowUpdateSuccess(true);
       })
       .catch((err) => console.error("Gagal update:", err));

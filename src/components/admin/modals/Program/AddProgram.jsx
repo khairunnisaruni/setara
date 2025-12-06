@@ -1,4 +1,3 @@
-// src/components/admin/modals/Program/AddProgram.jsx
 import { useState } from "react";
 import FailedModal from "../../modals/Failed";
 import SuccessModal from "../../modals/Success";
@@ -32,33 +31,58 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
     setFormData({ ...formData, programType: type });
   };
 
+  // 🔥 PERBAIKAN UTAMA ADA DI SINI 🔥
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await onSubmit(formData);
-      onClose();                 // tutup form input
-      setShowSuccessModal(true); // tampilkan popup sukses
 
-      // auto-hide popup sukses
-      setTimeout(() => {
-        setShowSuccessModal(false);
-      }, 2000);
+    // 1. Validasi sederhana (Opsional)
+    if (!formData.title || !formData.organizer) {
+      alert("Harap lengkapi Judul dan Penyelenggara!");
+      return;
+    }
+
+    // 2. Buat FormData untuk dikirim ke Backend
+    const dataKirim = new FormData();
+
+    // 3. Mapping: Data React (Inggris) -> Data Database (Indo/Snake_case)
+    dataKirim.append("judul_program", formData.title);
+    dataKirim.append("penyelenggara", formData.organizer);
+    dataKirim.append("jenis_program", formData.programType);
+    dataKirim.append("lokasi_program", formData.location);
+    dataKirim.append("deskripsi_program", formData.description);
+    dataKirim.append("periode_tanggal", formData.period);
+    dataKirim.append("deadline_pendaftaran", formData.deadline);
+    dataKirim.append("status_program", formData.status);
+    dataKirim.append("tautan_sumber_resmi", formData.link);
+
+    // 4. Append Gambar (Banner)
+    // Pastikan di Route backend pakai upload.single('banner')
+    if (formData.banner) {
+      dataKirim.append("banner", formData.banner);
+    }
+
+    try {
+      // Kirim FormData ke Parent
+      await onSubmit(dataKirim);
+      
+      onClose();
+      setShowSuccessModal(true);
+
+      // Reset form agar bersih saat dibuka lagi
+      setFormData({
+        title: "", organizer: "", programType: "", location: "",
+        description: "", period: "", deadline: "", status: "Akan Datang",
+        link: "", banner: null,
+      });
+
     } catch (error) {
-      console.error("Gagal menambah program:", error);
+      console.error("Gagal submit program:", error);
       onClose();
       setShowFailedModal(true);
-
-      // auto-hide popup gagal (opsional)
-      setTimeout(() => {
-        setShowFailedModal(false);
-      }, 2000);
     }
   };
 
-  // Sama seperti AddQuiz:
-  // komponen benar-benar hilang hanya jika
-  // form tertutup DAN tidak ada popup sukses/gagal
-  if (!isOpen && !showSuccessModal && !showFailedModal) return null;
+  if (!isOpen) return null;
 
   const typeOptions = [
     { value: "volunteer", label: "Volunteer" },
@@ -100,7 +124,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
                 name="organizer"
                 value={formData.organizer}
                 onChange={handleChange}
-                placeholder="Contoh: Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi"
+                placeholder="Contoh: Kemendikbud Ristek"
                 className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
               />
             </div>
@@ -139,7 +163,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                placeholder="Beri tahu dimana lokasi volunteer/pengabdian masyarakat"
+                placeholder="Lokasi kegiatan"
                 className="w-full p-2 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
               />
             </div>
@@ -239,7 +263,7 @@ const AddProgramModal = ({ isOpen, onClose, onSubmit }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="text-amber-500 text-sm px-4 py-1.5 rounded-md font-medium border border-gray-200"
+                className="text-amber-500 text-sm px-4 py-1.5 rounded-md font-medium border border-gray-200 hover:bg-gray-50"
               >
                 Batal
               </button>

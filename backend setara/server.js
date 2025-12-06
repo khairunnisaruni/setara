@@ -11,10 +11,12 @@ import "./config/db.js";
 // import routes
 import userRoutes from "./routes/userRoutes.js";
 import bookRoutes from "./routes/bookRoutes.js";
+import bukuRoutes from "./routes/bukuRoute.js";
 import ceritaRoutes from "./routes/ceritaRoutes.js";
 import agendaRoutes from "./routes/agendaRoutes.js";
-import programRoutes from "./routes/programRoutes.js";
 import materiRoutes from "./routes/materiRoute.js";
+import programRoutes from "./routes/programRoutes.js";
+import programsRoutes from "./routes/programRoute.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import kuisRoutes from "./routes/kuisRoute.js";
 import donasiRoutes from "./routes/donasiRoutes.js";
@@ -70,11 +72,11 @@ app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 
 app.use("/admin/donations", donasiRoutes);
-app.use("/admin/buku", bookRoutes);
+app.use("/admin/buku", bukuRoutes);
 app.use("/admin/quiz", kuisRoutes);
 app.use("/admin/materials", materiRoutes);
 app.use("/admin/stories", ceritaRoutes);
-app.use("/admin/programs", programRoutes);
+app.use("/admin/programs", programsRoutes);
 app.use('/admin/info', infoRoutes);
 app.use('/admin/users', userRoutes);
 app.use('/admin', dashboardRoutes);

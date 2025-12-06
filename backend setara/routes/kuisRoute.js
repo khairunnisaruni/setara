@@ -7,12 +7,14 @@ import {
     deleteQuiz, 
     updateQuizStatus 
 } from "../controllers/kuisController.js";
+import upload from "../middleware/upload.js";
 
 const router = express.Router();
 
 router.get("/", getQuiz);
-router.post("/", createQuiz);
-router.put("/:id", updateQuiz);
+router.post("/", upload.single('file'), createQuiz);
+
+router.put("/:id", upload.single('file'), updateQuiz);
 router.delete("/:id", deleteQuiz);
 router.patch("/:id/status", updateQuizStatus);
 

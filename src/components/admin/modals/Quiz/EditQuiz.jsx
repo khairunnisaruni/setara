@@ -7,8 +7,8 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
     description: "",
     platform: "",
     link: "",
-    kategori_id: "",       
-    kategori_kelas_id: "",  
+    kategori_id: "",
+    kategori_kelas_id: "",
     file: null,
   });
 
@@ -34,9 +34,9 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
         description: initialData.description || "",
         platform: initialData.platform || "",
         link: initialData.link || "",
-        kategori_id: initialData.kategori_id || "", 
+        kategori_id: initialData.kategori_id || "",
         kategori_kelas_id: initialData.kategori_kelas_id || "",
-        file: null, 
+        file: null,
       });
     }
   }, [isOpen, initialData]);
@@ -49,9 +49,29 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
     });
   };
 
+  // src/components/admin/modals/Quiz/EditQuizModal.jsx
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    // 1. Buat FormData
+    const dataKirim = new FormData();
+
+    // 2. Masukkan data text
+    dataKirim.append('title', formData.title);
+    dataKirim.append('description', formData.description);
+    dataKirim.append('platform', formData.platform);
+    dataKirim.append('link', formData.link);
+    dataKirim.append('kategori_id', formData.kategori_id);
+    dataKirim.append('kategori_kelas_id', formData.kategori_kelas_id);
+
+    // 3. Masukkan File HANYA JIKA user mengupload gambar baru
+    if (formData.file) {
+      dataKirim.append('file', formData.file);
+    }
+
+    // 4. Kirim FormData, BUKAN object biasa
+    onSubmit(dataKirim);
   };
 
   if (!isOpen) return null;
@@ -109,7 +129,6 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               {/* Pastikan value huruf kecil sesuai ENUM database kamu */}
               <option value="kahoot">Kahoot</option>
               <option value="wayground">Wayground</option>
-             
             </select>
           </div>
 
@@ -161,8 +180,8 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               className="w-full p-2 border border-gray-300 rounded-md text-sm placeholder-gray-400 text-gray-700"
             >
               <option value="">Pilih Kelas</option>
-               {/* Looping data dari database */}
-               {listKelas.map((item) => (
+              {/* Looping data dari database */}
+              {listKelas.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.nama}
                 </option>
@@ -219,4 +238,3 @@ const EditQuizModal = ({ isOpen, onClose, onSubmit, initialData }) => {
 };
 
 export default EditQuizModal;
-

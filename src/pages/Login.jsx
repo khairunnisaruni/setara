@@ -36,13 +36,20 @@ function Login() {
       });
 
       const data = await response.json();
+
       if (response.ok) {
 
         if (data.token) localStorage.setItem("token", data.token);
         if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
 
-        localStorage.setItem("loginSuccess", "true"); // untuk popup di beranda
-        navigate("/beranda");
+        localStorage.setItem("loginSuccess", "true");
+
+        // 🔥 CEK PROFESI USER UNTUK REDIRECT
+        if (data.user.profesi === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/beranda");
+        }
 
       } else {
         alert(data.message || "Login gagal");

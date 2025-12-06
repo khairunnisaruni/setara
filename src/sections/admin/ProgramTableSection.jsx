@@ -28,8 +28,16 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
     fetch('http://localhost:5000/admin/programs')
       .then(res => res.json())
       .then(data => {
-        if(Array.isArray(data)) setProgramList(data);
-        else setProgramList([]);
+        if(Array.isArray(data)) {
+            // Mapping agar properti gambar sesuai untuk modal detail
+            const mappedData = data.map(p => ({
+                ...p,
+                gambar: p.poster_banner // Mapping poster_banner ke properti 'gambar'
+            }));
+            setProgramList(mappedData);
+        } else {
+            setProgramList([]);
+        }
       })
       .catch(err => console.error("Gagal ambil data:", err));
   };
@@ -38,13 +46,9 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
     fetchPrograms();
   }, [refreshTrigger]);
 
-  
-  // === 🔥 BAGIAN BARU: FILTER DATA BERDASARKAN STATUS & TAB ===
-  // Tab Daftar = Hanya yang statusnya 'approved'
-  // Tab Verifikasi = Hanya yang statusnya 'pending'
-  
+  // === FILTER DATA ===
   const data = programList.filter(p => {
-    const matchesSearch = p.judul_program.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = p.judul_program?.toLowerCase().includes(search.toLowerCase());
     
     if (activeTab === "daftar") {
         return matchesSearch && p.status === 'approved'; 
@@ -54,7 +58,6 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
   });
 
   // === HANDLERS ===
-  const handleAdd = () => { setSelectedProgram(null); setShowEditModal(true); };
   const handleEdit = (program) => { setSelectedProgram(program); setShowEditModal(true); };
   const handleDelete = (program) => { setSelectedProgram(program); setShowDeleteConfirm(true); };
   
@@ -64,24 +67,27 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
     else setShowDetailVerifikasi(true);
   };
 
-  // Handler Buka Modal Approve/Reject
+  // Handler Buka Modal Approve/Reject (Langsung via Table)
   const handleApproveClick = (program) => { setSelectedProgram(program); setShowAccepted(true); };
   const handleRejectClick = (program) => { setSelectedProgram(program); setShowRejected(true); };
 
-  // === 🔥 BAGIAN BARU: LOGIKA UPDATE STATUS (PATCH) ===
+  // === LOGIKA UPDATE STATUS (PATCH) ===
   const updateStatus = (newStatus) => {
     if(!selectedProgram) return;
+
+    // Tutup modal detail verifikasi dulu jika sedang terbuka
+    setShowDetailVerifikasi(false);
 
     fetch(`http://localhost:5000/admin/programs/${selectedProgram.id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }) // Kirim status baru ('approved' / 'rejected')
+        body: JSON.stringify({ status: newStatus }) 
     })
     .then(res => res.json())
     .then(() => {
         fetchPrograms(); // Refresh data
-        setShowAccepted(false);
-        setShowRejected(false);
+        if(newStatus === 'approved') setShowAccepted(true);
+        else setShowRejected(true);
     })
     .catch(err => console.error("Gagal update status:", err));
   };
@@ -94,27 +100,15 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
         : 'http://localhost:5000/admin/programs';
     const method = isEditMode ? 'PUT' : 'POST';
 
-    const dataToSend = new FormData();
-    dataToSend.append("judul_program", formData.judul_program);
-    dataToSend.append("penyelenggara", formData.penyelenggara);
-    dataToSend.append("jenis_program", formData.jenis_program);
-    dataToSend.append("lokasi_program", formData.lokasi_program);
-    dataToSend.append("deskripsi_program", formData.deskripsi_program);
-    dataToSend.append("periode_tanggal", formData.periode_tanggal);
-    dataToSend.append("deadline_pendaftaran", formData.deadline_pendaftaran);
-    dataToSend.append("status_program", formData.status_program);
-    dataToSend.append("tautan_sumber_resmi", formData.tautan_sumber_resmi);
-
-    if (formData.poster_banner) {
-        dataToSend.append("poster", formData.poster_banner);
-    }
-
-    fetch(url, { method: method, body: dataToSend })
+    // Disini formData sudah berbentuk FormData object (dari modal)
+    // Jadi langsung kirim saja
+    fetch(url, { method: method, body: formData })
       .then(res => res.json())
       .then(() => {
         fetchPrograms();
         setShowEditModal(false);
-      });
+      })
+      .catch(err => console.error("Gagal submit program:", err));
   };
 
   // === DELETE ===
@@ -132,14 +126,13 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
   // Helper Format Tanggal
   const formatDate = (dateString) => {
     if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? "-" : date.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
   };
 
   return (
     <div className="bg-white rounded-2xl shadow-md border border-gray-100 w-full">
       
-
-
       {/* Tabel */}
       <div className="overflow-x-auto">
         <table className="min-w-[900px] w-full text-sm text-left border-collapse">
@@ -150,7 +143,6 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
                 <th className="p-3">Penyelenggara</th>
                 <th className="p-3">Jenis</th>
                 
-                {/* 🔥 BAGIAN BARU: Kolom Berubah Sesuai Tab */}
                 {activeTab === "daftar" ? (
                     <>
                         <th className="p-3">Deadline</th>
@@ -178,22 +170,21 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
                         
                         <td className="py-3 px-3">
                             <span className={`px-2 py-1 rounded text-xs font-semibold whitespace-nowrap capitalize ${
-                                program.jenis_program === 'Volunteer' ? 'bg-blue-100 text-blue-600' :
-                                program.jenis_program === 'Beasiswa' ? 'bg-orange-100 text-orange-600' :
+                                program.jenis_program === 'volunteer' ? 'bg-blue-100 text-blue-600' :
+                                program.jenis_program === 'beasiswa' ? 'bg-orange-100 text-orange-600' :
                                 'bg-green-100 text-green-600' 
                             }`}>
                                 {program.jenis_program}
                             </span>
                         </td>
 
-                        {/* 🔥 BAGIAN BARU: Isi Kolom Berubah Sesuai Tab */}
                         {activeTab === "daftar" ? (
                             <>
                                 <td className="py-3 px-3">{formatDate(program.deadline_pendaftaran)}</td>
                                 <td className="py-3 px-3">
                                     <span className={`px-2 py-1 rounded text-xs font-semibold capitalize ${
-                                        program.status_program === 'akan datang' ? 'bg-blue-100 text-blue-600' : 
-                                        program.status_program === 'sedang dibuka' ? 'bg-green-100 text-green-600' :
+                                        program.status_program === 'Akan Datang' ? 'bg-blue-100 text-blue-600' : 
+                                        program.status_program === 'Sedang Berjalan' ? 'bg-green-100 text-green-600' :
                                         'bg-gray-100 text-gray-600'
                                     }`}>
                                         {program.status_program}
@@ -208,9 +199,8 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
                         )}
 
                         <td className="py-3 px-3 text-center">
-                            {/* 🔥 BAGIAN BARU: Tombol Aksi Berbeda Sesuai Tab */}
                             <TableActions
-                                activeTab={activeTab} // Kirim props activeTab ke TableActions agar dia tau tombol apa yg ditampilkan
+                                activeTab={activeTab} 
                                 onView={() => handleView(program)}
                                 onEdit={() => handleEdit(program)}
                                 onDelete={() => handleDelete(program)}
@@ -226,10 +216,21 @@ const ProgramTableSection = ({ activeTab, search, refreshTrigger }) => {
       </div>
 
       {/* === SEMUA MODAL === */}
-      <DetailProgram isOpen={showDetailProgram} onClose={() => setShowDetailProgram(false)} program={selectedProgram} />
-      <DetailVerifikasiProgram isOpen={showDetailVerifikasi} onClose={() => setShowDetailVerifikasi(false)} program={selectedProgram} />
+      <DetailProgram 
+        isOpen={showDetailProgram} 
+        onClose={() => setShowDetailProgram(false)} 
+        program={selectedProgram} 
+      />
       
-      {/* 🔥 BAGIAN BARU: Modal Approve/Reject panggil updateStatus */}
+      {/* 🔥 Detail Verifikasi menerima fungsi onApprove & onReject dari Parent */}
+      <DetailVerifikasiProgram 
+        isOpen={showDetailVerifikasi} 
+        onClose={() => setShowDetailVerifikasi(false)} 
+        program={selectedProgram}
+        onApprove={() => updateStatus('approved')}
+        onReject={() => updateStatus('rejected')}
+      />
+      
       <AcceptedModal 
         isOpen={showAccepted} 
         onClose={() => setShowAccepted(false)} 

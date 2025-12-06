@@ -27,7 +27,7 @@ const DetailInformasi = ({ isOpen, onClose, info }) => {
           <div>
             <p className="text-gray-800 font-semibold">Judul Panduan</p>
             <p className="text-gray-500 text-sm">
-              {info?.judul_panduan || "Cara Menggunakan Aplikasi BoycottBuddy"}
+              {info?.judul_panduan || "Menggunakan Chatbot AI"}
             </p>
           </div>
 
@@ -35,7 +35,7 @@ const DetailInformasi = ({ isOpen, onClose, info }) => {
             <p className="text-gray-800 font-semibold">Deskripsi Panduan</p>
             <p className="text-gray-500 text-sm whitespace-pre-line">
               {info?.deskripsi_panduan ||
-                "Panduan ini menjelaskan langkah-langkah untuk menggunakan fitur utama aplikasi, mulai dari melakukan pencarian produk hingga memahami hasil deteksi merek yang termasuk dalam daftar boikot."}
+                "Chatbot AI dapat membantu Anda menjawab pertanyaan siswa secara otomatis. Klik pada menu Chatbot AI di navigation bar, kemudian ketik pertanyaan atau topik yang ingin dibahas. Bot akan memberikan respons yang relevan dan edukatif untuk mendukung proses pembelajaran."}
             </p>
           </div>
         </div>

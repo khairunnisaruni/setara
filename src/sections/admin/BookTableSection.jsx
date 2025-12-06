@@ -25,13 +25,12 @@ const BookTableSection = ({ activeTab, search }) => {
   const [books, setBooks] = useState([]);
 
   // 1. FETCH & MAPPING DATA
+  // 1. FETCH & MAPPING DATA
   const fetchBooks = () => {
-    // 🔥 PERHATIKAN: Endpoint di sini adalah 'buku'
     fetch('http://localhost:5000/admin/buku')
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) {
-          console.error("Data bukan array:", data);
           setBooks([]);
           return;
         }
@@ -39,16 +38,20 @@ const BookTableSection = ({ activeTab, search }) => {
         const formattedData = data.map(item => ({
           id: item.id,
           title: item.title,
-          penulis: item.author,       // Untuk tampilan tabel
-          kategori: item.nama_kategori, // Untuk tampilan tabel
+          penulis: item.author,
+          kategori: item.nama_kategori,
           tautan: item.link,
           submitter: item.nama_pengupload || "Admin",
           date: item.created_at,
-          
-          // Field untuk Form Edit (Sesuaikan dengan nama field database)
-          kategori_id: item.kategori_id, 
-          author: item.author, 
-          description: item.description, 
+
+          // --- FIELD INI YANG KURANG ---
+          gambar: item.gambar, // <--- WAJIB DITAMBAHKAN BIAR MUNCUL DI DETAIL
+          // ---------------------------
+
+          // Field untuk Form Edit
+          kategori_id: item.kategori_id,
+          author: item.author,
+          description: item.description,
           link: item.link,
           status: item.status || 'pending'
         }));
@@ -78,7 +81,7 @@ const BookTableSection = ({ activeTab, search }) => {
 
   const handleEdit = (book) => { setSelectedBook(book); setShowEditBookModal(true); };
   const handleDelete = (book) => { setSelectedBook(book); setShowDeleteConfirm(true); };
-  
+
   const handleApprove = (book) => { setSelectedBook(book); setShowAccepted(true); };
   const handleReject = (book) => { setSelectedBook(book); setShowRejected(true); };
 
@@ -89,7 +92,7 @@ const BookTableSection = ({ activeTab, search }) => {
 
     // 🔥 FIX: Ubah endpoint dari 'books' ke 'buku' agar konsisten dengan fetch
     const url = `http://localhost:5000/admin/buku/${selectedBook.id}`;
-    
+
     const dataToSend = new FormData();
     dataToSend.append("title", formData.title);
     dataToSend.append("author", formData.author); // Pastikan backend terima field 'author' (bukan 'penulis')
@@ -131,7 +134,7 @@ const BookTableSection = ({ activeTab, search }) => {
       .then(res => {
         // Handle response jika backend tidak mengembalikan JSON (misal status 204)
         if (res.ok) {
-            return res.text().then(text => text ? JSON.parse(text) : {});
+          return res.text().then(text => text ? JSON.parse(text) : {});
         }
         throw new Error("Gagal menghapus data");
       })
@@ -261,7 +264,7 @@ const BookTableSection = ({ activeTab, search }) => {
         key={selectedBook ? selectedBook.id : "edit"}
         isOpen={showEditBookModal}
         onClose={() => setShowEditBookModal(false)}
-        onSubmit={handleEditSubmit} 
+        onSubmit={handleEditSubmit}
         initialData={selectedBook}
       />
 

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Upload } from "lucide-react";
 
@@ -120,4 +119,3 @@ const AddBookModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 export default AddBookModal;
-

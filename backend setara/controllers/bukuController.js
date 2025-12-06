@@ -1,14 +1,14 @@
 // controllers/bukuController.js
 import Buku from "../models/Buku.js";
 
-export const getBooks = (req, res) => {
+export const getBook = (req, res) => {
     Buku.getAll((err, data) => {
         if (err) return res.status(500).json({ error: "Gagal ambil data buku" });
         return res.json(data);
     });
 };
 
-export const createBooks = (req, res) => {
+export const createBook = (req, res) => {
     // Ambil nama file gambar jika ada upload
     const gambar = req.file ? req.file.filename : null;
     const data = { ...req.body, added_by: 1 }; // Default Admin ID = 1

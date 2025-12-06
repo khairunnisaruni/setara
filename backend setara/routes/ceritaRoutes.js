@@ -8,7 +8,6 @@ import {
 } from "../controllers/ceritaController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
-import { createCerita, getApprovedCerita } from "../controllers/ceritaController.js";
 import { 
     getStories, 
     createStory, 

@@ -14,7 +14,8 @@ export const getQuiz = (req, res) => {
 };
 
 export const createQuiz = (req, res) => {
-    const data = { ...req.body, added_by: 1 }; // Default Admin ID = 1
+    const gambar = req.file ? req.file.filename : null;
+    const data = { ...req.body, added_by: 1, gambar: gambar }; // Default Admin ID = 1
 
     Kuis.create(data, (err, result) => {
         if (err) return res.status(500).json({ error: "Gagal tambah kuis" });
@@ -22,9 +23,24 @@ export const createQuiz = (req, res) => {
     });
 };
 
+// controllers/quizController.js
+
 export const updateQuiz = (req, res) => {
     const id = req.params.id;
-    Kuis.update(id, req.body, (err, result) => {
+
+    // Cek apakah user mengupload gambar baru?
+    let gambarBaru = null;
+    if (req.file) {
+        gambarBaru = req.file.filename;
+    }
+
+    // Masukkan ke object data
+    const data = { 
+        ...req.body, 
+        gambar: gambarBaru 
+    };
+
+    Kuis.update(id, data, (err, result) => {
         if (err) return res.status(500).json({ error: "Gagal update kuis" });
         return res.json({ message: "Kuis berhasil diupdate", result });
     });

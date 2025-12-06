@@ -54,22 +54,40 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
 
     // Validasi sederhana
     if (!formData.kategori_id || !formData.kategori_kelas_id) {
-       alert("Harap pilih kategori mapel dan kelas!");
-       return;
+      alert("Harap pilih kategori mapel dan kelas!");
+      return;
     }
 
     try {
-      // Pastikan data dikirim sebagai object yang benar
-      await onSubmit(formData); 
+      // === PERUBAHAN UTAMA DISINI ===
+      // Kita harus convert Object menjadi FormData agar File bisa terkirim
+      const dataKirim = new FormData();
+
+      dataKirim.append('title', formData.title);
+      dataKirim.append('description', formData.description);
+      dataKirim.append('platform', formData.platform);
+      dataKirim.append('link', formData.link);
+      dataKirim.append('kategori_id', formData.kategori_id);
+      dataKirim.append('kategori_kelas_id', formData.kategori_kelas_id);
+
+      // Cek jika ada file, baru di-append
+      if (formData.file) {
+        dataKirim.append('file', formData.file);
+      }
+
+      // Kirim FormData (dataKirim), BUKAN object biasa (formData)
+      await onSubmit(dataKirim);
+      // ==============================
+
       onClose();
       setShowSuccessModal(true);
-      
+
       // Reset form
       setFormData({
         title: "", description: "", platform: "", link: "",
         kategori_id: "", kategori_kelas_id: "", file: null
       });
-      
+
     } catch (error) {
       onClose();
       setShowFailedModal(true);
@@ -123,7 +141,6 @@ const AddQuizModal = ({ isOpen, onClose, onSubmit }) => {
                 <option value="">Pilih Platform</option>
                 <option value="kahoot">Kahoot</option>
                 <option value="wayground">Wayground</option>
-                
               </select>
             </div>
 

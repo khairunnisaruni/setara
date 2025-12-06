@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import AdminLayout from "../../sections/admin/AdminLayout";
 import TabButton from "../../components/admin/TabButton";
 import ToolbarSection from "../../sections/admin/ToolbarSection";
-import QuizTableSection from "../../sections/admin/QuizTableSection"; 
+import QuizTableSection from "../../sections/admin/QuizTableSection";
 import Pagination from "../../components/admin/Pagination";
 
 // ✅ 1. Import Modal-modalnya
@@ -13,9 +13,9 @@ import FailedModal from "../../components/admin/modals/Failed";
 const KuisGame = () => {
   const [activeTab, setActiveTab] = useState("daftar");
   const [search, setSearch] = useState("");
-  
+
   const [pendingCount, setPendingCount] = useState(0);
-  
+
   // ✅ 2. Tambahkan State Modal & Refresh
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -38,13 +38,22 @@ const KuisGame = () => {
   // ✅ 3. Fungsi Submit ke Backend
   const handleAddSubmit = async (formData) => {
     try {
+      // formData disini SUDAH berupa FormData (ada file gambarnya)
+      // Jadi jangan di-stringify!
+
       const response = await fetch('http://localhost:5000/admin/quiz', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        // ❌ HAPUS BARIS INI: headers: { 'Content-Type': 'application/json' },
+        // ❌ JANGAN PAKAI JSON.stringify
+
+        // ✅ CUKUP BEGINI SAJA:
+        body: formData,
       });
 
       if (!response.ok) throw new Error("Gagal tambah kuis");
+
+      const result = await response.json(); // Baca pesan sukses dari backend
+      console.log("Sukses:", result);
 
       // Jika Sukses
       setRefreshTrigger(prev => prev + 1);
@@ -52,7 +61,7 @@ const KuisGame = () => {
       setShowSuccessModal(true);
 
     } catch (error) {
-      console.error(error);
+      console.error("Error submit:", error);
       setIsAddModalOpen(false);
       setShowFailedModal(true);
     }
@@ -94,32 +103,32 @@ const KuisGame = () => {
         />
 
         {/* Table */}
-        <QuizTableSection 
-            activeTab={activeTab} 
-            search={search} 
-            refreshTrigger={refreshTrigger}
+        <QuizTableSection
+          activeTab={activeTab}
+          search={search}
+          refreshTrigger={refreshTrigger}
         />
 
         <Pagination />
-        
+
         {/* ✅ 5. Render Modal Disini */}
-        <AddQuizModal 
-          isOpen={isAddModalOpen} 
-          onClose={() => setIsAddModalOpen(false)} 
+        <AddQuizModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
           onSubmit={handleAddSubmit}
         />
 
         {showSuccessModal && (
-          <SuccessModal 
-            isOpen={showSuccessModal} 
-            onClose={() => setShowSuccessModal(false)} 
+          <SuccessModal
+            isOpen={showSuccessModal}
+            onClose={() => setShowSuccessModal(false)}
           />
         )}
 
         {showFailedModal && (
-          <FailedModal 
-            isOpen={showFailedModal} 
-            onClose={() => setShowFailedModal(false)} 
+          <FailedModal
+            isOpen={showFailedModal}
+            onClose={() => setShowFailedModal(false)}
           />
         )}
 

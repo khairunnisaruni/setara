@@ -201,6 +201,6 @@ export const updateDonationStatus = (req, res) => {
     });
 };
 
-export { createDonasi, getDonasi, getApprovedDonasi };
+export { getApprovedDonasi };
 export default createDonasi;
 
